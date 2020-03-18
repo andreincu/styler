@@ -1,20 +1,24 @@
 {
-  "name": "zzz-plugin",
+  "name": "zzz-plugin (Beta)",
   "id": "820660579767995949",
   "api": "1.0.0",
   "main": "dist/code.js",
   "menu": [
     {
-      "name": "ZZZGenerate",
+      "name": "ZZ Generate",
       "command": "generate"
     },
     {
-      "name": "ZZZZDetach",
-      "command": "detach"
+      "name": "ZZZ Apply Styles",
+      "command": "apply"
     },
     {
-      "name": "ZZZZRemove",
+      "name": "ZZZ REMOVE ALL STYLES",
       "command": "removeAllStyles"
+    },
+    {
+      "name": "ZZZ Detach Styles",
+      "command": "detach"
     }
   ]
 }

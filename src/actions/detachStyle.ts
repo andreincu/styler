@@ -1,1 +1,4 @@
-export default layer => layer.fillStyleId = "";
+export default layer => { 
+  layer.fillStyleId = "";
+  layer.strokeStyleId = "";
+}

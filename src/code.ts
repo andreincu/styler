@@ -4,7 +4,7 @@
 // ** DONE ** layer-name != style-name (linked) => (renamed) update style name to layer
 // ** DONE ** layer-name != style-name (detached) => (create) create style using layer name and properties
 
-// import clone from './utils/clone';
+import clone from './utils/clone';
 import getAllStyles from "./utils/getAllStyles";
 import getStyleById from "./utils/getStyleById";
 import getStyleByName from "./utils/getStyleByName";
@@ -57,9 +57,15 @@ if (figma.command == "generate") {
   figma.closePlugin();
 } else if (figma.command == "detach") {
   for (let layer of layers) detachStyle(layer);
-
   figma.closePlugin();
 } else if (figma.command == "removeAllStyles") {
   for (let style of localStyles) style.remove();
+  figma.closePlugin();
+} else if (figma.command == "apply") {
+  for (let layer of layers) {
+    const nameMatch = getStyleByName(localStyles, layer);
+
+    applyStyle(nameMatch, layer);
+  }
   figma.closePlugin();
 }
