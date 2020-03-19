@@ -26,18 +26,25 @@ if (figma.command == 'generate') {
     ignored: 0
   };
 
-  for (let layer of layers) {
-    const idMatch = figma.getStyleById(layer.fillStyleId);
+  for (const layer of layers) {
+    const idMatch = getStyleById(styles, layer);
     const nameMatch = getStyleByName(styles, layer);
 
+    // update style properties from layer and apply to layer
     if (!idMatch && nameMatch) {
       updateStyle(nameMatch, layer);
       applyStyle(nameMatch, layer);
       counter.updated++;
-    } else if (idMatch && !nameMatch) {
+    }
+
+    // rename style from layer
+    else if (idMatch && !nameMatch) {
       renameStyle(idMatch, layer);
       counter.renamed++;
-    } else if (!idMatch && !nameMatch) {
+    }
+
+    // create style from layer
+    else if (!idMatch && !nameMatch) {
       createStyle(layer);
       counter.created++;
     } else {
@@ -68,7 +75,7 @@ else if (figma.command == 'detach') {
 
 // remove all styles, be very carefull!!!
 else if (figma.command == 'removeAllStyles') {
-  for (let style of styles) {
+  for (const style of styles) {
     style.remove();
   }
 
@@ -77,7 +84,7 @@ else if (figma.command == 'removeAllStyles') {
 
 // apply existing styles to layer
 else if (figma.command == 'apply') {
-  for (let layer of layers) {
+  for (const layer of layers) {
     const nameMatch = getStyleByName(styles, layer);
     applyStyle(nameMatch, layer);
   }
