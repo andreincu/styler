@@ -1,34 +1,34 @@
 // there are 4 main scenarios
-// layer-name = style-name (linked) => matched
-// ** DONE ** layer-name = style-name (detached) => (applied) update style properties (for example colors) from layer properties
+// ** DONE ** layer-name = style-name (linked) => matched (Apply style)
+// ** DONE ** layer-name = style-name (detached) => update style properties (for example colors) from layer properties
 // ** DONE ** layer-name != style-name (linked) => (renamed) update style name to layer
 // ** DONE ** layer-name != style-name (detached) => (create) create style using layer name and properties
 
-import clone from './utils/clone';
-import getAllStyles from "./utils/getAllStyles";
-import getStyleById from "./utils/getStyleById";
-import getStyleByName from "./utils/getStyleByName";
+// import clone from './utils/clone';
+import getAllStyles from './utils/getAllStyles';
+import getStyleById from './utils/getStyleById';
+import getStyleByName from './utils/getStyleByName';
 
-import createStyle from "./actions/createStyle";
-import applyStyle from "./actions/applyStyle";
-import renameStyle from "./actions/renameStyle";
-import updateStyle from "./actions/updateStyle";
-import detachStyle from "./actions/detachStyle";
+import createStyle from './actions/createStyle';
+import applyStyle from './actions/applyStyle';
+import renameStyle from './actions/renameStyle';
+import updateStyle from './actions/updateStyle';
+import detachStyle from './actions/detachStyle';
 
 const layers = figma.currentPage.selection;
-const localStyles = getAllStyles();
+const styles = getAllStyles();
 
-if (figma.command == "generate") {
+if (figma.command == 'generate') {
   const counter = {
     created: 0,
     updated: 0,
     renamed: 0,
-    ignored: 0,
+    ignored: 0
   };
 
   for (let layer of layers) {
-    const idMatch = getStyleById(localStyles, layer);
-    const nameMatch = getStyleByName(localStyles, layer);
+    const idMatch = figma.getStyleById(layer.fillStyleId);
+    const nameMatch = getStyleByName(styles, layer);
 
     if (!idMatch && nameMatch) {
       updateStyle(nameMatch, layer);
@@ -51,21 +51,36 @@ if (figma.command == "generate") {
     - Updated: ${counter.updated}\n
     - Renamed: ${counter.renamed}\n
     - Ignored: ${counter.ignored}
-    `,
+    `
   );
 
   figma.closePlugin();
-} else if (figma.command == "detach") {
-  for (let layer of layers) detachStyle(layer);
-  figma.closePlugin();
-} else if (figma.command == "removeAllStyles") {
-  for (let style of localStyles) style.remove();
-  figma.closePlugin();
-} else if (figma.command == "apply") {
-  for (let layer of layers) {
-    const nameMatch = getStyleByName(localStyles, layer);
+}
 
+// detach styles
+else if (figma.command == 'detach') {
+  for (let layer of layers) {
+    detachStyle(layer);
+  }
+
+  figma.closePlugin();
+}
+
+// remove all styles, be very carefull!!!
+else if (figma.command == 'removeAllStyles') {
+  for (let style of styles) {
+    style.remove();
+  }
+
+  figma.closePlugin();
+}
+
+// apply existing styles to layer
+else if (figma.command == 'apply') {
+  for (let layer of layers) {
+    const nameMatch = getStyleByName(styles, layer);
     applyStyle(nameMatch, layer);
   }
+
   figma.closePlugin();
 }
