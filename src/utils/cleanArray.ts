@@ -4,6 +4,6 @@ import isShape from './isShape';
 
 export default layers => {
   return layers.filter(layer => {
-    isText(layer) || isContainer(layer) || isShape(layer);
+    return isText(layer) || isContainer(layer) || isShape(layer);
   });
 };
