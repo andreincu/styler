@@ -14,9 +14,18 @@ import applyStyle from './actions/applyStyle';
 import renameStyle from './actions/renameStyle';
 import updateStyle from './actions/updateStyle';
 import detachStyle from './actions/detachStyle';
+import cleanArray from './utils/cleanArray';
 
-const layers = figma.currentPage.selection;
+const selection = figma.currentPage.selection;
+console.log('selection:' + selection);
+const layers = cleanArray(selection);
+console.log('layers:' + layers);
 const styles = getAllStyles();
+
+if (!layers) {
+  figma.notify('Select a valid layer, please! 🌟');
+  figma.closePlugin();
+}
 
 if (figma.command == 'generate') {
   const counter = {
@@ -66,7 +75,7 @@ if (figma.command == 'generate') {
 
 // detach styles
 else if (figma.command == 'detach') {
-  for (let layer of layers) {
+  for (const layer of layers) {
     detachStyle(layer);
   }
 
