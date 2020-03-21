@@ -3,9 +3,19 @@
 // ** DONE ** layer-name = style-name (detached) => update style properties (for example colors) from layer properties
 // ** DONE ** layer-name != style-name (linked) => (renamed) update style name to layer
 // ** DONE ** layer-name != style-name (detached) => (create) create style using layer name and properties
+//
+// Known issues:
+// - Figma limitations:
+// --- For the moment, figma api doesn't provide any method to sort styles
+// --- Styles that inherit a layer name that begins with "_" (underscore) or "." (dot) doesn't get unpublish status
+// TODO:
+// - add pefix / suffix for fill vs stroke
+// - save all styles locally
+// - check if layer is visible (ignore it )
 
 // import clone from './utils/clone';
-import getAllStyles from './utils/getAllStyles';
+import cleanArray from './utils/cleanLayers';
+import getAllStyles from './utils/cleanStyles';
 import getStyleById from './utils/getStyleById';
 import getStyleByName from './utils/getStyleByName';
 
@@ -14,7 +24,6 @@ import applyStyle from './actions/applyStyle';
 import renameStyle from './actions/renameStyle';
 import updateStyle from './actions/updateStyle';
 import detachStyle from './actions/detachStyle';
-import cleanArray from './utils/cleanArray';
 
 const selection = figma.currentPage.selection;
 const layers = cleanArray(selection);
