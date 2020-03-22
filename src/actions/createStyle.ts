@@ -1,19 +1,9 @@
-import hasFills from '../utils/hasFills';
-
 export default layer => {
-  const fillStyle = figma.createPaintStyle();
-  const strokeStyle = figma.createPaintStyle();
+  let newStyle = figma.createPaintStyle();
 
-  if (hasFills(layer)) {
-    fillStyle.name = layer.name + '-fill';
-    fillStyle.paints = layer.fills;
-    layer.fillStyleId = fillStyle.id;
-  }
-  if (hasFills(layer)) {
-    strokeStyle.name = layer.name + '-fill';
-    strokeStyle.paints = layer.fills;
-    layer.strokeStyle = strokeStyle.id;
-  }
+  newStyle.name = layer.name;
+  newStyle.paints = layer.fills;
+  layer.fillStyleId = newStyle.id;
 
-  return [fillStyle, strokeStyle];
-};
+  return newStyle;
+}
