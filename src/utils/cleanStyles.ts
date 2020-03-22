@@ -5,13 +5,19 @@
 // ignoring effect style for the moment
 
 export default () => {
-  let localStyles = [];
-  localStyles.push(figma.getLocalPaintStyles());
-  localStyles.push(figma.getLocalTextStyles());
-  // grid
-  // effect
+  const styleTypes = {
+    paint: figma.getLocalPaintStyles(),
+    text: figma.getLocalTextStyles(),
+    effect: figma.getLocalEffectStyles(),
+    grid: figma.getLocalGridStyles()
+  };
 
-  localStyles = localStyles.flat();
+  let styles = [];
+  for (const key in styleTypes) {
+    styles.push(styleTypes[key]);
+  }
 
-  return localStyles;
-}
+  styles = styles.flat();
+
+  return styles;
+};

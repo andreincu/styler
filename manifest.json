@@ -9,16 +9,16 @@
       "command": "generate"
     },
     {
-      "name": "ZZZ Apply Styles",
+      "name": "ZZ Apply Styles",
       "command": "apply"
     },
     {
-      "name": "ZZZ REMOVE ALL STYLES",
-      "command": "removeAllStyles"
+      "name": "ZZ Detach Styles",
+      "command": "detachStyles"
     },
     {
-      "name": "ZZZ Detach Styles",
-      "command": "detach"
+      "name": "ZZ Remove Styles",
+      "command": "removeStyles"
     }
   ]
 }
