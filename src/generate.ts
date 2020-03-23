@@ -1,48 +1,42 @@
 import getStyleById from './utils/getStyleById';
 import getStyleByName from './utils/getStyleByName';
-import renameStyles from './actions/renameStyles';
+import createStyle from './actions/createStyle';
+import renameStyle from './actions/renameStyle';
 import updateStyle from './actions/updateStyle';
-import checkLayerFills from './utils/checkLayerFills';
-import checkLayerStrokes from './utils/checkLayerStrokes';
-import createFillStyle from './actions/createFillStyle';
-import createStrokeStyle from './actions/createStrokeStyle';
-import checkLayerEffects from './utils/checkLayerEffects';
-import createEffectStyle from './actions/createEffectStyle';
+import applyStyle from './actions/applyStyle';
 
-export default (layers, styles, counter) =>
+export default (layers, styleType, counter) => {
+  const styles = styleType.style.get();
   layers.map(layer => {
-    const idMatch = getStyleById(layer);
-    const nameMatch = getStyleByName(layer, styles);
+    const layerProp = styleType.layer.prop;
 
-    // create style from layer
-    if (idMatch.length <= 0 && nameMatch.length <= 0) {
-      if (checkLayerFills(layer)) {
-        createFillStyle(layer);
+    if (layer[layerProp] && layer[layerProp].length > 0) {
+      const idMatch = getStyleById(layer, styles, styleType);
+      const nameMatch = getStyleByName(layer, styles, styleType);
+
+      if (!idMatch && !nameMatch) {
+        createStyle(layer, styleType);
         counter.created++;
       }
-      if (checkLayerStrokes(layer)) {
-        createStrokeStyle(layer);
-        counter.created++;
+
+      // rename style from layer
+      else if (idMatch && !nameMatch) {
+        renameStyle(layer, idMatch, styleType);
+        counter.renamed++;
       }
-      if (checkLayerEffects(layer)) {
-        createEffectStyle(layer);
-        counter.created++;
+      // update style properties from layer and apply to layer
+      else if (!idMatch && nameMatch) {
+        updateStyle(layer, nameMatch, styleType);
+        applyStyle(layer, nameMatch, styleType);
+        counter.updated++;
       }
     }
+  });
+};
 
-    // rename style from layer
-    else if (idMatch && !nameMatch) {
-      renameStyles(idMatch, layer, counter);
-    }
-
-    // update style properties from layer and apply to layer
-    else if (!idMatch && nameMatch) {
-      updateStyle(nameMatch, layer);
-      counter.updated++;
-    }
-
+/* 
     //
     else {
       counter.ignored++;
-    }
-  });
+    } 
+*/

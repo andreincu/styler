@@ -1,5 +1,5 @@
-export default (prefix, item, suffix) => {
-  const modifiedName = prefix + item.name + suffix;
+export default (item, affix) => {
+  const modifiedName = affix.prefix + item.name + affix.suffix;
 
   return modifiedName;
 };

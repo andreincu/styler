@@ -7,9 +7,9 @@
 export default () => {
   const styleTypes = {
     paint: figma.getLocalPaintStyles(),
-    text: figma.getLocalTextStyles(),
     effect: figma.getLocalEffectStyles(),
-    grid: figma.getLocalGridStyles()
+    grid: figma.getLocalGridStyles(),
+    text: figma.getLocalTextStyles()
   };
 
   let styles = [];

@@ -1,13 +1,7 @@
-export default (layers, counter) =>
+export default (layers, styleType, counter) =>
   layers.map(layer => {
-    const ids = [
-      'fillStyleId',
-      'strokeStyleId',
-      'textStyleId',
-      'gridStyleId',
-      'effectStyleId'
-    ];
+    const layerId = styleType.layer.id;
+    layer[layerId] ? (layer[layerId] = '') : null;
 
-    ids.map(id => (layer[id] ? (layer[id] = '') : null));
     counter.detached++;
   });

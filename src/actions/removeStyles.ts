@@ -1,7 +1,11 @@
 // removing all local styles
-export default (styles, counter) => {
-  styles.map(style => {
-    style.remove();
-    counter.removed++;
+export default (styleTypes, counter) => {
+  styleTypes.map(styleType => {
+    const styles = styleType.style.get();
+
+    styles.map(style => {
+      style.remove();
+      counter.removed++;
+    });
   });
 };
