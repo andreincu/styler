@@ -1,5 +1,5 @@
 import modifiedName from '../utils/modifiedName';
-// import getTextProperties from '../utils/getTextProperties';
+import applyStyle from './applyStyle';
 
 export default (layer, styleType) => {
   const layerProp = styleType.layer.prop;
@@ -10,18 +10,17 @@ export default (layer, styleType) => {
     getTextProperties(layer, newStyle, styleType);
   } else {
     newStyle[styleProp] = layer[layerProp];
+    newStyle.name = modifiedName(layer, styleType.affix);
   }
-  newStyle.name = modifiedName(layer, styleType.affix);
 
   return newStyle;
 };
 
 async function getTextProperties(layer, style, styleType) {
   const textProp = styleType.style.textProp;
-  const fontName = layer.fontName;
-  let test = await figma.loadFontAsync(fontName);
-  console.log(test);
-  debugger;
+  await figma.loadFontAsync(layer.fontName);
 
-  return textProp.map(prop => (style[prop] = layer[prop]));
+  textProp.map(prop => (style[prop] = layer[prop]));
+  style.name = modifiedName(layer, styleType.affix);
+  applyStyle(layer, style, styleType);
 }

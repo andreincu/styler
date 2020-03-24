@@ -20,8 +20,7 @@ export default (layers, styleTypes, counter) => {
         const nameMatch = getStyleByName(layer, styles, styleType);
 
         if (!idMatch && !nameMatch) {
-          const createdStyle = createStyle(layer, styleType);
-          applyStyle(layer, createdStyle, styleType);
+          createStyle(layer, styleType);
           counter.created++;
         }
 
@@ -33,7 +32,6 @@ export default (layers, styleTypes, counter) => {
         // update style properties from layer and apply to layer
         else if (!idMatch && nameMatch) {
           updateStyle(layer, nameMatch, styleType);
-          // applyStyle(layer, nameMatch, styleType);
           counter.updated++;
         }
         //

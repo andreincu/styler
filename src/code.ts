@@ -132,7 +132,7 @@ function main() {
   };
 
   let styleTypes = [];
-  // styleTypes.push(textType);
+  styleTypes.push(textType);
   styleTypes.push(fillType);
   styleTypes.push(strokeType);
   styleTypes.push(effectType);
