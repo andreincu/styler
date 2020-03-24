@@ -1,7 +1,6 @@
 import createStyle from './actions/createStyle';
 import renameStyle from './actions/renameStyle';
 import updateStyle from './actions/updateStyle';
-import applyStyle from './actions/applyStyle';
 
 import getStyleById from './utils/getStyleById';
 import getStyleByName from './utils/getStyleByName';
@@ -10,12 +9,9 @@ export default (layers, styleTypes, counter) => {
   layers.map(layer => {
     styleTypes.map(styleType => {
       const styles = styleType.style.get();
-      const layerProperty = styleType.layer.prop;
+      const prop = styleType.layer.prop;
 
-      if (
-        layerProperty === 'bypass' ||
-        (layer[layerProperty] && layer[layerProperty].length > 0)
-      ) {
+      if (prop === 'bypass' || (layer[prop] && layer[prop].length > 0)) {
         const idMatch = getStyleById(layer, styles, styleType);
         const nameMatch = getStyleByName(layer, styles, styleType);
 

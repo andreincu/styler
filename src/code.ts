@@ -21,11 +21,11 @@ TODO:
  */
 
 import cleanLayers from './utils/cleanLayers';
-import applyStyles from './actions/applyStyle';
 import detachStyles from './actions/detachStyles';
 import removeStyles from './actions/removeStyles';
 import getStyleByName from './utils/getStyleByName';
 import generate from './generate';
+import applyStyle from './actions/applyStyle';
 
 function main() {
   const selection = figma.currentPage.selection;
@@ -202,7 +202,7 @@ function main() {
           if (layer[layerProp].length > 0 || layerProp === 'bypass') {
             const styles = styleType.style.get();
             const nameMatch = getStyleByName(layer, styles, styleType);
-            applyStyles(layer, nameMatch, styleType);
+            applyStyle(layer, nameMatch, styleType);
             counter.applied++;
           }
         });
