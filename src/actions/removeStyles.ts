@@ -1,11 +1,14 @@
 // removing all local styles
-export default (styleTypes, counter) => {
-  styleTypes.map(styleType => {
-    const styles = styleType.style.get();
-
-    styles.map(style => {
+export default counter => {
+  [
+    figma.getLocalPaintStyles(),
+    figma.getLocalTextStyles(),
+    figma.getLocalEffectStyles(),
+    figma.getLocalGridStyles()
+  ]
+    .flat()
+    .map(style => {
       style.remove();
       counter.removed++;
     });
-  });
 };

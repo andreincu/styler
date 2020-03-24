@@ -21,17 +21,17 @@ TODO:
  */
 
 import cleanLayers from './utils/cleanLayers';
-import cleanStyles from './utils/cleanStyles';
-
 import applyStyles from './actions/applyStyle';
 import detachStyles from './actions/detachStyles';
 import removeStyles from './actions/removeStyles';
+import getStyleByName from './utils/getStyleByName';
 import generate from './generate';
 
 function main() {
   const selection = figma.currentPage.selection;
 
   const fillType = {
+    type: 'PAINT',
     style: {
       create: figma.createPaintStyle,
       get: figma.getLocalPaintStyles,
@@ -47,6 +47,7 @@ function main() {
     }
   };
   const strokeType = {
+    type: 'PAINT',
     style: {
       create: figma.createPaintStyle,
       get: figma.getLocalPaintStyles,
@@ -62,6 +63,7 @@ function main() {
     }
   };
   const effectType = {
+    type: 'EFFECT',
     style: {
       create: figma.createEffectStyle,
       get: figma.getLocalEffectStyles,
@@ -77,6 +79,7 @@ function main() {
     }
   };
   const gridType = {
+    type: 'GRID',
     style: {
       create: figma.createGridStyle,
       get: figma.getLocalGridStyles,
@@ -91,8 +94,45 @@ function main() {
       suffix: ''
     }
   };
+  const textType = {
+    type: 'TEXT',
+    style: {
+      create: figma.createTextStyle,
+      get: figma.getLocalTextStyles,
+      prop: 'bypass',
+      textProp: [
+        'fontName',
+        'fontSize',
+        'letterSpacing',
+        'lineHeight',
+        'paragraphIndent',
+        'paragraphSpacing',
+        'textCase',
+        'textDecoration'
+      ]
+    },
+    layer: {
+      id: 'textStyleId',
+      prop: 'bypass',
+      textProp: [
+        'fontName',
+        'fontSize',
+        'letterSpacing',
+        'lineHeight',
+        'paragraphIndent',
+        'paragraphSpacing',
+        'textCase',
+        'textDecoration'
+      ]
+    },
+    affix: {
+      prefix: '',
+      suffix: ''
+    }
+  };
 
   let styleTypes = [];
+  // styleTypes.push(textType);
   styleTypes.push(fillType);
   styleTypes.push(strokeType);
   styleTypes.push(effectType);
@@ -109,10 +149,13 @@ function main() {
 
   // remove all styles, be very carefull!!!
   if (figma.command === 'removeStyles') {
-    removeStyles(styleTypes, counter);
+    removeStyles(counter);
 
     figma.closePlugin(
-      ` Removed ${counter.removed} styles. 🔥 (Tip: You can still undo the action)`
+      ` 
+      Removed ${counter.removed} styles. 🔥 
+      (Tip: You can still undo the action)
+      `
     );
     return;
   }
@@ -132,9 +175,7 @@ function main() {
 
     // create, update, rename styles based of selected layers
     if (figma.command === 'generate') {
-      styleTypes.map(styleType => {
-        generate(layers, styleType, counter);
-      });
+      generate(layers, styleTypes, counter);
 
       figma.closePlugin(`
         Statistics:\n
@@ -147,24 +188,28 @@ function main() {
 
     // detach styles
     else if (figma.command === 'detachStyles') {
-      styleTypes.map(styleType => {
-        detachStyles(layers, styleType, counter);
-      });
+      detachStyles(layers, styleTypes, counter);
+
       figma.closePlugin(`Detached ${counter.detached} styles. ✌️`);
       return;
     }
 
-    /* // apply existing styles to layer
+    // apply existing styles to layer
     else if (figma.command == 'applyStyles') {
       layers.map(layer => {
-        styles.map(style => {
-          applyStyles(layer, style, styleTypes);
-          counter.applied++;
+        styleTypes.map(styleType => {
+          const layerProp = styleType.layer.prop;
+          if (layer[layerProp].length > 0 || layerProp === 'bypass') {
+            const styles = styleType.style.get();
+            const nameMatch = getStyleByName(layer, styles, styleType);
+            applyStyles(layer, nameMatch, styleType);
+            counter.applied++;
+          }
         });
       });
 
       figma.closePlugin(`Applied ${counter.applied} styles. ✌️`);
-    } */
+    }
   }
 }
 main();
