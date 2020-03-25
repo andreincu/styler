@@ -1,1 +1,0 @@
-export default layer => layer.fillStyleId = "";
