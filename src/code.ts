@@ -170,8 +170,10 @@ function main() {
         styleTypes.push(allTypes.textType);
       } else {
         if (layer.fills.length && !layer.strokes.length) {
+          allTypes.fillType.affix.prefix = '';
           allTypes.fillType.affix.suffix = '';
         } else if (!layer.fills.length && layer.strokes.length) {
+          allTypes.strokeType.affix.prefix = '';
           allTypes.strokeType.affix.suffix = '';
         }
         styleTypes.push(allTypes.fillType);
