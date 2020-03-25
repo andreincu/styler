@@ -10,7 +10,7 @@
     },
     {
       "name": "ZZ Apply Styles",
-      "command": "apply"
+      "command": "applyStyles"
     },
     {
       "name": "ZZ Detach Styles",
