@@ -5,9 +5,6 @@ There are 4 main scenarios:
 3. layer-name != style-name (linked) => (renamed) update style name to layer
 4. layer-name != style-name (detached) => (create) create style using layer name and properties 
 
-Brainstorming:
-- 
-
 Known issues:
 - Figma limitations:
 --- For the moment, figma api doesn't provide any method to sort styles
@@ -20,123 +17,18 @@ TODO:
 
  */
 
-import cleanLayers from './utils/cleanLayers';
-import detachStyles from './actions/detachStyles';
-import removeStyles from './actions/removeStyles';
-import getStyleByName from './utils/getStyleByName';
-import generate from './generate';
+import generate from './actions/generate';
 import applyStyle from './actions/applyStyle';
+import detachStyle from './actions/detachStyle';
+import removeStyles from './actions/removeStyles';
+
+import getStyleById from './utils/getStyleById';
+import getStyleByName from './utils/getStyleByName';
+import cleanLayers from './utils/cleanLayers';
 
 function main() {
+  let figmaCommand = figma.command;
   const selection = figma.currentPage.selection;
-
-  const fillType = {
-    type: 'PAINT',
-    style: {
-      create: figma.createPaintStyle,
-      get: figma.getLocalPaintStyles,
-      prop: 'paints'
-    },
-    layer: {
-      prop: 'fills',
-      id: 'fillStyleId'
-    },
-    affix: {
-      prefix: '',
-      suffix: '-fill'
-    }
-  };
-  const strokeType = {
-    type: 'PAINT',
-    style: {
-      create: figma.createPaintStyle,
-      get: figma.getLocalPaintStyles,
-      prop: 'paints'
-    },
-    layer: {
-      prop: 'strokes',
-      id: 'strokeStyleId'
-    },
-    affix: {
-      prefix: '',
-      suffix: '-stroke'
-    }
-  };
-  const effectType = {
-    type: 'EFFECT',
-    style: {
-      create: figma.createEffectStyle,
-      get: figma.getLocalEffectStyles,
-      prop: 'effects'
-    },
-    layer: {
-      prop: 'effects',
-      id: 'effectStyleId'
-    },
-    affix: {
-      prefix: '',
-      suffix: ''
-    }
-  };
-  const gridType = {
-    type: 'GRID',
-    style: {
-      create: figma.createGridStyle,
-      get: figma.getLocalGridStyles,
-      prop: 'layoutGrids'
-    },
-    layer: {
-      prop: 'layoutGrids',
-      id: 'gridStyleId'
-    },
-    affix: {
-      prefix: '',
-      suffix: ''
-    }
-  };
-  const textType = {
-    type: 'TEXT',
-    style: {
-      create: figma.createTextStyle,
-      get: figma.getLocalTextStyles,
-      prop: 'bypass',
-      textProp: [
-        'fontName',
-        'fontSize',
-        'letterSpacing',
-        'lineHeight',
-        'paragraphIndent',
-        'paragraphSpacing',
-        'textCase',
-        'textDecoration'
-      ]
-    },
-    layer: {
-      id: 'textStyleId',
-      prop: 'bypass',
-      textProp: [
-        'fontName',
-        'fontSize',
-        'letterSpacing',
-        'lineHeight',
-        'paragraphIndent',
-        'paragraphSpacing',
-        'textCase',
-        'textDecoration'
-      ]
-    },
-    affix: {
-      prefix: '',
-      suffix: ''
-    }
-  };
-
-  let styleTypes = [];
-  styleTypes.push(textType);
-  styleTypes.push(fillType);
-  styleTypes.push(strokeType);
-  styleTypes.push(effectType);
-  styleTypes.push(gridType);
   const counter = {
     applied: 0,
     created: 0,
@@ -145,6 +37,106 @@ function main() {
     renamed: 0,
     removed: 0,
     updated: 0
+  };
+  const allTypes = {
+    fillType: {
+      type: 'FILL',
+      style: {
+        create: figma.createPaintStyle,
+        get: figma.getLocalPaintStyles,
+        prop: 'paints'
+      },
+      layer: {
+        prop: 'fills',
+        id: 'fillStyleId'
+      },
+      affix: {
+        prefix: '',
+        suffix: '-fill'
+      }
+    },
+    strokeType: {
+      type: 'STROKE',
+      style: {
+        create: figma.createPaintStyle,
+        get: figma.getLocalPaintStyles,
+        prop: 'paints'
+      },
+      layer: {
+        prop: 'strokes',
+        id: 'strokeStyleId'
+      },
+      affix: {
+        prefix: '',
+        suffix: '-stroke'
+      }
+    },
+    effectType: {
+      type: 'EFFECT',
+      style: {
+        create: figma.createEffectStyle,
+        get: figma.getLocalEffectStyles,
+        prop: 'effects'
+      },
+      layer: {
+        prop: 'effects',
+        id: 'effectStyleId'
+      },
+      affix: {
+        prefix: '',
+        suffix: ''
+      }
+    },
+    gridType: {
+      type: 'GRID',
+      style: {
+        create: figma.createGridStyle,
+        get: figma.getLocalGridStyles,
+        prop: 'layoutGrids'
+      },
+      layer: {
+        prop: 'layoutGrids',
+        id: 'gridStyleId'
+      },
+      affix: {
+        prefix: '',
+        suffix: ''
+      }
+    },
+    textType: {
+      type: 'TEXT',
+      style: {
+        create: figma.createTextStyle,
+        get: figma.getLocalTextStyles,
+        prop: 'fontName',
+        textProp: [
+          'fontSize',
+          'letterSpacing',
+          'lineHeight',
+          'paragraphIndent',
+          'paragraphSpacing',
+          'textCase',
+          'textDecoration'
+        ]
+      },
+      layer: {
+        id: 'textStyleId',
+        prop: 'fontName',
+        textProp: [
+          'fontSize',
+          'letterSpacing',
+          'lineHeight',
+          'paragraphIndent',
+          'paragraphSpacing',
+          'textCase',
+          'textDecoration'
+        ]
+      },
+      affix: {
+        prefix: '',
+        suffix: ''
+      }
+    }
   };
 
   // remove all styles, be very carefull!!!
@@ -172,43 +164,62 @@ function main() {
   else {
     const layers = cleanLayers(selection);
     counter.ignored = selection.length - layers.length;
+    layers.map(layer => {
+      let styleTypes = [];
+      if (layer.type === 'TEXT') {
+        styleTypes.push(allTypes.textType);
+      } else {
+        if (layer.fills.length && !layer.strokes.length) {
+          allTypes.fillType.affix.suffix = '';
+        } else if (!layer.fills.length && layer.strokes.length) {
+          allTypes.strokeType.affix.suffix = '';
+        }
+        styleTypes.push(allTypes.fillType);
+        styleTypes.push(allTypes.strokeType);
+        styleTypes.push(allTypes.effectType);
+        styleTypes.push(allTypes.gridType);
+      }
 
-    // create, update, rename styles based of selected layers
-    if (figma.command === 'generate') {
-      generate(layers, styleTypes, counter);
+      styleTypes.map(styleType => {
+        const styles = styleType.style.get();
+        const layerProp = layer[styleType.layer.prop];
+        const idMatch = getStyleById(layer, styles, styleType);
+        const nameMatch = getStyleByName(layer, styles, styleType);
 
-      figma.closePlugin(`
-        Statistics:\n
-        - Created: ${counter.created}\n
-        - Updated: ${counter.updated}\n
-        - Renamed: ${counter.renamed}\n
-        - Ignored: ${counter.ignored}
-        `);
-    }
-
-    // detach styles
-    else if (figma.command === 'detachStyles') {
-      detachStyles(layers, styleTypes, counter);
-
-      figma.closePlugin(`Detached ${counter.detached} styles. ✌️`);
-      return;
-    }
-
-    // apply existing styles to layer
-    else if (figma.command == 'applyStyles') {
-      layers.map(layer => {
-        styleTypes.map(styleType => {
-          const layerProp = styleType.layer.prop;
-          if (layer[layerProp].length > 0 || layerProp === 'bypass') {
-            const styles = styleType.style.get();
-            const nameMatch = getStyleByName(layer, styles, styleType);
-            applyStyle(layer, nameMatch, styleType);
-            counter.applied++;
+        if ((layerProp && layerProp.length) || styleType.type === 'TEXT') {
+          switch (figmaCommand) {
+            case 'generate':
+              generate(layer, idMatch, nameMatch, styleType, counter);
+              break;
+            case 'applyStyles':
+              applyStyle(layer, nameMatch, styleType, counter);
+              break;
+            case 'detachStyles':
+              detachStyle(layer, styleType, counter);
+              break;
+            default:
+              figma.closePlugin('Something bad happened 😬');
+              return;
           }
-        });
+        }
       });
-
-      figma.closePlugin(`Applied ${counter.applied} styles. ✌️`);
+    });
+    switch (figmaCommand) {
+      case 'generate':
+        figma.closePlugin(`
+          Statistics:\n
+          - Created: ${counter.created}\n
+          - Updated: ${counter.updated}\n
+          - Renamed: ${counter.renamed}\n
+          - Ignored: ${counter.ignored}
+          `);
+        break;
+      case 'applyStyles':
+        figma.closePlugin(`Applied ${counter.applied} styles. ✌️`);
+        break;
+      case 'detachStyles':
+        figma.closePlugin(`Detached ${counter.detached} styles. ✌️`);
+        break;
     }
   }
 }
