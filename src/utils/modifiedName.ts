@@ -1,5 +1,5 @@
 export default (item, affix) => {
-  const modifiedName = affix.prefix + item.name + affix.suffix;
+  const modifiedName = affix.prefix + item + affix.suffix;
 
   return modifiedName;
 };

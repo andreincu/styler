@@ -20,11 +20,12 @@ TODO:
 import generate from './actions/generate';
 import applyStyle from './actions/applyStyle';
 import detachStyle from './actions/detachStyle';
-import removeStyles from './actions/removeStyles';
+import removeAllStyles from './actions/removeAllStyles';
 
 import getStyleById from './utils/getStyleById';
 import getStyleByName from './utils/getStyleByName';
 import cleanLayers from './utils/cleanLayers';
+import removeStyle from './actions/removeStyle';
 
 function main() {
   let figmaCommand = figma.command;
@@ -140,8 +141,8 @@ function main() {
   };
 
   // remove all styles, be very carefull!!!
-  if (figma.command === 'removeStyles') {
-    removeStyles(counter);
+  if (figma.command === 'removeAllStyles') {
+    removeAllStyles(counter);
 
     figma.closePlugin(
       ` 
@@ -190,7 +191,7 @@ function main() {
 
         if ((layerProp && layerProp.length) || styleType.type === 'TEXT') {
           switch (figmaCommand) {
-            case 'generate':
+            case 'generateStyles':
               generate(layer, idMatch, nameMatch, styleType, counter);
               break;
             case 'applyStyles':
@@ -198,6 +199,13 @@ function main() {
               break;
             case 'detachStyles':
               detachStyle(layer, styleType, counter);
+              break;
+            case 'removeFillStyles':
+            case 'removeStrokeStyles':
+            case 'removeTextStyles':
+            case 'removeEffectStyles':
+            case 'removeGridStyles':
+              removeStyle(idMatch, styleType, figmaCommand, counter);
               break;
             default:
               figma.closePlugin('Something bad happened 😬');
@@ -207,7 +215,7 @@ function main() {
       });
     });
     switch (figmaCommand) {
-      case 'generate':
+      case 'generateStyles':
         figma.closePlugin(`
           Statistics:\n
           - Created: ${counter.created}\n
@@ -220,7 +228,14 @@ function main() {
         figma.closePlugin(`Applied ${counter.applied} styles. ✌️`);
         break;
       case 'detachStyles':
-        figma.closePlugin(`Detached ${counter.detached} styles. ✌️`);
+        figma.closePlugin(`Detached ${counter.detached} styles. 💔`);
+        break;
+      case 'removeFillStyles':
+      case 'removeStrokeStyles':
+      case 'removeTextStyles':
+      case 'removeEffectStyles':
+      case 'removeGridStyles':
+        figma.closePlugin(`Removed ${counter.removed} styles. 🔥`);
         break;
     }
   }

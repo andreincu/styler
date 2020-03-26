@@ -1,5 +1,3 @@
-import applyStyle from './applyStyle';
-
 // sync layer style with shared style
 export default async (layer, style, styleType) => {
   const layerId = styleType.layer.id;

@@ -15,12 +15,12 @@ export default async (layer, styleType) => {
 
     newStyle[styleProp] = layer[layerProp];
     textProp.map(prop => (newStyle[prop] = layer[prop]));
-    newStyle.name = modifiedName(layer, styleType.affix);
+    newStyle.name = modifiedName(layer.name, styleType.affix);
     layer[layerId] = newStyle.id;
   } else {
     newStyle = styleType.style.create();
     newStyle[styleProp] = layer[layerProp];
-    newStyle.name = modifiedName(layer, styleType.affix);
+    newStyle.name = modifiedName(layer.name, styleType.affix);
     layer[layerId] = newStyle.id;
   }
 

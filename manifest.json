@@ -1,24 +1,53 @@
 {
-  "name": "zzz-plugin (Beta)",
+  "name": "Figma Style Generator",
   "id": "820660579767995949",
   "api": "1.0.0",
   "main": "dist/code.js",
   "menu": [
     {
-      "name": "ZZ Generate",
-      "command": "generate"
+      "name": "Generate Styles",
+      "command": "generateStyles"
     },
     {
-      "name": "ZZ Apply Styles",
+      "separator": true
+    },
+    {
+      "name": "Apply Styles",
       "command": "applyStyles"
     },
     {
-      "name": "ZZ Detach Styles",
+      "name": "Detach Styles",
       "command": "detachStyles"
     },
     {
-      "name": "ZZ Remove Styles",
-      "command": "removeStyles"
+      "separator": true
+    },
+    {
+      "name": "Remove Fill Styles",
+      "command": "removeFillStyles"
+    },
+    {
+      "name": "Remove Stroke styles",
+      "command": "removeStrokeStyles"
+    },
+    {
+      "name": "Remove Text Styles",
+      "command": "removeTextStyles"
+    },
+    {
+      "name": "Remove Effect Styles",
+      "command": "removeEffectStyles"
+    },
+    {
+      "name": "Remove Grid Styles",
+      "command": "removeGridStyles"
+    },
+    {
+      "separator": true
+    },
+    {
+      "name": "Clear All Styles",
+      "command": "removeAllStyles"
     }
   ]
 }
