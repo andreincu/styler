@@ -27,7 +27,7 @@
       "command": "removeFillStyles"
     },
     {
-      "name": "Remove Stroke styles",
+      "name": "Remove Stroke Styles",
       "command": "removeStrokeStyles"
     },
     {
@@ -47,7 +47,7 @@
     },
     {
       "name": "Clear All Styles",
-      "command": "removeAllStyles"
+      "command": "clearAllStyles"
     }
   ]
 }
