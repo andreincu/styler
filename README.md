@@ -1,7 +1,5 @@
 # Styler
 
-## Description
-
 Styler is a plugin for figma that is inspired by [Sketch Style Generator plugin](https://github.com/lucaorio/sketch-styles-generator) made by **Luca Orio**.  
 The plugin generates styles that inherit the properties from the selected layers.
 
@@ -30,6 +28,11 @@ The goal of the plugin is to quickly create styles that represent the foundation
 1. Use **Remove Fill, Stroke, Text, Effect, and Grid** will delete the styles from the selected layers.
 1. Use **Clear all Styles** will delete all the styles from the document.
 
+## Known issues
+
+1. [Figma limitation] While trying to rename the styles using underscore `_` or point `.` prefixes, the style will not change the publish status (it will not become unpublish). ☹️
+1. [Figma limitation] After you create styles, you cannot reorder them using Figma API. 😔
+
 ## Notes
 
 1. Any change can be **Undo**.
@@ -37,3 +40,8 @@ The goal of the plugin is to quickly create styles that represent the foundation
 1. There is no support for **Groups** and I don't plan to support it.
 1. The plugin, extract only text properties from text layers.
 1. For layer that contains both fill and stroke properties, the plugin will add automatically a suffix to the style name `-fill` and `-stroke`, otherwise the style name will be exactly as the layer name.
+
+## Pairing well with
+
+1. [Themer](https://github.com/thomas-lowry/themer)
+1. [Match fills to local styles](https://www.figma.com/community/plugin/783240561193792353/Match-fills-to-local-styles)
