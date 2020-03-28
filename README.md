@@ -1,4 +1,6 @@
-# Styler
+![cover](src/assets/cover.png)
+
+# ![icon](src/assets/icon.png) Styler
 
 Styler is a plugin for Figma that generates styles based on selected layers.
 
