@@ -43,6 +43,5 @@ Styler is a plugin for Figma that generates styles based on selected layers.
 1. [Themer](https://github.com/thomas-lowry/themer)
 1. [Match fills to local styles](https://www.figma.com/community/plugin/783240561193792353/Match-fills-to-local-styles)
 
-Inspired by [Sketch Style Generator](https://github.com/lucaorio/sketch-styles-generator) made by **Luca Orio**.
-
+Inspired by [Sketch Style Generator](https://github.com/lucaorio/sketch-styles-generator) made by **Luca Orio**.  
 Many thanks to [Cristi Nica](https://github.com/cristi9512) for support.
