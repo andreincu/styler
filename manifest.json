@@ -1,5 +1,5 @@
 {
-  "name": "Figma Style Generator",
+  "name": "Styler",
   "id": "820660579767995949",
   "api": "1.0.0",
   "main": "dist/code.js",

@@ -1,6 +1,6 @@
 # Styler
 
-Styler is a plugin for figma that is inspired by [Sketch Style Generator plugin](https://github.com/lucaorio/sketch-styles-generator) made by **Luca Orio**.  
+Styler is a plugin for figma that is inspired by [Sketch Style Generator](https://github.com/lucaorio/sketch-styles-generator) made by **Luca Orio**.  
 The plugin generates styles that inherit the properties from the selected layers.
 
 The goal of the plugin is to quickly create styles that represent the foundation of a design system and to help to maintain it.

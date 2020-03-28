@@ -207,7 +207,9 @@ function main() {
               removeStyle(idMatch, styleType, figmaCommand, counter);
               break;
             default:
-              figma.closePlugin('Something bad happened 😬');
+              figma.closePlugin(
+                'Something bad happened. 😬 Actually, nothing is changed.'
+              );
               return;
           }
         }
@@ -223,19 +225,29 @@ function main() {
           - Renamed: ${counter.renamed}\n
           - Ignored: ${counter.ignored}
           `);
+        return;
         break;
       case 'applyStyles':
         figma.closePlugin(`✌️ Applied ${counter.applied} styles.`);
+        return;
         break;
       case 'detachStyles':
         figma.closePlugin(`💔 Detached ${counter.detached} styles.`);
+        return;
         break;
       case 'removeFillStyles':
       case 'removeStrokeStyles':
       case 'removeTextStyles':
       case 'removeEffectStyles':
       case 'removeGridStyles':
-        figma.closePlugin(`🔥 Removed ${counter.removed} styles.`);
+        {
+          if (counter.removed != 0) {
+            figma.closePlugin(`🔥 Removed ${counter.removed} styles.`);
+            return;
+          } else {
+            figma.closePlugin(`ℹ️ Layer doesn't have this type of property`);
+          }
+        }
         break;
     }
   }
