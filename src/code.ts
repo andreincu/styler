@@ -53,7 +53,7 @@ function main() {
       },
       affix: {
         prefix: '',
-        suffix: '-fill'
+        suffix: ''
       }
     },
     strokeType: {
@@ -69,7 +69,7 @@ function main() {
       },
       affix: {
         prefix: '',
-        suffix: '-stroke'
+        suffix: ''
       }
     },
     effectType: {
@@ -169,13 +169,10 @@ function main() {
       if (layer.type === 'TEXT') {
         styleTypes.push(allTypes.textType);
       } else {
-        if (layer.fills.length && !layer.strokes.length) {
-          allTypes.fillType.affix.prefix = '';
-          allTypes.fillType.affix.suffix = '';
-        } else if (!layer.fills.length && layer.strokes.length) {
-          allTypes.strokeType.affix.prefix = '';
-          allTypes.strokeType.affix.suffix = '';
-        }
+        if (layer.fills.length && layer.strokes.length) {
+          allTypes.fillType.affix.suffix = '-fill';
+          allTypes.strokeType.affix.suffix = '-stroke';
+        } 
         styleTypes.push(allTypes.fillType);
         styleTypes.push(allTypes.strokeType);
         styleTypes.push(allTypes.effectType);
