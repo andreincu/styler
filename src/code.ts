@@ -165,11 +165,16 @@ function main() {
     const layers = cleanLayers(selection);
     counter.ignored = selection.length - layers.length;
     layers.map(layer => {
+      // reset affix
+      allTypes.fillType.affix.suffix = '';
+      allTypes.strokeType.affix.suffix = '';
+
       let styleTypes = [];
       if (layer.type === 'TEXT') {
         styleTypes.push(allTypes.textType);
       } else {
-        if (layer.fills.length && layer.strokes.length) {
+        // checking if layer has both fill and stroke properties
+        if (layer.fills && layer.fills.length && layer.strokes && layer.strokes.length) {
           allTypes.fillType.affix.suffix = '-fill';
           allTypes.strokeType.affix.suffix = '-stroke';
         } 
