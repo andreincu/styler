@@ -1,5 +1,4 @@
-export default (layer, styleType, counter) => {
+export default (layer, styleType) => {
   const layerId = styleType.layer.id;
   layer[layerId] = '';
-  counter.detached++;
 };

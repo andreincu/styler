@@ -199,7 +199,8 @@ function main() {
               applyStyle(layer, nameMatch, styleType, counter);
               break;
             case 'detachStyles':
-              detachStyle(layer, styleType, counter);
+              detachStyle(layer, styleType);
+              counter.detached++;
               break;
             case 'removeFillStyles':
             case 'removeStrokeStyles':
