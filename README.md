@@ -15,17 +15,16 @@ Styler is a plugin for Figma that generates styles based on selected layers.
 ## Usage
 
 1. Select any number of layers
-1. Don't bother with the names of the layers, you can rename it later
-   > I recommend using bulk rename `Cmd + R` (Mac) or `Ctrl + R` (Windows)
-1. Use **Generate Styles** to:
-   - **Create** new styles, if there is no style attached and no layer name match
-   - **Rename** style, if any style is attached to the layer (applied)
-   - **Update** style, if layer name is the same as the style name
-     > In order to update a style, you must detach the previous one first, otherwise it will rename the other style.
-1. Use **Apply Styles** to apply styles that match layer name
-1. Use **Detach Styles** to detach all the styles from the selected layers
-1. Use **Remove Fill, Stroke, Text, Effect, and Grid** will delete the styles from the selected layers.
-1. Use **Clear all Styles** will delete all the styles from the document.
+1. Don't bother with the names of the layers, you can rename it later, but try to not have the same name for multiple layers.
+   > I recommend using bulk rename `Cmd` `R` (Mac) or `Ctrl` `R` (Windows)
+1. **Generate Styles**
+   - **Create:** creates styles, when there is no match between layer and existing styles.
+   - **Rename:** renames styles, when there is a style attached to the layer and no style with desired new name.
+   - **Update:** update styles, when there is a name match.
+1. **Apply Styles:** apply styles to the selected layers.
+1. **Detach Styles:** detach styles of the selected layers.
+1. **Remove Styles:** remove styles based on the selected layers.
+1. **Remove By Type:** _Fill_, _Stroke_, _Text_, _Effect_, _Grid_
 
 ## Known issues
 
@@ -35,10 +34,10 @@ Styler is a plugin for Figma that generates styles based on selected layers.
 ## Notes
 
 1. Any change can be **Undo**.
-1. Only **Local Styles** are supported.
+1. Only **Local Styles** are supported. Still... You can use external styles to update local ones.
 1. There is no support for **Groups** and I don't plan to support it.
 1. The plugin, extract only text properties from text layers.
-1. For layer that contains both fill and stroke properties, the plugin will add automatically a suffix to the style name `-fill` and `-stroke`, otherwise the style name will be exactly as the layer name.
+1. For layer that contains both fill and stroke properties, the plugin will add automatically a suffix to the style name `-fill` and `-stroke`, otherwise the style name will be exactly as the layer name. I plan to expand this.
 
 ## Pairing well with
 

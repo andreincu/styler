@@ -20,34 +20,33 @@
       "command": "detachStyles"
     },
     {
-      "separator": true
+      "name": "Remove Styles",
+      "command": "removeStyles"
     },
     {
-      "name": "Remove Fill Styles",
-      "command": "removeFillStyles"
-    },
-    {
-      "name": "Remove Stroke Styles",
-      "command": "removeStrokeStyles"
-    },
-    {
-      "name": "Remove Text Styles",
-      "command": "removeTextStyles"
-    },
-    {
-      "name": "Remove Effect Styles",
-      "command": "removeEffectStyles"
-    },
-    {
-      "name": "Remove Grid Styles",
-      "command": "removeGridStyles"
-    },
-    {
-      "separator": true
-    },
-    {
-      "name": "Clear All Styles",
-      "command": "clearAllStyles"
+      "name": "Remove by type",
+      "menu": [
+        {
+          "name": "Fill Styles",
+          "command": "removeFillStyles"
+        },
+        {
+          "name": "Stroke Styles",
+          "command": "removeStrokeStyles"
+        },
+        {
+          "name": "Text Styles",
+          "command": "removeTextStyles"
+        },
+        {
+          "name": "Effect Styles",
+          "command": "removeEffectStyles"
+        },
+        {
+          "name": "Grid Styles",
+          "command": "removeGridStyles"
+        }
+      ]
     }
   ]
 }

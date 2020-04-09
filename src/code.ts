@@ -21,7 +21,6 @@ import applyStyle from './actions/applyStyle';
 import detachStyle from './actions/detachStyle';
 import generateStyle from './actions/generateStyle';
 import removeStyle from './actions/removeStyle';
-import clearAllStyles from './actions/clearAllStyles';
 
 import getStyleById from './utils/getStyleById';
 import getStyleByName from './utils/getStyleByName';
@@ -140,20 +139,9 @@ function main() {
     }
   };
 
-  // remove all styles, be very carefull!!!
-  if (figma.command === 'clearAllStyles') {
-    clearAllStyles(counter);
-
-    figma.closePlugin(
-      ` 
-      🔥 Removed ${counter.removed} styles. (Tip: You can still undo the action)
-      `
-    );
-    return;
-  }
 
   // checking selection
-  else if (selection && selection.length <= 0) {
+  if (selection && selection.length <= 0) {
     figma.closePlugin(
       'No layers is selected, please select at least one layer. 🌟'
     );
@@ -196,11 +184,19 @@ function main() {
               generateStyle(layer, idMatch, nameMatch, styleType, counter);
               break;
             case 'applyStyles':
-              applyStyle(layer, nameMatch, styleType, counter);
+              applyStyle(layer, nameMatch, styleType);
+              counter.applied++;
               break;
             case 'detachStyles':
               detachStyle(layer, styleType);
               counter.detached++;
+              break;
+            case 'removeStyles':
+              removeStyle(idMatch, styleType, 'removeFillStyles', counter);
+              removeStyle(idMatch, styleType, 'removeStrokeStyles', counter);
+              removeStyle(idMatch, styleType, 'removeTextStyles', counter);
+              removeStyle(idMatch, styleType, 'removeEffectStyles', counter);
+              removeStyle(idMatch, styleType, 'removeGridStyles', counter);
               break;
             case 'removeFillStyles':
             case 'removeStrokeStyles':
@@ -211,7 +207,7 @@ function main() {
               break;
             default:
               figma.closePlugin(
-                'Something bad happened. 😬 Actually, nothing is changed.'
+                '😬 Something bad happened. Actually, nothing is changed.'
               );
               return;
           }
@@ -228,16 +224,14 @@ function main() {
           - Renamed: ${counter.renamed}\n
           - Ignored: ${counter.ignored}
           `);
-        return;
         break;
       case 'applyStyles':
         figma.closePlugin(`✌️ Applied ${counter.applied} styles.`);
-        return;
         break;
       case 'detachStyles':
         figma.closePlugin(`💔 Detached ${counter.detached} styles.`);
-        return;
         break;
+      case 'removeStyles':
       case 'removeFillStyles':
       case 'removeStrokeStyles':
       case 'removeTextStyles':
@@ -245,10 +239,10 @@ function main() {
       case 'removeGridStyles':
         {
           if (counter.removed != 0) {
-            figma.closePlugin(`🔥 Removed ${counter.removed} styles.`);
+            figma.closePlugin(`🔥 Removed ${counter.removed} styles. (Tip: You can still undo the action)`);
             return;
           } else {
-            figma.closePlugin(`ℹ️ Layer doesn't have this type of property`);
+            figma.closePlugin(`ℹ️ There is no style attached to the layer...`);
           }
         }
         break;

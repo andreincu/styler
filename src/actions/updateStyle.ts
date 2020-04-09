@@ -1,3 +1,5 @@
+import applyStyle from "./applyStyle";
+
 // sync layer style with shared style
 export default async (layer, style, styleType) => {
   const layerId = styleType.layer.id;
@@ -9,9 +11,9 @@ export default async (layer, style, styleType) => {
 
     style[styleProp] = layer[layerProp];
     textProp.map(prop => (style[prop] = layer[prop]));
-    layer[layerId] = style.id;
+    applyStyle(layer, style, styleType)
   } else {
     style[styleProp] = layer[layerProp];
-    layer[layerId] = style.id;
+    applyStyle(layer, style, styleType)
   }
 };
