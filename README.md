@@ -2,14 +2,8 @@
 
 # Styler
 
-Styler is a plugin for Figma that generates styles based on selected layers.
-
-## Features
-
-- Generate Styles
-- Apply Styles
-- Detach Styles
-- Remove Styles
+Styler is a plugin for Figma that generates styles based on selected layers.  
+Basically, you can control your styles by changing layer properties and updating the styles.
 
 ## Usage
 
