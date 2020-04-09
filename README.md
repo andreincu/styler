@@ -16,11 +16,10 @@ Basically, you can control your styles by changing layer properties and updating
 - **Remove Styles:** remove styles based on the selected layers.
 - **Remove By Type:** _Fill_, _Stroke_, _Text_, _Effect_, _Grid_
 
-### Tips
+> It is much faster to use bulk rename feature of figma to rename layers `Cmd` `R` (Mac) or `Ctrl` `R` (Windows).
+> [More info](https://help.figma.com/hc/en-us/articles/360039958934-Rename-Layers)
 
-1. It is much faster to use bulk rename feature of figma to rename layers `Cmd` `R` (Mac) or `Ctrl` `R` (Windows).
-   [More info](https://help.figma.com/hc/en-us/articles/360039958934-Rename-Layers)
-1. Try to avoid same name for multiple layers.
+> Try to avoid same name for multiple layers. It will create a single style, but it will update its properties.
 
 ## Known issues
 
