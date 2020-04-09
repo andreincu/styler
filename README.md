@@ -7,17 +7,20 @@ Basically, you can control your styles by changing layer properties and updating
 
 ## Usage
 
-1. Select any number of layers
-1. Don't bother with the names of the layers, you can rename it later, but try to not have the same name for multiple layers.
-   > I recommend using bulk rename `Cmd` `R` (Mac) or `Ctrl` `R` (Windows)
-1. **Generate Styles**
-   - **Create:** creates styles, when there is no match between layer and existing styles.
-   - **Rename:** renames styles, when there is a style attached to the layer and no style with desired new name.
-   - **Update:** update styles, when there is a name match.
-1. **Apply Styles:** apply styles to the selected layers.
-1. **Detach Styles:** detach styles of the selected layers.
-1. **Remove Styles:** remove styles based on the selected layers.
-1. **Remove By Type:** _Fill_, _Stroke_, _Text_, _Effect_, _Grid_
+- **Generate Styles**
+  - **Create:** creates styles, when there is no match between layer and existing styles.
+  - **Rename:** renames styles, when there is a style attached to the layer and no style with desired new name.
+  - **Update:** update styles, when there is a name match.
+- **Apply Styles:** apply styles to the selected layers.
+- **Detach Styles:** detach styles of the selected layers.
+- **Remove Styles:** remove styles based on the selected layers.
+- **Remove By Type:** _Fill_, _Stroke_, _Text_, _Effect_, _Grid_
+
+### Tips
+
+1. It is much faster to use bulk rename feature of figma to rename layers `Cmd` `R` (Mac) or `Ctrl` `R` (Windows).
+   [More info](https://help.figma.com/hc/en-us/articles/360039958934-Rename-Layers)
+1. Try to avoid same name for multiple layers.
 
 ## Known issues
 
