@@ -18,19 +18,19 @@ module.exports = (env, argv) => ({
         test: /\.tsx?$/,
         use: [
           {
-            loader: 'ts-loader'
+            loader: 'ts-loader',
             // options: { transpileOnly: true }
-          }
+          },
         ],
-        exclude: /node_modules/
-      }
-    ]
+        exclude: /node_modules/,
+      },
+    ],
   },
 
   output: {
     filename: 'code.js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'dist'),
   },
 
-  plugins: [new CleanWebpackPlugin()]
+  plugins: [new CleanWebpackPlugin()],
 });

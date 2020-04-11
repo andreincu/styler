@@ -1,13 +1,18 @@
 {
   "compilerOptions": {
-    "module": "es6",
     "target": "es6",
-    "lib": ["ES2020"],
+    "lib": ["es6", "dom", "es2017"],
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "removeComments": true,
-    "sourceMap": true,
-    "allowJs": true
+    "esModuleInterop": true,
+    "typeRoots": ["node_modules/@types"],
+    "types": ["node"]
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"]
+  "filesGlob": [
+    "./src/**/*.ts",
+    "./typings/index.d.ts",
+    "./custom_typings/**/*.d.ts",
+    "./node_modules/@types/**/*.d.ts"
+  ]
 }

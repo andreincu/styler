@@ -36,7 +36,7 @@ function main() {
     ignored: 0,
     renamed: 0,
     removed: 0,
-    updated: 0
+    updated: 0,
   };
   const allTypes = {
     fillType: {
@@ -44,64 +44,64 @@ function main() {
       style: {
         create: figma.createPaintStyle,
         get: figma.getLocalPaintStyles,
-        prop: 'paints'
+        prop: 'paints',
       },
       layer: {
         prop: 'fills',
-        id: 'fillStyleId'
+        id: 'fillStyleId',
       },
       affix: {
         prefix: '',
-        suffix: ''
-      }
+        suffix: '',
+      },
     },
     strokeType: {
       type: 'STROKE',
       style: {
         create: figma.createPaintStyle,
         get: figma.getLocalPaintStyles,
-        prop: 'paints'
+        prop: 'paints',
       },
       layer: {
         prop: 'strokes',
-        id: 'strokeStyleId'
+        id: 'strokeStyleId',
       },
       affix: {
         prefix: '',
-        suffix: ''
-      }
+        suffix: '',
+      },
     },
     effectType: {
       type: 'EFFECT',
       style: {
         create: figma.createEffectStyle,
         get: figma.getLocalEffectStyles,
-        prop: 'effects'
+        prop: 'effects',
       },
       layer: {
         prop: 'effects',
-        id: 'effectStyleId'
+        id: 'effectStyleId',
       },
       affix: {
         prefix: '',
-        suffix: ''
-      }
+        suffix: '',
+      },
     },
     gridType: {
       type: 'GRID',
       style: {
         create: figma.createGridStyle,
         get: figma.getLocalGridStyles,
-        prop: 'layoutGrids'
+        prop: 'layoutGrids',
       },
       layer: {
         prop: 'layoutGrids',
-        id: 'gridStyleId'
+        id: 'gridStyleId',
       },
       affix: {
         prefix: '',
-        suffix: ''
-      }
+        suffix: '',
+      },
     },
     textType: {
       type: 'TEXT',
@@ -116,8 +116,8 @@ function main() {
           'paragraphIndent',
           'paragraphSpacing',
           'textCase',
-          'textDecoration'
-        ]
+          'textDecoration',
+        ],
       },
       layer: {
         id: 'textStyleId',
@@ -129,22 +129,19 @@ function main() {
           'paragraphIndent',
           'paragraphSpacing',
           'textCase',
-          'textDecoration'
-        ]
+          'textDecoration',
+        ],
       },
       affix: {
         prefix: '',
-        suffix: ''
-      }
-    }
+        suffix: '',
+      },
+    },
   };
-
 
   // checking selection
   if (selection && selection.length <= 0) {
-    figma.closePlugin(
-      'No layers is selected, please select at least one layer. 🌟'
-    );
+    figma.closePlugin('No layers is selected, please select at least one layer. 🌟');
     return;
   }
 
@@ -165,7 +162,7 @@ function main() {
         if (layer.fills && layer.fills.length && layer.strokes && layer.strokes.length) {
           allTypes.fillType.affix.suffix = '-fill';
           allTypes.strokeType.affix.suffix = '-stroke';
-        } 
+        }
         styleTypes.push(allTypes.fillType);
         styleTypes.push(allTypes.strokeType);
         styleTypes.push(allTypes.effectType);
@@ -206,9 +203,7 @@ function main() {
               removeStyle(idMatch, styleType, figmaCommand, counter);
               break;
             default:
-              figma.closePlugin(
-                '😬 Something bad happened. Actually, nothing is changed.'
-              );
+              figma.closePlugin('😬 Something bad happened. Actually, nothing is changed.');
               return;
           }
         }
