@@ -12,6 +12,13 @@
       "separator": true
     },
     {
+      "name": "Extract Styleguides (New)",
+      "command": "extractStyles"
+    },
+    {
+      "separator": true
+    },
+    {
       "name": "Apply Styles",
       "command": "applyStyles"
     },
