@@ -186,6 +186,8 @@ function main() {
         styles: styles,
       };
     });
+    console.log(collectedStyles);
+    debugger;
 
     let surfaceContainer = figma.createFrame();
     surfaceContainer.name = 'Surfaces';
@@ -196,6 +198,26 @@ function main() {
     collectedStyles.map(collection => {
       let layer = figma.createFrame();
       layer.name = collection.name;
+
+      // reset affix
+      allTypes.fillType.affix.suffix = '';
+      allTypes.strokeType.affix.suffix = '';
+      // check if there are fills and strokes
+      if (collection.styles.filter(style => style.type === 'PAINT').length > 1) {
+        allTypes.fillType.affix.suffix = '-fill';
+        allTypes.strokeType.affix.suffix = '-stroke';
+      }
+
+      collection.styles.map(style => {
+        const test = Object.values(allTypes);
+        // .filter(
+        //   type => type.style.prop.toLocaleLowerCase() === style.type.toLocaleLowerCase(),
+        // );
+
+        // .map(type => applyStyle(layer, style, type));
+
+        return test;
+      });
 
       return surfaceContainer.appendChild(layer);
     });
