@@ -180,14 +180,11 @@ function main() {
     const uniqueNames = [...new Set(curatedNames)];
 
     const collectedStyles = uniqueNames.map(name => {
-      const styles = otherStyles.filter(style => style.name.match(name));
       return {
         name: name,
-        styles: styles,
+        styles: otherStyles.filter(style => style.name.match(name)),
       };
     });
-    console.log(collectedStyles);
-    debugger;
 
     let surfaceContainer = figma.createFrame();
     surfaceContainer.name = 'Surfaces';
@@ -202,24 +199,34 @@ function main() {
       // reset affix
       allTypes.fillType.affix.suffix = '';
       allTypes.strokeType.affix.suffix = '';
-      // check if there are fills and strokes
-      if (collection.styles.filter(style => style.type === 'PAINT').length > 1) {
-        allTypes.fillType.affix.suffix = '-fill';
-        allTypes.strokeType.affix.suffix = '-stroke';
-      }
 
       collection.styles.map(style => {
-        const test = Object.values(allTypes);
-        // .filter(
-        //   type => type.style.prop.toLocaleLowerCase() === style.type.toLocaleLowerCase(),
-        // );
+        // this is a working code, but the approach is not ok
+        // should refactor
+        // check if there are fills and strokes
+        if (collection.styles.filter(style => style.type === 'PAINT').length > 1) {
+          allTypes.fillType.affix.suffix = '-fill';
+          allTypes.strokeType.affix.suffix = '-stroke';
 
-        // .map(type => applyStyle(layer, style, type));
-
-        return test;
+          if (style.name.match('-fill')) {
+            layer.fillStyleId = style.id;
+          } else if (style.name.match('-stroke')) {
+            layer.strokeStyleId = style.id;
+          }
+        } else {
+          if (style.type === 'PAINT') {
+            layer.fillStyleId = style.id;
+          }
+        }
+        if (style.type === 'EFFECT') {
+          layer.effectStyleId = style.id;
+        }
+        if (style.type === 'GRID') {
+          layer.gridStyleId = style.id;
+        }
       });
 
-      return surfaceContainer.appendChild(layer);
+      surfaceContainer.appendChild(layer);
     });
 
     figma.closePlugin(`ending`);
