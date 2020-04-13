@@ -29,6 +29,7 @@ import setCanvasBg from './actions/setCanvasBg';
 import clone from './utils/clone';
 import changeFillColor from './utils/changeFillColor';
 import setAutoFlowFrame from './utils/setAutoFlowFrame';
+import chunkArray from './utils/chunkArray';
 
 function main() {
   let figmaCommand = figma.command;
@@ -186,47 +187,49 @@ function main() {
       };
     });
 
-    let surfaceContainer = figma.createFrame();
-    surfaceContainer.name = 'Surfaces';
-    changeFillColor(surfaceContainer, 0, 0, 0);
-    setAutoFlowFrame(surfaceContainer, 'HORIZONTAL', 'MIN', 'AUTO', 24, 24, 24);
-    mainContainer.appendChild(surfaceContainer);
+    chunkArray(collectedStyles, 8).map(collectedStyles => {
+      let rowContainer = figma.createFrame();
+      rowContainer.name = 'Surfaces';
+      changeFillColor(rowContainer, 0, 0, 0);
+      setAutoFlowFrame(rowContainer, 'HORIZONTAL', 'MIN', 'AUTO', 24, 24, 24);
+      mainContainer.appendChild(rowContainer);
 
-    collectedStyles.map(collection => {
-      let layer = figma.createFrame();
-      layer.name = collection.name;
+      collectedStyles.map(collection => {
+        let colContainer = figma.createFrame();
+        colContainer.name = collection.name;
 
-      // reset affix
-      allTypes.fillType.affix.suffix = '';
-      allTypes.strokeType.affix.suffix = '';
+        // reset affix
+        allTypes.fillType.affix.suffix = '';
+        allTypes.strokeType.affix.suffix = '';
 
-      collection.styles.map(style => {
-        // this is a working code, but the approach is not ok
-        // should refactor
-        // check if there are fills and strokes
-        if (collection.styles.filter(style => style.type === 'PAINT').length > 1) {
-          allTypes.fillType.affix.suffix = '-fill';
-          allTypes.strokeType.affix.suffix = '-stroke';
+        collection.styles.map(style => {
+          // this is a working code, but the approach is not ok
+          // should refactor
+          // check if there are fills and strokes
+          if (collection.styles.filter(style => style.type === 'PAINT').length > 1) {
+            allTypes.fillType.affix.suffix = '-fill';
+            allTypes.strokeType.affix.suffix = '-stroke';
 
-          if (style.name.match('-fill')) {
-            layer.fillStyleId = style.id;
-          } else if (style.name.match('-stroke')) {
-            layer.strokeStyleId = style.id;
+            if (style.name.match('-fill')) {
+              colContainer.fillStyleId = style.id;
+            } else if (style.name.match('-stroke')) {
+              colContainer.strokeStyleId = style.id;
+            }
+          } else {
+            if (style.type === 'PAINT') {
+              colContainer.fillStyleId = style.id;
+            }
           }
-        } else {
-          if (style.type === 'PAINT') {
-            layer.fillStyleId = style.id;
+          if (style.type === 'EFFECT') {
+            colContainer.effectStyleId = style.id;
           }
-        }
-        if (style.type === 'EFFECT') {
-          layer.effectStyleId = style.id;
-        }
-        if (style.type === 'GRID') {
-          layer.gridStyleId = style.id;
-        }
+          if (style.type === 'GRID') {
+            colContainer.gridStyleId = style.id;
+          }
+        });
+
+        rowContainer.appendChild(colContainer);
       });
-
-      surfaceContainer.appendChild(layer);
     });
 
     figma.closePlugin(`ending`);
