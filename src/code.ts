@@ -37,6 +37,7 @@ function main() {
     applied: 0,
     created: 0,
     detached: 0,
+    extracted: 0,
     ignored: 0,
     renamed: 0,
     removed: 0,
@@ -229,10 +230,11 @@ function main() {
         });
 
         rowContainer.appendChild(colContainer);
+        counter.extracted++;
       });
     });
 
-    figma.closePlugin(`ending`);
+    figma.closePlugin(`✌️ Generated ${counter.extracted} layers.`);
     return;
   }
 
