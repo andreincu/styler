@@ -159,13 +159,14 @@ function main() {
 
     figma.getLocalTextStyles().map(async style => {
       let textLayer = figma.createText();
+      counter.extracted++;
 
       changeFillColor(textLayer, 1, 1, 1);
       await figma.loadFontAsync(style.fontName);
       textLayer.textStyleId = style.id;
       textLayer.characters = style.name;
 
-      return textContainer.appendChild(textLayer);
+      textContainer.appendChild(textLayer);
     });
 
     const otherStyles = [
@@ -229,8 +230,8 @@ function main() {
           }
         });
 
-        rowContainer.appendChild(colContainer);
         counter.extracted++;
+        return rowContainer.appendChild(colContainer);
       });
     });
 
