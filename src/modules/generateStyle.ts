@@ -2,7 +2,7 @@ import createStyle from './createStyle';
 import renameStyle from './renameStyle';
 import updateStyle from './updateStyle';
 import detachStyle from './detachStyle';
-import modifiedName from '../utils/modifiedName';
+import modifiedName from './modifiedName';
 
 export default (layer, idMatch, nameMatch, styleType, counter) => {
   // create, update, rename styles based of selected layers

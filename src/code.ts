@@ -17,19 +17,19 @@ TODO:
 
  */
 
-import applyStyle from './actions/applyStyle';
-import detachStyle from './actions/detachStyle';
-import generateStyle from './actions/generateStyle';
-import removeStyle from './actions/removeStyle';
+import applyStyle from './modules/applyStyle';
+import detachStyle from './modules/detachStyle';
+import generateStyle from './modules/generateStyle';
+import removeStyle from './modules/removeStyle';
 
-import getStyleById from './utils/getStyleById';
-import getStyleByName from './utils/getStyleByName';
-import cleanLayers from './utils/cleanLayers';
-import setCanvasBg from './actions/setCanvasBg';
-import clone from './utils/clone';
-import changeFillColor from './utils/changeFillColor';
-import setAutoFlowFrame from './utils/setAutoFlowFrame';
-import chunkArray from './utils/chunkArray';
+import getStyleById from './modules/getStyleById';
+import getStyleByName from './modules/getStyleByName';
+import cleanLayers from './modules/cleanLayers';
+import setCanvasBg from './modules/setCanvasBg';
+import clone from './modules/clone';
+import changeFillColor from './modules/changeFillColor';
+import setAutoFlowFrame from './modules/setAutoFlowFrame';
+import chunkArray from './modules/chunkArray';
 
 function main() {
   let figmaCommand = figma.command;

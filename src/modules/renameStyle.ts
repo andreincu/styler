@@ -1,4 +1,4 @@
-import modifiedName from '../utils/modifiedName';
+import modifiedName from './modifiedName';
 
 // sync layer style with shared style
 export default (layer, style, styleType) => {

@@ -1,4 +1,4 @@
-import clone from '../utils/clone';
+import clone from './clone';
 
 export default (red = 0, green = 0, blue = 0) => {
   const canvasBg = clone(figma.currentPage.backgrounds);

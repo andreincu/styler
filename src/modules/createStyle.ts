@@ -1,4 +1,4 @@
-import modifiedName from '../utils/modifiedName';
+import modifiedName from './modifiedName';
 
 export default async (layer, styleType) => {
   let newStyle;
