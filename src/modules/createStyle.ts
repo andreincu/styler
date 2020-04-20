@@ -2,12 +2,11 @@ import modifiedName from './modifiedName';
 
 export default async (layer, styleType) => {
   let newStyle = styleType.style.create();
-  const layerId = styleType.layer.id;
-  const layerProp = styleType.layer.prop;
-  const styleProp = styleType.style.prop;
+  const { id: layerId, prop: layerProp } = styleType.layer;
+  const { prop: styleProp } = styleType.style;
 
   if (styleType.type === 'TEXT') {
-    const textProp = styleType.style.textProp;
+    const { textProp } = styleType.style;
 
     // Asking nicely for fontName
     await figma.loadFontAsync(layer.fontName);
