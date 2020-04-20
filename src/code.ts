@@ -25,8 +25,6 @@ import removeStyle from './modules/removeStyle';
 import getStyleById from './modules/getStyleById';
 import getStyleByName from './modules/getStyleByName';
 import cleanLayers from './modules/cleanLayers';
-import setCanvasBg from './modules/setCanvasBg';
-import clone from './modules/clone';
 import changeFillColor from './modules/changeFillColor';
 import setAutoFlowFrame from './modules/setAutoFlowFrame';
 import chunkArray from './modules/chunkArray';
