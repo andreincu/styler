@@ -1,22 +1,3 @@
-/* 
-There are 4 main scenarios:
-1. layer-name = style-name (linked) => matched (Apply style)
-2. layer-name = style-name (detached) => update style properties (for example colors) from layer properties
-3. layer-name != style-name (linked) => (renamed) update style name to layer
-4. layer-name != style-name (detached) => (create) create style using layer name and properties 
-
-Known issues:
-- Figma limitations:
---- For the moment, figma api doesn't provide any method to sort styles
---- Styles that inherit a layer name that begins with "_" (underscore) or "." (dot) doesn't get unpublish status
-
-TODO:
-- add pefix / suffix for fill vs stroke
-- save all styles locally
-- check if layer is visible (ignore it )
-
- */
-
 import applyStyle from './modules/applyStyle';
 import detachStyle from './modules/detachStyle';
 import generateStyle from './modules/generateStyle';
