@@ -31,6 +31,10 @@
       "command": "removeStyles"
     },
     {
+      "name": "zzTest",
+      "command": "test"
+    },
+    {
       "name": "Remove by type",
       "menu": [
         {

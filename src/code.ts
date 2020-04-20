@@ -10,6 +10,55 @@ import changeFillColor from './modules/changeFillColor';
 import setAutoFlowFrame from './modules/setAutoFlowFrame';
 import chunkArray from './modules/chunkArray';
 
+if (figma.command === 'test') {
+  const layer = figma.currentPage.selection[0];
+  const style = figma
+    .getLocalPaintStyles()
+    .filter(style => style.name.includes('Primary'))
+    .find(style => style.name.includes('fill'));
+
+  class Generator {
+    styleType: string;
+    styleProperties: Array<string | number | object>;
+    layerProperties: Array<string | number | object>;
+
+    constructor(styleType, [...styleProperties], [...layerProperties] = []) {
+      this.styleType = styleType;
+      this.styleProperties = [...styleProperties];
+
+      Array.isArray(layerProperties) && layerProperties.length
+        ? (this.layerProperties = [...layerProperties])
+        : (this.layerProperties = [...styleProperties]);
+    }
+
+    getStyles() {
+      const ucFirstStyleType = this.styleType[0] + this.styleType.slice(1).toLocaleLowerCase();
+      const getCommand = `getLocal${ucFirstStyleType}Styles`;
+      return figma[getCommand]();
+    }
+
+    renameStyle(layer, style) {
+      return (style.name = layer.name);
+    }
+  }
+
+  const fill = new Generator('PAINT', ['paints'], ['fills']);
+  const stroke = new Generator('PAINT', ['paints'], ['strokes']);
+  const effect = new Generator('EFFECT', ['paints']);
+  const grid = new Generator('GRID', ['layoutGrids']);
+  const text = new Generator('TEXT', [
+    'fontName',
+    'fontSize',
+    'letterSpacing',
+    'lineHeight',
+    'paragraphIndent',
+    'paragraphSpacing',
+    'textCase',
+    'textDecoration',
+  ]);
+  debugger;
+}
+
 function main() {
   let figmaCommand = figma.command;
   const counter = {
