@@ -5,14 +5,7 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "removeComments": true,
-    "esModuleInterop": true,
-    "typeRoots": ["node_modules/@types"],
-    "types": ["node"]
+    "esModuleInterop": true
   },
-  "filesGlob": [
-    "./src/**/*.ts",
-    "./typings/index.d.ts",
-    "./custom_typings/**/*.d.ts",
-    "./node_modules/@types/**/*.d.ts"
-  ]
+  "include": ["src/**/*"]
 }

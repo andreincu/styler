@@ -9,35 +9,21 @@ import cleanLayers from './modules/cleanLayers';
 import changeFillColor from './modules/changeFillColor';
 import setAutoFlowFrame from './modules/setAutoFlowFrame';
 import chunkArray from './modules/chunkArray';
+import { ucFirst } from './modules/string-utils';
 
 if (figma.command === 'test') {
-  interface Generator {
-    styleType?: string;
-    styleProperties?: [string];
-    layerProperties?: [string];
-  }
-  interface GeneratorOptions {
-    styleType?: string;
-    styleProperties?: [string];
-    layerProperties?: [string];
-  }
-
-  const layer = figma.currentPage.selection[0];
-  const style = figma
-    .getLocalPaintStyles()
-    .filter(style => style.name.includes('Primary'))
-    .find(style => style.name.includes('fill'));
-
   class Generator {
-    constructor(options: GeneratorOptions = {}) {
+    styleType?: string;
+    styleProperties?: [string];
+    layerProperties?: [string];
+
+    constructor(options: { styleType?: string; styleProperties?: [string]; layerProperties?: [string] }) {
       this.styleType = options.styleType.toLocaleUpperCase() || '';
       this.styleProperties = options.styleProperties || options.layerProperties;
       this.layerProperties = options.layerProperties || options.styleProperties;
     }
-
     getStyles() {
-      const ucFirstStyleType = this.styleType[0] + this.styleType.slice(1).toLocaleLowerCase();
-      const getCommand = `getLocal${ucFirstStyleType}Styles`;
+      const getCommand = `getLocal${ucFirst(this.styleType)}Styles`;
       return figma[getCommand]();
     }
 
@@ -46,11 +32,10 @@ if (figma.command === 'test') {
     }
   }
 
-  const fill = new Generator({ styleType: 'PAINT', styleProperties: ['paints'], layerProperties: ['fills'] });
-  const effects = new Generator({ styleType: 'EFFECT', styleProperties: ['effects'] });
-
+  const fill = new Generator({ styleType: 'paint', styleProperties: ['paints'], layerProperties: ['fills'] });
+  const effects = new Generator({ styleType: 'effect', styleProperties: ['effects'] });
   const text = new Generator({
-    styleType: 'TEXT',
+    styleType: 'text',
     styleProperties: [
       'fontName',
       'fontSize',
@@ -62,6 +47,12 @@ if (figma.command === 'test') {
       'textDecoration',
     ],
   });
+
+  const layer = figma.currentPage.selection[0];
+  const style = figma
+    .getLocalPaintStyles()
+    .filter(style => style.name.includes('Primary'))
+    .find(style => style.name.includes('fill'));
   debugger;
 }
 
