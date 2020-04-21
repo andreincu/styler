@@ -11,6 +11,17 @@ import setAutoFlowFrame from './modules/setAutoFlowFrame';
 import chunkArray from './modules/chunkArray';
 
 if (figma.command === 'test') {
+  interface Generator {
+    styleType?: string;
+    styleProperties?: [string];
+    layerProperties?: [string];
+  }
+  interface GeneratorOptions {
+    styleType?: string;
+    styleProperties?: [string];
+    layerProperties?: [string];
+  }
+
   const layer = figma.currentPage.selection[0];
   const style = figma
     .getLocalPaintStyles()
@@ -18,17 +29,10 @@ if (figma.command === 'test') {
     .find(style => style.name.includes('fill'));
 
   class Generator {
-    styleType: string;
-    styleProperties: Array<string | number | object>;
-    layerProperties: Array<string | number | object>;
-
-    constructor(styleType, [...styleProperties], [...layerProperties] = []) {
-      this.styleType = styleType;
-      this.styleProperties = [...styleProperties];
-
-      Array.isArray(layerProperties) && layerProperties.length
-        ? (this.layerProperties = [...layerProperties])
-        : (this.layerProperties = [...styleProperties]);
+    constructor(options: GeneratorOptions = {}) {
+      this.styleType = options.styleType.toLocaleUpperCase() || '';
+      this.styleProperties = options.styleProperties || options.layerProperties;
+      this.layerProperties = options.layerProperties || options.styleProperties;
     }
 
     getStyles() {
@@ -42,20 +46,22 @@ if (figma.command === 'test') {
     }
   }
 
-  const fill = new Generator('PAINT', ['paints'], ['fills']);
-  const stroke = new Generator('PAINT', ['paints'], ['strokes']);
-  const effect = new Generator('EFFECT', ['paints']);
-  const grid = new Generator('GRID', ['layoutGrids']);
-  const text = new Generator('TEXT', [
-    'fontName',
-    'fontSize',
-    'letterSpacing',
-    'lineHeight',
-    'paragraphIndent',
-    'paragraphSpacing',
-    'textCase',
-    'textDecoration',
-  ]);
+  const fill = new Generator({ styleType: 'PAINT', styleProperties: ['paints'], layerProperties: ['fills'] });
+  const effects = new Generator({ styleType: 'EFFECT', styleProperties: ['effects'] });
+
+  const text = new Generator({
+    styleType: 'TEXT',
+    styleProperties: [
+      'fontName',
+      'fontSize',
+      'letterSpacing',
+      'lineHeight',
+      'paragraphIndent',
+      'paragraphSpacing',
+      'textCase',
+      'textDecoration',
+    ],
+  });
   debugger;
 }
 
