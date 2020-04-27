@@ -11,5 +11,6 @@ module.exports = {
   },
   rules: {
     semi: 'warn',
+    'arrow-parens': 'always',
   },
 };

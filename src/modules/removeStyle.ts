@@ -1,18 +1,18 @@
-import modifiedName from './modifiedName';
+// import modifiedName from './modifiedName';
 
-// removing all local styles
-export default (style, styleType, figmaCommand, counter) => {
-  const commandAffix = {
-    prefix: 'remove',
-    suffix: 'styles',
-  };
-  const modifiedCommand = figmaCommand.toLocaleLowerCase();
-  const modifiedTypeName = modifiedName(styleType.type, commandAffix).toLocaleLowerCase();
+// // removing all local styles
+// export default (style, styleType, figmaCommand, counter) => {
+//   const commandAffix = {
+//     prefix: 'remove',
+//     suffix: 'styles',
+//   };
+//   const modifiedCommand = figmaCommand.toLocaleLowerCase();
+//   const modifiedTypeName = modifiedName(styleType.type, commandAffix).toLocaleLowerCase();
 
-  if (style && modifiedCommand === modifiedTypeName) {
-    style.remove();
-    counter.removed++;
-  } else {
-    counter.ignored++;
-  }
-};
+//   if (style && modifiedCommand === modifiedTypeName) {
+//     style.remove();
+//     counter.removed++;
+//   } else {
+//     counter.ignored++;
+//   }
+// };

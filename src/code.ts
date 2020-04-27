@@ -1,40 +1,29 @@
-import applyStyle from './modules/applyStyle';
-import detachStyle from './modules/detachStyle';
-import generateStyle from './modules/generateStyle';
-import removeStyle from './modules/removeStyle';
-
-import getStyleById from './modules/getStyleById';
-import getStyleByName from './modules/getStyleByName';
-import cleanLayers from './modules/cleanLayers';
-import changeFillColor from './modules/changeFillColor';
-import setAutoFlowFrame from './modules/setAutoFlowFrame';
-import chunkArray from './modules/chunkArray';
-import { ucFirst } from './modules/string-utils';
+import { cleanLayers } from './modules/layer-utils';
+import { chunk, groupBy } from './modules/array-utils';
+import Styler from './modules/Styler';
 
 if (figma.command === 'test') {
-  class Generator {
-    styleType?: string;
-    styleProperties?: [string];
-    layerProperties?: [string];
-
-    constructor(options: { styleType?: string; styleProperties?: [string]; layerProperties?: [string] }) {
-      this.styleType = options.styleType.toLocaleUpperCase() || '';
-      this.styleProperties = options.styleProperties || options.layerProperties;
-      this.layerProperties = options.layerProperties || options.styleProperties;
-    }
-    getStyles() {
-      const getCommand = `getLocal${ucFirst(this.styleType)}Styles`;
-      return figma[getCommand]();
-    }
-
-    renameStyle(layer, style) {
-      return (style.name = layer.name);
-    }
-  }
-
-  const fill = new Generator({ styleType: 'paint', styleProperties: ['paints'], layerProperties: ['fills'] });
-  const effects = new Generator({ styleType: 'effect', styleProperties: ['effects'] });
-  const text = new Generator({
+  const filler = new Styler({
+    styleType: 'paint',
+    styleProperties: ['paints'],
+    layerProperties: ['fills'],
+    layerPropertyType: 'fill',
+  });
+  const strokeer = new Styler({
+    styleType: 'paint',
+    styleProperties: ['paints'],
+    layerProperties: ['strokes'],
+    layerPropertyType: 'stroke',
+  });
+  const effecter = new Styler({
+    styleType: 'effect',
+    styleProperties: ['effects'],
+  });
+  const grider = new Styler({
+    styleType: 'grid',
+    styleProperties: ['layoutGrids'],
+  });
+  const texter = new Styler({
     styleType: 'text',
     styleProperties: [
       'fontName',
@@ -47,16 +36,38 @@ if (figma.command === 'test') {
       'textDecoration',
     ],
   });
+  // stylers are the links between layers and styles that are created by figma code inconsistency or design decision itself (which are not bad and simply exist)
+  const stylers = [filler, strokeer, effecter, grider, texter];
 
-  const layer = figma.currentPage.selection[0];
-  const style = figma
-    .getLocalPaintStyles()
-    .filter(style => style.name.includes('Primary'))
-    .find(style => style.name.includes('fill'));
-  debugger;
+  const allStyles = [
+    ...figma.getLocalPaintStyles(),
+    ...figma.getLocalEffectStyles(),
+    ...figma.getLocalGridStyles(),
+    ...figma.getLocalTextStyles(),
+  ];
+
+  const selectedLayers = figma.currentPage.selection;
+  const curatedLayers = cleanLayers(selectedLayers);
+
+  curatedLayers.map((layer) => {
+    const curatedStyles = allStyles.filter((style) => style.name.includes(layer.name));
+
+    stylers.map((styler) => {
+      if (styler.styleType !== 'TEXT') {
+        console.log('if: ' + styler.layerProperties);
+      } else {
+        console.log('else: ' + styler.layerProperties);
+      }
+    });
+    // fill.updateStyle(layer, curatedStyles[0]);
+    // text.updateStyle(layer, curatedStyles[0]);
+    debugger;
+  });
+
+  figma.closePlugin();
 }
 
-function main() {
+/* function main() {
   let figmaCommand = figma.command;
   const counter = {
     applied: 0,
@@ -369,3 +380,4 @@ function main() {
   }
 }
 main();
+ */

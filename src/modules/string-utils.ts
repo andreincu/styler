@@ -1,5 +1,5 @@
-export const ucFirst = word => word[0] + word.slice(1).toLocaleLowerCase();
+export const ucFirst = (word) => word[0].toLocaleUpperCase() + word.slice(1).toLocaleLowerCase();
 
-export const addAffix = (word, affix = { prefix: '', suffix: '' }) => affix.prefix + word + affix.suffix;
+export const addAffixTo = (word, prefix = '', suffix = '') => prefix + word + suffix;
 
-export default { ucFirst };
+export default { ucFirst, addAffixTo };
