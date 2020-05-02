@@ -1,4 +1,5 @@
 import clone from './clone';
+import { isArrayEmpty } from './array-utils';
 
 // avoiding layers that have mixed properties
 const isContainer = (layer) => ['FRAME', 'COMPONENT', 'INSTANCE'].includes(layer.type);
@@ -57,4 +58,6 @@ export const setAutoFlow = (
   return frame;
 };
 
-export default { cleanLayers, editLayerFill, editCanvasBg, setAutoFlow };
+export const hasFillAndStroke = (layer) => !isArrayEmpty(layer.fills) && !isArrayEmpty(layer.strokes);
+
+export default { cleanLayers, editLayerFill, editCanvasBg, setAutoFlow, hasFillAndStroke };

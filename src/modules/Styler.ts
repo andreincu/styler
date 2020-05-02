@@ -1,4 +1,5 @@
 import { addAffixTo, ucFirst } from './string-utils';
+import { isArrayEmpty } from './array-utils';
 
 const toStyleId = (prop) => (prop === undefined ? undefined : addAffixTo(prop.toLocaleLowerCase(), '', 'StyleId'));
 
@@ -6,6 +7,7 @@ export default class Styler {
   styleType: string;
   styleProperties: Array<string>;
   layerProperties: Array<string>;
+  layerPropertyType: string;
   layerStyleId: string;
   prefix: string;
   suffix: string;
@@ -22,40 +24,83 @@ export default class Styler {
     this.styleType = options.styleType.toLocaleUpperCase() || '';
     this.styleProperties = options.styleProperties || options.layerProperties;
     this.layerProperties = options.layerProperties || options.styleProperties;
-    this.layerStyleId = toStyleId(options.layerPropertyType) || toStyleId(options.styleType);
+    this.layerPropertyType = options.layerPropertyType || options.styleType;
+    this.layerStyleId = toStyleId(this.layerPropertyType);
     this.prefix = options.prefix || '';
     this.suffix = options.suffix || '';
   }
 
   applyStyle = (layer, style) => (layer[this.layerStyleId] = style.id);
 
-  createStyle = async (layer) => {
-    const createStyle = addAffixTo(ucFirst(this.styleType), 'create', 'Style');
+  createStyle = (layer) => {
+    const createCommand = addAffixTo(ucFirst(this.styleType), 'create', 'Style');
+    let newStyle = figma[createCommand]();
 
-    let newStyle = figma[createStyle]();
-    this.renameStyle(layer, newStyle);
-    await this.updateStyle(layer, newStyle);
+    this.renameStyle(newStyle, layer);
+    this.updateStyle(newStyle, layer);
 
     return newStyle;
   };
 
   detachStyle = (layer) => (layer[this.layerStyleId] = '');
 
-  getStyleById = (layer, styles) => styles.find((style) => style.id === layer[this.layerStyleId]);
+  getLocalStyles = () => {
+    const getCommand = addAffixTo(ucFirst(this.styleType), 'getLocal', 'Styles');
+    return figma[getCommand]();
+  };
 
-  getStyleByName = (layer, styles) => styles.find((style) => style.name === addAffixTo(layer.name));
+  getStyleById = (layer) => figma.getStyleById(layer[this.layerStyleId]);
 
-  renameStyle = (layer, style) => (style.name = addAffixTo(layer.name, '', ''));
+  getStyleByName = (layer) => {
+    const typedStyles = this.getLocalStyles();
+    return typedStyles.find((style) => style.name === addAffixTo(layer.name));
+  };
 
-  updateStyle = async (layer, style) => {
-    if (this.styleType === 'TEXT') {
-      await figma.loadFontAsync(layer.fontName);
+  renameStyle = (style, layer) => (style.name = addAffixTo(layer.name, this.prefix, this.suffix));
+
+  removeStyle = (style, command, counter) => {
+    const stylerType = addAffixTo(this.layerPropertyType, 'remove', 'styles');
+
+    if (style && command.toLocaleLowerCase() === stylerType.toLocaleLowerCase()) {
+      style.remove();
+      counter.removed++;
     }
+  };
 
+  updateStyle = (style, layer) => {
     this.detachStyle(layer);
     this.layerProperties.map((prop, index) => (style[this.styleProperties[index]] = layer[prop]));
     this.applyStyle(layer, style);
 
     return style;
   };
+
+  // this is something that combine multiple existing actions (create, update, rename)
+  generateStyle = (layer, idMatch, nameMatch, counter) => {
+    // create
+    if (!idMatch && !nameMatch) {
+      this.createStyle(layer);
+      counter.created++;
+    }
+
+    // rename
+    else if (idMatch && !nameMatch) {
+      this.renameStyle(idMatch, layer);
+      counter.renamed++;
+    }
+
+    // update
+    else if ((!idMatch && nameMatch) || idMatch !== nameMatch) {
+      this.updateStyle(nameMatch, layer);
+      counter.updated++;
+    }
+
+    // ignore
+    else {
+      counter.ignored++;
+    }
+  };
+
+  // I could actually check the entire array, but I don't think is necessary
+  isPropEmpty = (layer) => isArrayEmpty(layer[this.layerProperties[0]]);
 }

@@ -1,8 +1,22 @@
-import { cleanLayers } from './modules/layer-utils';
-import { chunk, groupBy } from './modules/array-utils';
+import { cleanLayers, hasFillAndStroke } from './modules/layer-utils';
+import { chunk, groupBy, isArrayEmpty } from './modules/array-utils';
 import Styler from './modules/Styler';
 
-if (figma.command === 'test') {
+(function main() {
+  const figmaCommand = figma.command;
+
+  const counter = {
+    applied: 0,
+    created: 0,
+    detached: 0,
+    extracted: 0,
+    ignored: 0,
+    renamed: 0,
+    removed: 0,
+    updated: 0,
+  };
+
+  // creating each style one by one
   const filler = new Styler({
     styleType: 'paint',
     styleProperties: ['paints'],
@@ -36,9 +50,9 @@ if (figma.command === 'test') {
       'textDecoration',
     ],
   });
-  // stylers are the links between layers and styles that are created by figma code inconsistency or design decision itself (which are not bad and simply exist)
-  const stylers = [filler, strokeer, effecter, grider, texter];
 
+  const selectedLayers = figma.currentPage.selection;
+  const curatedLayers = cleanLayers(selectedLayers);
   const allStyles = [
     ...figma.getLocalPaintStyles(),
     ...figma.getLocalEffectStyles(),
@@ -46,26 +60,101 @@ if (figma.command === 'test') {
     ...figma.getLocalTextStyles(),
   ];
 
-  const selectedLayers = figma.currentPage.selection;
-  const curatedLayers = cleanLayers(selectedLayers);
+  curatedLayers.map(async (layer, index) => {
+    // stylers are the links between layers and styles that are created by figma code inconsistency or design decision itself (which are not bad and simply exist)
+    const stylers = [];
 
-  curatedLayers.map((layer) => {
-    const curatedStyles = allStyles.filter((style) => style.name.includes(layer.name));
+    // keeping this approach, untill I found a better way to handle text layers
+    if (layer.type === 'TEXT') {
+      stylers.push(texter);
+      await figma.loadFontAsync(layer.fontName);
+    } else {
+      stylers.push(filler, strokeer, effecter, grider);
+    }
+
+    filler.suffix = '';
+    strokeer.suffix = '';
+
+    if (hasFillAndStroke(layer)) {
+      filler.suffix = '-fill';
+      strokeer.suffix = '-stroke';
+    }
 
     stylers.map((styler) => {
-      if (styler.styleType !== 'TEXT') {
-        console.log('if: ' + styler.layerProperties);
-      } else {
-        console.log('else: ' + styler.layerProperties);
+      if (styler.isPropEmpty(layer)) return;
+
+      const idMatch = styler.getStyleById(layer);
+      const nameMatch = styler.getStyleByName(layer);
+
+      switch (figmaCommand) {
+        case 'generateStyles':
+          styler.generateStyle(layer, idMatch, nameMatch, counter);
+          break;
+        case 'applyStyles':
+          styler.applyStyle(layer, nameMatch);
+          counter.applied++;
+          break;
+        case 'detachStyles':
+          styler.detachStyle(layer);
+          counter.detached++;
+          break;
+        case 'removeStyles':
+          ['removeFillStyles', 'removeStrokeStyles', 'removeTextStyles', 'removeEffectStyles', 'removeGridStyles'].map(
+            (command) => {
+              styler.removeStyle(idMatch, command, counter);
+            },
+          );
+          break;
+        case 'removeFillStyles':
+        case 'removeStrokeStyles':
+        case 'removeTextStyles':
+        case 'removeEffectStyles':
+        case 'removeGridStyles':
+          styler.removeStyle(idMatch, figmaCommand);
+          counter.removed++;
+          break;
+        default:
+          figma.closePlugin('😬 Something bad happened. Actually, nothing is changed.');
+          return;
       }
     });
-    // fill.updateStyle(layer, curatedStyles[0]);
-    // text.updateStyle(layer, curatedStyles[0]);
-    debugger;
   });
 
+  switch (figmaCommand) {
+    case 'generateStyles':
+      figma.closePlugin(`
+          Statistics:\n
+          - Created: ${counter.created}\n
+          - Updated: ${counter.updated}\n
+          - Renamed: ${counter.renamed}\n
+          - Ignored: ${counter.ignored}
+          `);
+      break;
+    case 'applyStyles':
+      figma.closePlugin(`✌️ Applied ${counter.applied} styles.`);
+      break;
+    case 'detachStyles':
+      figma.closePlugin(`💔 Detached ${counter.detached} styles.`);
+      break;
+    case 'removeStyles':
+    case 'removeFillStyles':
+    case 'removeStrokeStyles':
+    case 'removeTextStyles':
+    case 'removeEffectStyles':
+    case 'removeGridStyles':
+      {
+        if (counter.removed != 0) {
+          figma.closePlugin(`🔥 Removed ${counter.removed} styles. (Tip: You can still undo the action)`);
+          return;
+        } else {
+          figma.closePlugin(`ℹ There is no style attached to the layer...`);
+        }
+      }
+      break;
+  }
+
   figma.closePlugin();
-}
+})();
 
 /* function main() {
   let figmaCommand = figma.command;

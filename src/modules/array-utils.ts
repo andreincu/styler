@@ -1,5 +1,5 @@
 // check if array is empty
-export const isArrayEmpty = (array) => !(Array.isArray(array) && array.length);
+export const isArrayEmpty = (array) => (array || []).length === 0;
 
 // split array in multiple parts
 export const chunk = (array, size = 1) => {
@@ -20,4 +20,4 @@ export const groupBy = (array, key) => {
   }, {});
 };
 
-export default { chunk, groupBy };
+export default { chunk, groupBy, uniq, isArrayEmpty };
