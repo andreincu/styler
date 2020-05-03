@@ -61,7 +61,7 @@ import Styler from './modules/Styler';
   ];
   debugger;
 
-  curatedLayers.map(async (layer, index) => {
+  curatedLayers.map((layer, index) => {
     // stylers are the links between layers and styles that are created by figma code inconsistency or design decision itself (which are not bad and simply exist)
     const stylers = [];
 
