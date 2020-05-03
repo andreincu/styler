@@ -32,9 +32,11 @@ export default class Styler {
 
   applyStyle = (layer, style) => (layer[this.layerStyleId] = style.id);
 
-  createStyle = (layer) => {
+  createStyle = async (layer) => {
+    if (layer.type === 'TEXT') await figma.loadFontAsync(layer.fontName);
+
     const createCommand = addAffixTo(ucFirst(this.styleType), 'create', 'Style');
-    let newStyle = figma[createCommand]();
+    const newStyle = figma[createCommand]();
 
     this.renameStyle(newStyle, layer);
     this.updateStyle(newStyle, layer);
@@ -103,4 +105,6 @@ export default class Styler {
 
   // I could actually check the entire array, but I don't think is necessary
   isPropEmpty = (layer) => isArrayEmpty(layer[this.layerProperties[0]]);
+
+  isPropMixed = (layer) => this.layerProperties.some((prop) => layer[prop] === figma.mixed);
 }

@@ -59,15 +59,15 @@ import Styler from './modules/Styler';
     ...figma.getLocalGridStyles(),
     ...figma.getLocalTextStyles(),
   ];
+  debugger;
 
   curatedLayers.map(async (layer, index) => {
     // stylers are the links between layers and styles that are created by figma code inconsistency or design decision itself (which are not bad and simply exist)
     const stylers = [];
 
-    // keeping this approach, untill I found a better way to handle text layers
+    // keeping this approach, until I found a better way to handle text layers
     if (layer.type === 'TEXT') {
       stylers.push(texter);
-      await figma.loadFontAsync(layer.fontName);
     } else {
       stylers.push(filler, strokeer, effecter, grider);
     }
@@ -81,7 +81,9 @@ import Styler from './modules/Styler';
     }
 
     stylers.map((styler) => {
-      if (styler.isPropEmpty(layer)) return;
+      if (styler.isPropEmpty(layer) || styler.isPropMixed(layer)) {
+        return counter.ignored++;
+      }
 
       const idMatch = styler.getStyleById(layer);
       const nameMatch = styler.getStyleByName(layer);
@@ -90,14 +92,17 @@ import Styler from './modules/Styler';
         case 'generateStyles':
           styler.generateStyle(layer, idMatch, nameMatch, counter);
           break;
+
         case 'applyStyles':
           styler.applyStyle(layer, nameMatch);
           counter.applied++;
           break;
+
         case 'detachStyles':
           styler.detachStyle(layer);
           counter.detached++;
           break;
+
         case 'removeStyles':
           ['removeFillStyles', 'removeStrokeStyles', 'removeTextStyles', 'removeEffectStyles', 'removeGridStyles'].map(
             (command) => {
@@ -105,6 +110,7 @@ import Styler from './modules/Styler';
             },
           );
           break;
+
         case 'removeFillStyles':
         case 'removeStrokeStyles':
         case 'removeTextStyles':
@@ -113,6 +119,7 @@ import Styler from './modules/Styler';
           styler.removeStyle(idMatch, figmaCommand);
           counter.removed++;
           break;
+
         default:
           figma.closePlugin('😬 Something bad happened. Actually, nothing is changed.');
           return;
@@ -120,22 +127,29 @@ import Styler from './modules/Styler';
     });
   });
 
+  const TIMEOUT = { timeout: 6000 };
   switch (figmaCommand) {
     case 'generateStyles':
-      figma.closePlugin(`
+      figma.notify(
+        `
           Statistics:\n
           - Created: ${counter.created}\n
           - Updated: ${counter.updated}\n
           - Renamed: ${counter.renamed}\n
-          - Ignored: ${counter.ignored}
-          `);
+          - Not Changed: ${counter.ignored}
+          `,
+        TIMEOUT,
+      );
       break;
+
     case 'applyStyles':
-      figma.closePlugin(`✌️ Applied ${counter.applied} styles.`);
+      figma.notify(`✌️ Applied ${counter.applied} styles.`, TIMEOUT);
       break;
+
     case 'detachStyles':
-      figma.closePlugin(`💔 Detached ${counter.detached} styles.`);
+      figma.notify(`💔 Detached ${counter.detached} styles.`, TIMEOUT);
       break;
+
     case 'removeStyles':
     case 'removeFillStyles':
     case 'removeStrokeStyles':
@@ -144,10 +158,9 @@ import Styler from './modules/Styler';
     case 'removeGridStyles':
       {
         if (counter.removed != 0) {
-          figma.closePlugin(`🔥 Removed ${counter.removed} styles. (Tip: You can still undo the action)`);
-          return;
+          figma.notify(`🔥 Removed ${counter.removed} styles. (Tip: You can still undo the action)`, TIMEOUT);
         } else {
-          figma.closePlugin(`ℹ There is no style attached to the layer...`);
+          figma.notify(`ℹ There is no style attached to the layer...`, TIMEOUT);
         }
       }
       break;

@@ -3,9 +3,7 @@ import { isArrayEmpty } from './array-utils';
 
 // avoiding layers that have mixed properties
 const isContainer = (layer) => ['FRAME', 'COMPONENT', 'INSTANCE'].includes(layer.type);
-
 const isShape = (layer) => ['RECTANGLE', 'ELLIPSE', 'POLYGON', 'STAR'].includes(layer.type);
-
 const isText = (layer) => layer.type === 'TEXT';
 
 // cleanup selection
