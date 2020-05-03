@@ -2,6 +2,8 @@ import { cleanLayers, hasFillAndStroke } from './modules/layer-utils';
 import { chunk, groupBy, isArrayEmpty } from './modules/array-utils';
 import Styler from './modules/Styler';
 
+figma.showUI(__html__, { visible: false });
+
 (function main() {
   const figmaCommand = figma.command;
 
