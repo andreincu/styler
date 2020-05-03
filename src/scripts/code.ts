@@ -1,8 +1,5 @@
 import { cleanLayers, hasFillAndStroke } from './modules/layer-utils';
-import { chunk, groupBy, isArrayEmpty } from './modules/array-utils';
 import Styler from './modules/Styler';
-
-figma.showUI(__html__, { visible: false });
 
 (function main() {
   const figmaCommand = figma.command;
@@ -61,7 +58,6 @@ figma.showUI(__html__, { visible: false });
     ...figma.getLocalGridStyles(),
     ...figma.getLocalTextStyles(),
   ];
-  debugger;
 
   curatedLayers.map((layer, index) => {
     // stylers are the links between layers and styles that are created by figma code inconsistency or design decision itself (which are not bad and simply exist)
@@ -123,25 +119,22 @@ figma.showUI(__html__, { visible: false });
           break;
 
         default:
-          figma.closePlugin('😬 Something bad happened. Actually, nothing is changed.');
-          return;
+          figma.notify('😬 Something bad happened. Actually, nothing is changed.');
+          break;
       }
     });
   });
 
-  const TIMEOUT = { timeout: 6000 };
+  const TIMEOUT = { timeout: 8000 };
   switch (figmaCommand) {
     case 'generateStyles':
-      figma.notify(
-        `
-          Statistics:\n
-          - Created: ${counter.created}\n
-          - Updated: ${counter.updated}\n
-          - Renamed: ${counter.renamed}\n
-          - Not Changed: ${counter.ignored}
-          `,
-        TIMEOUT,
-      );
+      figma.showUI(__html__, { width: 400, height: 400 });
+      figma.ui.postMessage(counter);
+
+      setTimeout(() => {
+        figma.ui.close();
+        figma.closePlugin();
+      }, TIMEOUT.timeout);
       break;
 
     case 'applyStyles':

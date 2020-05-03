@@ -10,7 +10,7 @@ module.exports = (env, argv) => ({
   devtool: argv.mode === 'production' ? false : 'inline-source-map',
   entry: {
     code: './src/scripts/code.ts',
-    ui: './src/scripts/ui.ts',
+    ui: './src/ui.ts',
   },
 
   // Webpack tries these extensions for you if you omit the extension like "import './file'"
@@ -32,7 +32,7 @@ module.exports = (env, argv) => ({
       },
       // Enables including CSS by doing "import './file.css'" in your TypeScript code
       {
-        test: /\.css$/,
+        test: /\.s[ac]ss$/i,
         use: [
           // Creates `style` nodes from JS strings
           'style-loader',
