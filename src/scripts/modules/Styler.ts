@@ -55,7 +55,7 @@ export default class Styler {
 
   getStyleByName = (layer) => {
     const typedStyles = this.getLocalStyles();
-    return typedStyles.find((style) => style.name === addAffixTo(layer.name));
+    return typedStyles.find((style) => style.name === addAffixTo(layer.name, this.prefix, this.suffix));
   };
 
   renameStyle = (style, layer) => (style.name = addAffixTo(layer.name, this.prefix, this.suffix));
