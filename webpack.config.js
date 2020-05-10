@@ -14,7 +14,7 @@ module.exports = (env, argv) => ({
   },
 
   // Webpack tries these extensions for you if you omit the extension like "import './file'"
-  resolve: { extensions: ['.tsx', '.ts', '.jsx', '.js'] },
+  resolve: { extensions: ['.tsx', '.ts', '.jsx', '.js', '.css'] },
 
   module: {
     rules: [
@@ -32,7 +32,7 @@ module.exports = (env, argv) => ({
       },
       // Enables including CSS by doing "import './file.css'" in your TypeScript code
       {
-        test: /\.s[ac]ss$/i,
+        test: /\.(s[ac]ss|css)$/i,
         use: [
           // Creates `style` nodes from JS strings
           'style-loader',

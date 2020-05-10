@@ -70,19 +70,10 @@ import Styler from './modules/Styler';
       stylers.push(filler, strokeer, effecter, grider);
     }
 
-    filler.suffix = '';
-    strokeer.suffix = '';
-
-    if (hasFillAndStroke(layer)) {
-      filler.suffix = '-fill';
-      strokeer.suffix = '-stroke';
-    }
+    filler.suffix = '-fill';
+    strokeer.suffix = '-stroke';
 
     stylers.map((styler) => {
-      if (styler.isPropEmpty(layer) || styler.isPropMixed(layer)) {
-        return counter.ignored++;
-      }
-
       const idMatch = styler.getStyleById(layer);
       const nameMatch = styler.getStyleByName(layer);
 
@@ -92,13 +83,11 @@ import Styler from './modules/Styler';
           break;
 
         case 'applyStyles':
-          styler.applyStyle(layer, nameMatch);
-          counter.applied++;
+          styler.applyStyle(layer, nameMatch, counter);
           break;
 
         case 'detachStyles':
-          styler.detachStyle(layer);
-          counter.detached++;
+          styler.detachStyle(layer, counter);
           break;
 
         case 'removeStyles':
@@ -128,21 +117,24 @@ import Styler from './modules/Styler';
   const TIMEOUT = { timeout: 8000 };
   switch (figmaCommand) {
     case 'generateStyles':
-      figma.showUI(__html__, { width: 400, height: 400 });
-      figma.ui.postMessage(counter);
+      const modifiedCounter = {
+        created: counter.created,
+        ignored: counter.ignored,
+        renamed: counter.renamed,
+        updated: counter.updated,
+      };
 
-      setTimeout(() => {
-        figma.ui.close();
-        figma.closePlugin();
-      }, TIMEOUT.timeout);
+      customNotification(modifiedCounter, TIMEOUT);
       break;
 
     case 'applyStyles':
       figma.notify(`✌️ Applied ${counter.applied} styles.`, TIMEOUT);
+      figma.closePlugin();
       break;
 
     case 'detachStyles':
       figma.notify(`💔 Detached ${counter.detached} styles.`, TIMEOUT);
+      figma.closePlugin();
       break;
 
     case 'removeStyles':
@@ -154,15 +146,26 @@ import Styler from './modules/Styler';
       {
         if (counter.removed != 0) {
           figma.notify(`🔥 Removed ${counter.removed} styles. (Tip: You can still undo the action)`, TIMEOUT);
+          figma.closePlugin();
         } else {
           figma.notify(`ℹ There is no style attached to the layer...`, TIMEOUT);
+          figma.closePlugin();
         }
       }
       break;
   }
-
-  figma.closePlugin();
 })();
+
+function customNotification(message, options = { timeout: 6000 }) {
+  figma.showUI(__html__, { width: 640, height: 400 });
+
+  figma.ui.postMessage(message);
+
+  // setTimeout(() => {
+  //   figma.ui.close();
+  //   figma.closePlugin();
+  // }, options.timeout);
+}
 
 /* function main() {
   let figmaCommand = figma.command;

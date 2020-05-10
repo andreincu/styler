@@ -1,11 +1,12 @@
 .loading-bar {
   display: block;
-  position: fixed;
+  position: relative;
   top: 0;
   left: 0;
   width: 100vw;
   height: 4px;
   background: grey;
+  z-index: 1000;
 
   @keyframes loading-animation {
     from {
@@ -27,7 +28,6 @@
     background-color: blue;
     transform: scaleX(0);
     transform-origin: left center;
-    z-index: 1000;
     content: '';
     animation: loading-animation 8s linear forwards;
   }

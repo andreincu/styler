@@ -30,21 +30,31 @@ export default class Styler {
     this.suffix = options.suffix || '';
   }
 
-  applyStyle = (layer, style) => (layer[this.layerStyleId] = style.id);
+  applyStyle = (layer, style, counter) => {
+    if (style) {
+      layer[this.layerStyleId] = style.id;
+      counter.applied++;
+    }
+  };
 
-  createStyle = async (layer) => {
+  createStyle = async (layer, counter) => {
     if (layer.type === 'TEXT') await figma.loadFontAsync(layer.fontName);
 
     const createCommand = addAffixTo(ucFirst(this.styleType), 'create', 'Style');
     const newStyle = figma[createCommand]();
 
     this.renameStyle(newStyle, layer);
-    this.updateStyle(newStyle, layer);
+    this.updateStyle(newStyle, layer, counter);
 
     return newStyle;
   };
 
-  detachStyle = (layer) => (layer[this.layerStyleId] = '');
+  detachStyle = (layer, counter) => {
+    if (layer[this.layerStyleId] === '') return;
+
+    layer[this.layerStyleId] = '';
+    counter.detached++;
+  };
 
   getLocalStyles = () => {
     const getCommand = addAffixTo(ucFirst(this.styleType), 'getLocal', 'Styles');
@@ -69,19 +79,28 @@ export default class Styler {
     }
   };
 
-  updateStyle = (style, layer) => {
-    this.detachStyle(layer);
+  updateStyle = (style, layer, counter) => {
+    this.detachStyle(layer, counter);
     this.layerProperties.map((prop, index) => (style[this.styleProperties[index]] = layer[prop]));
-    this.applyStyle(layer, style);
+    this.applyStyle(layer, style, counter);
 
     return style;
   };
 
   // this is something that combine multiple existing actions (create, update, rename)
   generateStyle = (layer, idMatch, nameMatch, counter) => {
+    if (this.isPropEmpty(layer)) {
+      return;
+    }
+
+    if (this.isPropMixed(layer)) {
+      counter.ignored++;
+      return;
+    }
+
     // create
     if (!idMatch && !nameMatch) {
-      this.createStyle(layer);
+      this.createStyle(layer, counter);
       counter.created++;
     }
 
@@ -93,7 +112,7 @@ export default class Styler {
 
     // update
     else if ((!idMatch && nameMatch) || idMatch !== nameMatch) {
-      this.updateStyle(nameMatch, layer);
+      this.updateStyle(nameMatch, layer, counter);
       counter.updated++;
     }
 
@@ -103,8 +122,8 @@ export default class Styler {
     }
   };
 
+  isPropMixed = (layer) => this.layerProperties.some((prop) => layer[prop] === figma.mixed);
+
   // I could actually check the entire array, but I don't think is necessary
   isPropEmpty = (layer) => isArrayEmpty(layer[this.layerProperties[0]]);
-
-  isPropMixed = (layer) => this.layerProperties.some((prop) => layer[prop] === figma.mixed);
 }
