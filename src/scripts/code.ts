@@ -1,19 +1,30 @@
-import { cleanLayers, hasFillAndStroke } from './modules/layer-utils';
-import Styler from './modules/Styler';
+import {
+  Styler,
+  generateAllLayerStyles,
+  applyAllLayerStyles,
+  detachAllLayerStyles,
+  removeAllLayerStyles,
+  removeLayerStylesByType,
+} from './modules/styler';
+import { cleanLayers } from './modules/utils/layers';
+import { isArrayEmpty, figmaNotifyAndClose } from './modules/utils/common';
 
 (function main() {
-  const figmaCommand = figma.command;
+  figma.showUI(__html__, { visible: false });
 
-  const counter = {
-    applied: 0,
-    created: 0,
-    detached: 0,
-    extracted: 0,
-    ignored: 0,
-    renamed: 0,
-    removed: 0,
-    updated: 0,
-  };
+  const CMD = figma.command;
+  const TIMEOUT = { timeout: 8000 };
+
+  // const counter = {
+  //   applied: 0,
+  //   created: 0,
+  //   detached: 0,
+  //   extracted: 0,
+  //   ignored: 0,
+  //   renamed: 0,
+  //   removed: 0,
+  //   updated: 0,
+  // };
 
   // creating each style one by one
   const filler = new Styler({
@@ -21,12 +32,14 @@ import Styler from './modules/Styler';
     styleProperties: ['paints'],
     layerProperties: ['fills'],
     layerPropertyType: 'fill',
+    suffix: '-fill', // here it will be a variable in the future
   });
   const strokeer = new Styler({
     styleType: 'paint',
     styleProperties: ['paints'],
     layerProperties: ['strokes'],
     layerPropertyType: 'stroke',
+    suffix: '-stroke', // here it will be a variable in the future
   });
   const effecter = new Styler({
     styleType: 'effect',
@@ -50,122 +63,144 @@ import Styler from './modules/Styler';
     ],
   });
 
-  const selectedLayers = figma.currentPage.selection;
-  const curatedLayers = cleanLayers(selectedLayers);
-  const allStyles = [
-    ...figma.getLocalPaintStyles(),
-    ...figma.getLocalEffectStyles(),
-    ...figma.getLocalGridStyles(),
-    ...figma.getLocalTextStyles(),
-  ];
+  const layers = cleanLayers(figma.currentPage.selection);
+  const stylers = [filler, strokeer, effecter, grider, texter];
 
-  curatedLayers.map((layer, index) => {
-    // stylers are the links between layers and styles that are created by figma code inconsistency or design decision itself (which are not bad and simply exist)
-    const stylers = [];
-
-    // keeping this approach, until I found a better way to handle text layers
-    if (layer.type === 'TEXT') {
-      stylers.push(texter);
-    } else {
-      stylers.push(filler, strokeer, effecter, grider);
-    }
-
-    filler.suffix = '-fill';
-    strokeer.suffix = '-stroke';
-
-    stylers.map((styler) => {
-      const idMatch = styler.getStyleById(layer);
-      const nameMatch = styler.getStyleByName(layer);
-
-      switch (figmaCommand) {
-        case 'generateStyles':
-          styler.generateStyle(layer, idMatch, nameMatch, counter);
-          break;
-
-        case 'applyStyles':
-          styler.applyStyle(layer, nameMatch, counter);
-          break;
-
-        case 'detachStyles':
-          styler.detachStyle(layer, counter);
-          break;
-
-        case 'removeStyles':
-          ['removeFillStyles', 'removeStrokeStyles', 'removeTextStyles', 'removeEffectStyles', 'removeGridStyles'].map(
-            (command) => {
-              styler.removeStyle(idMatch, command, counter);
-            },
-          );
-          break;
-
-        case 'removeFillStyles':
-        case 'removeStrokeStyles':
-        case 'removeTextStyles':
-        case 'removeEffectStyles':
-        case 'removeGridStyles':
-          styler.removeStyle(idMatch, figmaCommand);
-          counter.removed++;
-          break;
-
-        default:
-          figma.notify('😬 Something bad happened. Actually, nothing is changed.');
-          break;
-      }
-    });
-  });
-
-  const TIMEOUT = { timeout: 8000 };
-  switch (figmaCommand) {
-    case 'generateStyles':
-      const modifiedCounter = {
-        created: counter.created,
-        ignored: counter.ignored,
-        renamed: counter.renamed,
-        updated: counter.updated,
-      };
-
-      customNotification(modifiedCounter, TIMEOUT);
-      break;
-
-    case 'applyStyles':
-      figma.notify(`✌️ Applied ${counter.applied} styles.`, TIMEOUT);
-      figma.closePlugin();
-      break;
-
-    case 'detachStyles':
-      figma.notify(`💔 Detached ${counter.detached} styles.`, TIMEOUT);
-      figma.closePlugin();
-      break;
-
-    case 'removeStyles':
-    case 'removeFillStyles':
-    case 'removeStrokeStyles':
-    case 'removeTextStyles':
-    case 'removeEffectStyles':
-    case 'removeGridStyles':
-      {
-        if (counter.removed != 0) {
-          figma.notify(`🔥 Removed ${counter.removed} styles. (Tip: You can still undo the action)`, TIMEOUT);
-          figma.closePlugin();
-        } else {
-          figma.notify(`ℹ There is no style attached to the layer...`, TIMEOUT);
-          figma.closePlugin();
-        }
-      }
-      break;
+  if (isArrayEmpty(layers)) {
+    figmaNotifyAndClose(`🥰 You must select at least 1 layer.`, 8000);
+    return;
   }
+
+  // generate
+  if (CMD === 'generateStyles') {
+    generateAllLayerStyles(layers, stylers);
+  }
+  // apply
+  else if (CMD === 'applyStyles') {
+    applyAllLayerStyles(layers, stylers);
+  }
+  // detach
+  else if (CMD === 'detachStyles') {
+    detachAllLayerStyles(layers, stylers);
+  }
+  // remove
+  else if (CMD === 'removeStyles') {
+    removeAllLayerStyles(layers, stylers);
+  }
+  // remove by type
+  else if (CMD.includes('remove')) {
+    removeLayerStylesByType(layers, stylers, CMD);
+  }
+
+  // error
+  else {
+    figma.notify(`😬 Ups. Nothing happened...`);
+  }
+
+  // const allStyles = [
+  //   ...figma.getLocalPaintStyles(),
+  //   ...figma.getLocalEffectStyles(),
+  //   ...figma.getLocalGridStyles(),
+  //   ...figma.getLocalTextStyles(),
+  // ];
+
+  // curatedLayers.map((layer, index) => {
+  //   filler.suffix = '-fill';
+  //   strokeer.suffix = '-stroke';
+
+  //   stylers.map((styler) => {
+
+  //     switch (figmaCommand) {
+  //       case 'generateStyles':
+  //         // styler.generateStyle(layer, idMatch, nameMatch, counter);
+  //         break;
+
+  //       case 'applyStyles':
+  //         styler.applyStyle(layer, nameMatch, counter);
+  //         break;
+
+  //       case 'detachStyles':
+  //         styler.detachStyle(layer, counter);
+  //         break;
+
+  //       case 'removeStyles':
+  //         ['removeFillStyles', 'removeStrokeStyles', 'removeTextStyles', 'removeEffectStyles', 'removeGridStyles'].map(
+  //           (command) => {
+  //             styler.removeStyle(idMatch, command, counter);
+  //           },
+  //         );
+  //         break;
+
+  //       case 'removeFillStyles':
+  //       case 'removeStrokeStyles':
+  //       case 'removeTextStyles':
+  //       case 'removeEffectStyles':
+  //       case 'removeGridStyles':
+  //         styler.removeStyle(idMatch, figmaCommand);
+  //         counter.removed++;
+  //         break;
+
+  //       default:
+  //         figma.notify('😬 Something bad happened. Actually, nothing is changed.');
+  //         break;
+  //     }
+  //   });
+  // });
+
+  // const TIMEOUT = { timeout: 8000 };
+  // switch (figmaCommand) {
+  //   case 'generateStyles':
+  //     figma.notify(
+  //       `
+  //         Statistics:\n
+  //         - Created: ${counter.created}\n
+  //         - Updated: ${counter.updated}\n
+  //         - Renamed: ${counter.renamed}\n
+  //         - Ignored: ${counter.ignored}
+  //         `,
+  //       TIMEOUT,
+  //     );
+  //     break;
+
+  //   case 'applyStyles':
+  //     figma.notify(`✌️ Applied ${counter.applied} styles.`, TIMEOUT);
+  //     figma.closePlugin();
+  //     break;
+
+  //   case 'detachStyles':
+  //     figma.notify(`💔 Detached ${counter.detached} styles.`, TIMEOUT);
+  //     figma.closePlugin();
+  //     break;
+
+  //   case 'removeStyles':
+  //   case 'removeFillStyles':
+  //   case 'removeStrokeStyles':
+  //   case 'removeTextStyles':
+  //   case 'removeEffectStyles':
+  //   case 'removeGridStyles':
+  //     {
+  //       if (counter.removed != 0) {
+  //         figma.notify(`🔥 Removed ${counter.removed} styles. (Tip: You can still undo the action)`, TIMEOUT);
+  //         figma.closePlugin();
+  //       } else {
+  //         figma.notify(`ℹ There is no style attached to the layer...`, TIMEOUT);
+  //         figma.closePlugin();
+  //       }
+  //     }
+  //     break;
+  // }
 })();
 
-function customNotification(message, options = { timeout: 6000 }) {
-  figma.showUI(__html__, { width: 640, height: 400 });
+// function customNotification(message, options = { timeout: 6000 }) {
+//   figma.showUI(__html__, { width: 640, height: 400 });
 
-  figma.ui.postMessage(message);
+//   figma.ui.postMessage(message);
 
-  // setTimeout(() => {
-  //   figma.ui.close();
-  //   figma.closePlugin();
-  // }, options.timeout);
-}
+//   // setTimeout(() => {
+//   //   figma.ui.close();
+//   //   figma.closePlugin();
+//   // }, options.timeout);
+// }
 
 /* function main() {
   let figmaCommand = figma.command;
