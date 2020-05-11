@@ -13,18 +13,7 @@ import { isArrayEmpty, figmaNotifyAndClose } from './modules/utils/common';
   figma.showUI(__html__, { visible: false });
 
   const CMD = figma.command;
-  const TIMEOUT = { timeout: 8000 };
-
-  // const counter = {
-  //   applied: 0,
-  //   created: 0,
-  //   detached: 0,
-  //   extracted: 0,
-  //   ignored: 0,
-  //   renamed: 0,
-  //   removed: 0,
-  //   updated: 0,
-  // };
+  const TIMEOUT = 8000;
 
   // creating each style one by one
   const filler = new Styler({
@@ -67,7 +56,7 @@ import { isArrayEmpty, figmaNotifyAndClose } from './modules/utils/common';
   const stylers = [filler, strokeer, effecter, grider, texter];
 
   if (isArrayEmpty(layers)) {
-    figmaNotifyAndClose(`🥰 You must select at least 1 layer.`, 8000);
+    figmaNotifyAndClose(`🥰 You must select at least 1 layer.`, TIMEOUT);
     return;
   }
 

@@ -6,15 +6,15 @@
   "ui": "dist/index.html",
   "menu": [
     {
-      "name": "Generate Styles",
-      "command": "generateStyles"
+      "name": "Extract Styleguides (New)",
+      "command": "extractStyles"
     },
     {
       "separator": true
     },
     {
-      "name": "Extract Styleguides (New)",
-      "command": "extractStyles"
+      "name": "Generate Styles",
+      "command": "generateStyles"
     },
     {
       "separator": true
@@ -29,7 +29,7 @@
     },
     {
       "name": "Remove Styles",
-      "command": "removeStyles"
+      "command": "remove-styles"
     },
     {
       "name": "zzTest",
@@ -40,23 +40,23 @@
       "menu": [
         {
           "name": "Fill Styles",
-          "command": "removeFillStyles"
+          "command": "remove-fill-styles"
         },
         {
           "name": "Stroke Styles",
-          "command": "removeStrokeStyles"
+          "command": "remove-stroke-styles"
         },
         {
           "name": "Text Styles",
-          "command": "removeTextStyles"
+          "command": "remove-text-styles"
         },
         {
           "name": "Effect Styles",
-          "command": "removeEffectStyles"
+          "command": "remove-effect-styles"
         },
         {
           "name": "Grid Styles",
-          "command": "removeGridStyles"
+          "command": "remove-grid-styles"
         }
       ]
     }

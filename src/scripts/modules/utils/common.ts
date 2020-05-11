@@ -59,7 +59,7 @@ export function clone(val) {
 }
 
 // I created this because I need a way to extend the timer
-export const figmaNotifyAndClose = (message = '', setTimeout) => {
+export const figmaNotifyAndClose = (message = '', setTimeout = 6000) => {
   figma.notify(message, { timeout: setTimeout });
   figma.closePlugin();
 };

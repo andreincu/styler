@@ -141,6 +141,10 @@ export const generateAllLayerStyles = (layers, stylers) => {
     });
   });
 
+  if (counter.created === 0 && counter.updated === 0 && counter.renamed === 0 && counter.ignored) {
+    figmaNotifyAndClose(`😭 We do not support mixed properties. Noo...`, TIMEOUT);
+    return;
+  }
   figmaNotifyAndClose(
     `
       🔨 Created: ${counter.created} -
@@ -169,7 +173,11 @@ export const applyAllLayerStyles = (layers, stylers) => {
     });
   });
 
-  figmaNotifyAndClose(`✌️ Applied ${counter} styles.`, TIMEOUT);
+  if (counter === 0) {
+    figmaNotifyAndClose(`🤔 There is no style that has this layer name. Maybe? Renam...`, TIMEOUT);
+    return;
+  }
+  figmaNotifyAndClose(`✌️ Applied ${counter} styles. He he...`, TIMEOUT);
 };
 
 // detaching all layer's styles
@@ -187,7 +195,11 @@ export const detachAllLayerStyles = (layers, stylers) => {
     });
   });
 
-  figmaNotifyAndClose(`💔 Detached ${counter} styles.`, TIMEOUT);
+  if (counter === 0) {
+    figmaNotifyAndClose(`🤔 No style was applied on any of the selected layers. Idk...`, TIMEOUT);
+    return;
+  }
+  figmaNotifyAndClose(`💔 Detached ${counter} styles. Layers will miss you...`, TIMEOUT);
 };
 
 // removing all layers's styles
@@ -206,19 +218,24 @@ export const removeAllLayerStyles = (layers, stylers) => {
     });
   });
 
-  figmaNotifyAndClose(`🔥 Removed ${counter} styles.`, TIMEOUT);
+  if (counter === 0) {
+    figmaNotifyAndClose(`🤔 No style was applied on any of the selected layers. Yep, it's weird...`, TIMEOUT);
+    return;
+  }
+  figmaNotifyAndClose(`🔥 Removed ${counter} styles. Rrr...`, TIMEOUT);
 };
 
 // removing styles
-export const removeLayerStylesByType = (layers, stylers, removeType) => {
+export const removeLayerStylesByType = (layers, stylers, CMD) => {
   let counter = 0;
+  const removeType = CMD.split('-')[1];
 
   layers.map((layer) => {
     const cleanedStylers = cleanStylers(layer, stylers);
 
     cleanedStylers.map((styler) => {
       const idMatch = styler.getStyleById(layer);
-      const stylerType = addAffixTo(styler.layerPropertyType, 'remove', 'styles');
+      const stylerType = styler.layerPropertyType.toLocaleLowerCase();
       if (!idMatch || removeType !== stylerType) return;
 
       idMatch.remove();
@@ -226,5 +243,9 @@ export const removeLayerStylesByType = (layers, stylers, removeType) => {
     });
   });
 
-  figmaNotifyAndClose(`🔥 Removed ${counter} styles.`, TIMEOUT);
+  if (counter === 0) {
+    figmaNotifyAndClose(`🤔 No ${removeType} style was applied on any of the selected layers. Whaa...`, TIMEOUT);
+    return;
+  }
+  figmaNotifyAndClose(`🔥 Removed ${counter} ${removeType} styles. Ups...`, TIMEOUT);
 };
