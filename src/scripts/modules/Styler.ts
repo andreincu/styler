@@ -102,19 +102,19 @@ export const generateAllLayerStyles = (layers, stylers) => {
     const cleanedStylers = cleanStylers(layer, stylers);
 
     cleanedStylers.map((styler) => {
-      const idMatch = styler.getStyleById(layer);
-      const nameMatch = styler.getStyleByName(layer);
-
       // we don't care about empty properties
       if (styler.isPropEmpty(layer)) {
         return;
       }
 
-      // mixed properties
+      // we also don't care about mixed properties
       if (styler.isPropMixed(layer)) {
         counter.ignored++;
         return;
       }
+
+      const idMatch = styler.getStyleById(layer);
+      const nameMatch = styler.getStyleByName(layer);
 
       // create
       if (!idMatch && !nameMatch) {
