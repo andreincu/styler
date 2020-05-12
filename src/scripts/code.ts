@@ -55,25 +55,42 @@ import { isArrayEmpty, figmaNotifyAndClose } from './modules/utils/common';
   const layers = cleanLayers(figma.currentPage.selection);
   const stylers = [filler, strokeer, effecter, grider, texter];
 
+  // REMOVE THIS CONDITION AT THE END!!!!
+  if (CMD === 'test') {
+    let counter = 0;
+    const allStyles = [
+      ...figma.getLocalEffectStyles(),
+      ...figma.getLocalPaintStyles(),
+      ...figma.getLocalGridStyles(),
+      ...figma.getLocalTextStyles(),
+    ];
+    allStyles.map((style) => {
+      style.remove();
+      counter++;
+    });
+    figmaNotifyAndClose(`🔥 Removed all ${counter} styles. Ups...`, TIMEOUT);
+    return;
+  }
+
   if (isArrayEmpty(layers)) {
     figmaNotifyAndClose(`🥰 You must select at least 1 layer.`, TIMEOUT);
     return;
   }
 
   // generate
-  if (CMD === 'generateStyles') {
+  if (CMD === 'generate-styles') {
     generateAllLayerStyles(layers, stylers);
   }
   // apply
-  else if (CMD === 'applyStyles') {
+  else if (CMD === 'apply-styles') {
     applyAllLayerStyles(layers, stylers);
   }
   // detach
-  else if (CMD === 'detachStyles') {
+  else if (CMD === 'detach-styles') {
     detachAllLayerStyles(layers, stylers);
   }
   // remove
-  else if (CMD === 'removeStyles') {
+  else if (CMD === 'remove-styles') {
     removeAllLayerStyles(layers, stylers);
   }
   // remove by type
@@ -85,99 +102,6 @@ import { isArrayEmpty, figmaNotifyAndClose } from './modules/utils/common';
   else {
     figma.notify(`😬 Ups. Nothing happened...`);
   }
-
-  // const allStyles = [
-  //   ...figma.getLocalPaintStyles(),
-  //   ...figma.getLocalEffectStyles(),
-  //   ...figma.getLocalGridStyles(),
-  //   ...figma.getLocalTextStyles(),
-  // ];
-
-  // curatedLayers.map((layer, index) => {
-  //   filler.suffix = '-fill';
-  //   strokeer.suffix = '-stroke';
-
-  //   stylers.map((styler) => {
-
-  //     switch (figmaCommand) {
-  //       case 'generateStyles':
-  //         // styler.generateStyle(layer, idMatch, nameMatch, counter);
-  //         break;
-
-  //       case 'applyStyles':
-  //         styler.applyStyle(layer, nameMatch, counter);
-  //         break;
-
-  //       case 'detachStyles':
-  //         styler.detachStyle(layer, counter);
-  //         break;
-
-  //       case 'removeStyles':
-  //         ['removeFillStyles', 'removeStrokeStyles', 'removeTextStyles', 'removeEffectStyles', 'removeGridStyles'].map(
-  //           (command) => {
-  //             styler.removeStyle(idMatch, command, counter);
-  //           },
-  //         );
-  //         break;
-
-  //       case 'removeFillStyles':
-  //       case 'removeStrokeStyles':
-  //       case 'removeTextStyles':
-  //       case 'removeEffectStyles':
-  //       case 'removeGridStyles':
-  //         styler.removeStyle(idMatch, figmaCommand);
-  //         counter.removed++;
-  //         break;
-
-  //       default:
-  //         figma.notify('😬 Something bad happened. Actually, nothing is changed.');
-  //         break;
-  //     }
-  //   });
-  // });
-
-  // const TIMEOUT = { timeout: 8000 };
-  // switch (figmaCommand) {
-  //   case 'generateStyles':
-  //     figma.notify(
-  //       `
-  //         Statistics:\n
-  //         - Created: ${counter.created}\n
-  //         - Updated: ${counter.updated}\n
-  //         - Renamed: ${counter.renamed}\n
-  //         - Ignored: ${counter.ignored}
-  //         `,
-  //       TIMEOUT,
-  //     );
-  //     break;
-
-  //   case 'applyStyles':
-  //     figma.notify(`✌️ Applied ${counter.applied} styles.`, TIMEOUT);
-  //     figma.closePlugin();
-  //     break;
-
-  //   case 'detachStyles':
-  //     figma.notify(`💔 Detached ${counter.detached} styles.`, TIMEOUT);
-  //     figma.closePlugin();
-  //     break;
-
-  //   case 'removeStyles':
-  //   case 'removeFillStyles':
-  //   case 'removeStrokeStyles':
-  //   case 'removeTextStyles':
-  //   case 'removeEffectStyles':
-  //   case 'removeGridStyles':
-  //     {
-  //       if (counter.removed != 0) {
-  //         figma.notify(`🔥 Removed ${counter.removed} styles. (Tip: You can still undo the action)`, TIMEOUT);
-  //         figma.closePlugin();
-  //       } else {
-  //         figma.notify(`ℹ There is no style attached to the layer...`, TIMEOUT);
-  //         figma.closePlugin();
-  //       }
-  //     }
-  //     break;
-  // }
 })();
 
 // function customNotification(message, options = { timeout: 6000 }) {

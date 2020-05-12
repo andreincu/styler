@@ -7,25 +7,25 @@
   "menu": [
     {
       "name": "Extract Styleguides (New)",
-      "command": "extractStyles"
+      "command": "extract-styles"
     },
     {
       "separator": true
     },
     {
       "name": "Generate Styles",
-      "command": "generateStyles"
+      "command": "generate-styles"
     },
     {
       "separator": true
     },
     {
       "name": "Apply Styles",
-      "command": "applyStyles"
+      "command": "apply-styles"
     },
     {
       "name": "Detach Styles",
-      "command": "detachStyles"
+      "command": "detach-styles"
     },
     {
       "name": "Remove Styles",

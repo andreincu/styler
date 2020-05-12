@@ -88,7 +88,6 @@ function cleanStylers(layer, stylers) {
   return stylers.filter((styler) => styler.layerPropertyType !== 'TEXT');
 }
 
-// this is something that combine multiple existing actions (create, update, rename)
 export const generateAllLayerStyles = (layers, stylers) => {
   const counter = {
     created: 0,
@@ -150,7 +149,6 @@ export const generateAllLayerStyles = (layers, stylers) => {
   );
 };
 
-// applying all layer's styles
 export const applyAllLayerStyles = (layers, stylers) => {
   let counter = 0;
 
@@ -174,7 +172,6 @@ export const applyAllLayerStyles = (layers, stylers) => {
   figmaNotifyAndClose(`✌️ Applied ${counter} styles. He he...`, TIMEOUT);
 };
 
-// detaching all layer's styles
 export const detachAllLayerStyles = (layers, stylers) => {
   let counter = 0;
 
@@ -196,7 +193,6 @@ export const detachAllLayerStyles = (layers, stylers) => {
   figmaNotifyAndClose(`💔 Detached ${counter} styles. Layers will miss you...`, TIMEOUT);
 };
 
-// removing all layers's styles
 export const removeAllLayerStyles = (layers, stylers) => {
   let counter = 0;
 
@@ -213,28 +209,26 @@ export const removeAllLayerStyles = (layers, stylers) => {
   });
 
   if (counter === 0) {
-    figmaNotifyAndClose(`🤔 No style was applied on any of the selected layers. Yep, it's weird...`, TIMEOUT);
+    figmaNotifyAndClose(`🤔 No style was applied on any of the selected layers. Yep, it's not weird...`, TIMEOUT);
     return;
   }
   figmaNotifyAndClose(`🔥 Removed ${counter} styles. Rrr...`, TIMEOUT);
 };
 
-// removing styles
 export const removeLayerStylesByType = (layers, stylers, CMD) => {
   let counter = 0;
   const removeType = CMD.split('-')[1];
 
   layers.map((layer) => {
-    const cleanedStylers = cleanStylers(layer, stylers);
+    stylers
+      .filter((styler) => styler.layerPropertyType === removeType.toLocaleUpperCase())
+      .map((styler) => {
+        const idMatch = styler.getStyleById(layer);
+        if (!idMatch) return;
 
-    cleanedStylers.map((styler) => {
-      const idMatch = styler.getStyleById(layer);
-      const stylerType = styler.layerPropertyType.toLocaleLowerCase();
-      if (!idMatch || removeType !== stylerType) return;
-
-      idMatch.remove();
-      counter++;
-    });
+        idMatch.remove();
+        counter++;
+      });
   });
 
   if (counter === 0) {
