@@ -103,13 +103,7 @@ export const generateAllLayerStyles = (layers, stylers) => {
 
     cleanedStylers.map((styler) => {
       // we don't care about empty properties
-      if (styler.isPropEmpty(layer)) {
-        return;
-      }
-
-      // we also don't care about mixed properties
-      if (styler.isPropMixed(layer)) {
-        counter.ignored++;
+      if (styler.isPropEmpty(layer) || styler.isPropMixed(layer)) {
         return;
       }
 
@@ -141,8 +135,8 @@ export const generateAllLayerStyles = (layers, stylers) => {
     });
   });
 
-  if (counter.created === 0 && counter.updated === 0 && counter.renamed === 0 && counter.ignored) {
-    figmaNotifyAndClose(`😭 We do not support mixed properties. Noo...`, TIMEOUT);
+  if (counter.created === 0 && counter.updated === 0 && counter.renamed === 0 && counter.ignored === 0) {
+    figmaNotifyAndClose(`😭 We do not support empty or mixed properties. Oh, Noo...`, TIMEOUT);
     return;
   }
   figmaNotifyAndClose(
