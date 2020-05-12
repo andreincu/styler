@@ -1,4 +1,4 @@
-import { addAffixTo, ucFirst, isArrayEmpty, figmaNotifyAndClose } from './utils/common';
+import { addAffixTo, ucFirst, isArrayEmpty, figmaNotifyAndClose, uniq } from './utils/common';
 
 const toStyleId = (prop) => (prop === undefined ? undefined : addAffixTo(prop.toLocaleLowerCase(), '', 'StyleId'));
 const TIMEOUT = 8000;
@@ -65,6 +65,8 @@ export class Styler {
   };
 
   renameStyle = (layer, style) => (style.name = addAffixTo(layer.name, this.prefix, this.suffix));
+
+  removeStyleNameAffix = (name): string => name.replace(this.suffix, '').replace(this.prefix, '');
 
   updateStyle = (layer, style) => {
     this.detachStyle(layer);
@@ -236,4 +238,12 @@ export const removeLayerStylesByType = (layers, stylers, CMD) => {
     return;
   }
   figmaNotifyAndClose(`🔥 Removed ${counter} ${removeType} styles. Ups...`, TIMEOUT);
+};
+
+export const getUniqueStylesName = (styles, stylers, sort = false): string[] => {
+  const namesWithoutAffixes = styles
+    .map((style) => stylers.map((styler) => styler.removeStyleNameAffix(style.name)))
+    .flat();
+
+  return uniq(namesWithoutAffixes, sort) as string[];
 };
