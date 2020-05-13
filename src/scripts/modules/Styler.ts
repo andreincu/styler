@@ -59,10 +59,14 @@ export class Styler {
 
   getStyleById = (layer) => figma.getStyleById(layer[this.layerStyleId]);
 
-  getStyleByName = (layer) => {
+  getStyleByName = (name) => {
     const stylesByType = this.getLocalStyles();
-    return stylesByType.find((style) => style.name === addAffixTo(layer.name, this.prefix, this.suffix));
+    return stylesByType.find((style) => style.name === addAffixTo(name, this.prefix, this.suffix));
   };
+
+  // static getAllStylesByName = (name) => {
+  //   return this.getStyleByName(name);
+  // };
 
   renameStyle = (layer, style) => (style.name = addAffixTo(layer.name, this.prefix, this.suffix));
 
@@ -109,7 +113,7 @@ export const generateAllLayerStyles = (layers, stylers) => {
       }
 
       const idMatch = styler.getStyleById(layer);
-      const nameMatch = styler.getStyleByName(layer);
+      const nameMatch = styler.getStyleByName(layer.name);
 
       // create
       if (!idMatch && !nameMatch) {
@@ -158,7 +162,7 @@ export const applyAllLayerStyles = (layers, stylers) => {
     const cleanedStylers = cleanStylers(layer, stylers);
 
     cleanedStylers.map((styler) => {
-      const nameMatch = styler.getStyleByName(layer);
+      const nameMatch = styler.getStyleByName(layer.name);
 
       if (!nameMatch) return;
 
@@ -240,10 +244,30 @@ export const removeLayerStylesByType = (layers, stylers, CMD) => {
   figmaNotifyAndClose(`🔥 Removed ${counter} ${removeType} styles. Ups...`, TIMEOUT);
 };
 
-export const getUniqueStylesName = (styles, stylers, sort = false): string[] => {
-  const namesWithoutAffixes = styles
-    .map((style) => stylers.map((styler) => styler.removeStyleNameAffix(style.name)))
-    .flat();
+export const getAllUniqueStylesName = (styles, stylers, sort = false): string[] => {
+  const allStylesName = styles.map((style) => style.name);
+  const affixes = stylers
+    .map((styler) => [styler.suffix, styler.prefix])
+    .flat()
+    .filter(Boolean)
+    .join('|');
+  const regexAffixes = new RegExp('\\b(?:' + affixes + ')\\b', 'g');
+
+  const namesWithoutAffixes = allStylesName.map((style) => style.replace(regexAffixes, ''));
 
   return uniq(namesWithoutAffixes, sort) as string[];
+};
+
+export const getAllStylesByName = (name, stylers) => {
+  const collectedStyles = [];
+
+  stylers.map((styler) => {
+    const nameMatch = styler.getStyleByName(name);
+
+    if (isArrayEmpty(nameMatch)) return;
+
+    collectedStyles.push(nameMatch);
+  });
+
+  return collectedStyles;
 };

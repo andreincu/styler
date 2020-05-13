@@ -19,15 +19,6 @@ export const uniq = (array, sort = false) => {
   return isArrayEmpty(array) ? [] : !sort ? [...new Set(array)] : [...new Set(array)].sort();
 };
 
-// groupBy(array, key): group array by key
-export const groupBy = (array, key) => {
-  return array.reduce((result, currentValue) => {
-    (result[currentValue[key]] = result[currentValue[key]] || []).push(currentValue);
-
-    return result;
-  }, {});
-};
-
 //this function returns clone the object
 export function clone(val) {
   const type = typeof val;

@@ -5,7 +5,8 @@ import {
   detachAllLayerStyles,
   removeAllLayerStyles,
   removeLayerStylesByType,
-  getUniqueStylesName,
+  getAllUniqueStylesName,
+  getAllStylesByName,
 } from './modules/styler';
 import { cleanLayers } from './modules/utils/layers';
 import { isArrayEmpty, figmaNotifyAndClose } from './modules/utils/common';
@@ -81,8 +82,27 @@ import { isArrayEmpty, figmaNotifyAndClose } from './modules/utils/common';
       ...figma.getLocalTextStyles(),
     ];
 
-    const uniqueNames = getUniqueStylesName(styles, stylers, true);
-    console.log(uniqueNames);
+    if (isArrayEmpty(styles)) {
+      figmaNotifyAndClose(`😵 There is no style in this file. Ouch...`, TIMEOUT);
+      return;
+    }
+
+    const uniqueStylesNames = getAllUniqueStylesName(styles, stylers, true);
+
+    const temp = uniqueStylesNames.map((name) => {
+      const collectedStyles = getAllStylesByName(name, stylers);
+
+      const type = collectedStyles.some((style) => style.type === 'TEXT') ? 'TEXT' : 'FRAME';
+
+      const object = {
+        name,
+        type,
+        styles: collectedStyles,
+      };
+
+      return object;
+    });
+    console.log(temp);
     debugger;
 
     figma.closePlugin();
@@ -90,7 +110,7 @@ import { isArrayEmpty, figmaNotifyAndClose } from './modules/utils/common';
   }
 
   if (isArrayEmpty(layers)) {
-    figmaNotifyAndClose(`🥰 You must select at least 1 layer.`, TIMEOUT);
+    figmaNotifyAndClose(`🥰 You must select at least 1 layer. Yea...`, TIMEOUT);
     return;
   }
 
