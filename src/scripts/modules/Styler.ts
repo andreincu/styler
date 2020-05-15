@@ -1,4 +1,5 @@
 import { addAffixTo, ucFirst, isArrayEmpty, figmaNotifyAndClose, uniq } from './utils/common';
+import { editObjectColor, setAutoFlow } from './utils/layers';
 
 const toStyleId = (prop) => (prop === undefined ? undefined : addAffixTo(prop.toLocaleLowerCase(), '', 'StyleId'));
 const TIMEOUT = 8000;
@@ -30,9 +31,7 @@ export class Styler {
     this.suffix = options.suffix || '';
   }
 
-  applyStyle = (layer, style) => {
-    layer[this.layerStyleId] = style.id;
-  };
+  applyStyle = (layer, style) => (layer[this.layerStyleId] = style.id);
 
   createStyle = async (layer) => {
     if (layer.type === 'TEXT') await figma.loadFontAsync(layer.fontName);
@@ -46,11 +45,7 @@ export class Styler {
     return newStyle;
   };
 
-  detachStyle = (layer) => {
-    if (layer[this.layerStyleId] === '') return;
-
-    layer[this.layerStyleId] = '';
-  };
+  detachStyle = (layer) => (layer[this.layerStyleId] = '');
 
   getLocalStyles = () => {
     const getCommand = addAffixTo(ucFirst(this.styleType), 'getLocal', 'Styles');
@@ -64,15 +59,13 @@ export class Styler {
     return stylesByType.find((style) => style.name === addAffixTo(name, this.prefix, this.suffix));
   };
 
-  // static getAllStylesByName = (name) => {
-  //   return this.getStyleByName(name);
-  // };
-
   renameStyle = (layer, style) => (style.name = addAffixTo(layer.name, this.prefix, this.suffix));
 
   removeStyleNameAffix = (name): string => name.replace(this.suffix, '').replace(this.prefix, '');
 
-  updateStyle = (layer, style) => {
+  updateStyle = async (layer, style) => {
+    if (layer.type === 'TEXT') await figma.loadFontAsync(layer.fontName);
+
     this.detachStyle(layer);
     this.layerProperties.map((prop, index) => (style[this.styleProperties[index]] = layer[prop]));
     this.applyStyle(layer, style);
@@ -270,4 +263,80 @@ export const getAllStylesByName = (name, stylers) => {
   });
 
   return collectedStyles;
+};
+
+export const getStylesheets = (styles, stylers) => {
+  const uniqueStylesNames = getAllUniqueStylesName(styles, stylers, true);
+
+  return uniqueStylesNames.map((name) => {
+    const collectedStyles = getAllStylesByName(name, stylers);
+    const type = collectedStyles.some((style) => style.type === 'TEXT') ? 'TEXT' : 'FRAME';
+
+    return {
+      name,
+      type,
+      styles: collectedStyles,
+    };
+  });
+};
+
+export const extractAllStyles = async (stylers) => {
+  const styles = [
+    ...figma.getLocalPaintStyles(),
+    ...figma.getLocalEffectStyles(),
+    ...figma.getLocalGridStyles(),
+    ...figma.getLocalTextStyles(),
+  ];
+
+  if (isArrayEmpty(styles)) {
+    figmaNotifyAndClose(`😵 There is no style in this file. Ouch...`, TIMEOUT);
+    return;
+  }
+
+  const stylesheets = getStylesheets(styles, stylers);
+
+  const stylesheetsContainer = figma.createFrame();
+  setAutoFlow(stylesheetsContainer, { direction: 'HORIZONTAL', gutter: 32 });
+  stylesheetsContainer.x = 0;
+  stylesheetsContainer.y = 0;
+
+  const textsContainer = figma.createFrame();
+  setAutoFlow(textsContainer, { direction: 'VERTICAL', gutter: 32 });
+  stylesheetsContainer.appendChild(textsContainer);
+
+  const visualsContainer = figma.createFrame();
+  setAutoFlow(visualsContainer, { direction: 'HORIZONTAL', gutter: 48 });
+  stylesheetsContainer.appendChild(visualsContainer);
+
+  const createdLayers = [];
+
+  stylesheets.map((stylesheet) => {
+    if (stylesheet.type === 'TEXT') {
+      const newLayer = figma.createText();
+
+      stylesheet.styles.map(async (style) => {
+        stylers.map((styler) => styler.applyStyle(newLayer, style));
+        await figma.loadFontAsync(style.fontName);
+        newLayer.characters = stylesheet.name;
+      });
+
+      editObjectColor(newLayer, 'fills', '#ffffff');
+      textsContainer.appendChild(newLayer);
+      createdLayers.push(newLayer);
+    }
+    // visual container
+    else {
+      const newLayer = figma.createFrame();
+
+      stylesheet.styles.map((style) => stylers.map((styler) => styler.applyStyle(newLayer, style)));
+
+      newLayer.name = stylesheet.name;
+      newLayer.resize(80, 80);
+
+      visualsContainer.appendChild(newLayer);
+      createdLayers.push(newLayer);
+    }
+  });
+
+  figma.closePlugin();
 };

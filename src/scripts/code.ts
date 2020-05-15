@@ -5,8 +5,7 @@ import {
   detachAllLayerStyles,
   removeAllLayerStyles,
   removeLayerStylesByType,
-  getAllUniqueStylesName,
-  getAllStylesByName,
+  extractAllStyles,
 } from './modules/styler';
 import { cleanLayers } from './modules/utils/layers';
 import { isArrayEmpty, figmaNotifyAndClose } from './modules/utils/common';
@@ -75,37 +74,7 @@ import { isArrayEmpty, figmaNotifyAndClose } from './modules/utils/common';
   }
   // REMOVE THIS CONDITION AT THE END!!!!
   if (CMD === 'extract-styles') {
-    const styles = [
-      ...figma.getLocalPaintStyles(),
-      ...figma.getLocalEffectStyles(),
-      ...figma.getLocalGridStyles(),
-      ...figma.getLocalTextStyles(),
-    ];
-
-    if (isArrayEmpty(styles)) {
-      figmaNotifyAndClose(`😵 There is no style in this file. Ouch...`, TIMEOUT);
-      return;
-    }
-
-    const uniqueStylesNames = getAllUniqueStylesName(styles, stylers, true);
-
-    const temp = uniqueStylesNames.map((name) => {
-      const collectedStyles = getAllStylesByName(name, stylers);
-
-      const type = collectedStyles.some((style) => style.type === 'TEXT') ? 'TEXT' : 'FRAME';
-
-      const object = {
-        name,
-        type,
-        styles: collectedStyles,
-      };
-
-      return object;
-    });
-    console.log(temp);
-    debugger;
-
-    figma.closePlugin();
+    extractAllStyles(stylers);
     return;
   }
 
