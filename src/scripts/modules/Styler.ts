@@ -1,5 +1,5 @@
-import { addAffixTo, ucFirst, isArrayEmpty, figmaNotifyAndClose, uniq } from './utils/common';
-import { editObjectColor, setAutoFlow } from './utils/layers';
+import { addAffixTo, ucFirst, isArrayEmpty, figmaNotifyAndClose, uniq, groupBy, chunk } from './utils/common';
+import { editObjectColor, setAutoFlow, ungroupEachToCanvas } from './utils/layers';
 
 const toStyleId = (prop) => (prop === undefined ? undefined : addAffixTo(prop.toLocaleLowerCase(), '', 'StyleId'));
 const TIMEOUT = 8000;
@@ -31,7 +31,11 @@ export class Styler {
     this.suffix = options.suffix || '';
   }
 
-  applyStyle = (layer, style) => (layer[this.layerStyleId] = style.id);
+  applyStyle = (layer, style) => {
+    if (!style) return;
+
+    return (layer[this.layerStyleId] = style.id);
+  };
 
   createStyle = async (layer) => {
     if (layer.type === 'TEXT') await figma.loadFontAsync(layer.fontName);
@@ -61,13 +65,11 @@ export class Styler {
 
   renameStyle = (layer, style) => (style.name = addAffixTo(layer.name, this.prefix, this.suffix));
 
-  removeStyleNameAffix = (name): string => name.replace(this.suffix, '').replace(this.prefix, '');
-
   updateStyle = async (layer, style) => {
     if (layer.type === 'TEXT') await figma.loadFontAsync(layer.fontName);
 
     this.detachStyle(layer);
-    this.layerProperties.map((prop, index) => (style[this.styleProperties[index]] = layer[prop]));
+    this.styleProperties.map((prop, index) => (style[prop] = layer[this.layerProperties[index]]));
     this.applyStyle(layer, style);
 
     return style;
@@ -86,6 +88,50 @@ function cleanStylers(layer, stylers) {
 
   return stylers.filter((styler) => styler.layerPropertyType !== 'TEXT');
 }
+
+export const applyAllLayerStyles = (layers, stylers) => {
+  let counter = 0;
+
+  layers.map((layer) => {
+    const cleanedStylers = cleanStylers(layer, stylers);
+
+    cleanedStylers.map((styler) => {
+      const nameMatch = styler.getStyleByName(layer.name);
+
+      if (!nameMatch) return;
+
+      styler.applyStyle(layer, nameMatch);
+      counter++;
+    });
+  });
+
+  if (counter === 0) {
+    figmaNotifyAndClose(`🤔 There is no style that has this layer name. Maybe? Renam...`, TIMEOUT);
+    return;
+  }
+  figmaNotifyAndClose(`✌️ Applied ${counter} styles. He he...`, TIMEOUT);
+};
+
+export const detachAllLayerStyles = (layers, stylers) => {
+  let counter = 0;
+
+  layers.map((layer) => {
+    const cleanedStylers = cleanStylers(layer, stylers);
+
+    cleanedStylers.map((styler) => {
+      if (layer[styler.layerStyleId] === '') return;
+
+      styler.detachStyle(layer);
+      counter++;
+    });
+  });
+
+  if (counter === 0) {
+    figmaNotifyAndClose(`🤔 No style was applied on any of the selected layers. Idk...`, TIMEOUT);
+    return;
+  }
+  figmaNotifyAndClose(`💔 Detached ${counter} styles. Layers will miss you...`, TIMEOUT);
+};
 
 export const generateAllLayerStyles = (layers, stylers) => {
   const counter = {
@@ -146,50 +192,6 @@ export const generateAllLayerStyles = (layers, stylers) => {
     `,
     TIMEOUT,
   );
-};
-
-export const applyAllLayerStyles = (layers, stylers) => {
-  let counter = 0;
-
-  layers.map((layer) => {
-    const cleanedStylers = cleanStylers(layer, stylers);
-
-    cleanedStylers.map((styler) => {
-      const nameMatch = styler.getStyleByName(layer.name);
-
-      if (!nameMatch) return;
-
-      styler.applyStyle(layer, nameMatch);
-      counter++;
-    });
-  });
-
-  if (counter === 0) {
-    figmaNotifyAndClose(`🤔 There is no style that has this layer name. Maybe? Renam...`, TIMEOUT);
-    return;
-  }
-  figmaNotifyAndClose(`✌️ Applied ${counter} styles. He he...`, TIMEOUT);
-};
-
-export const detachAllLayerStyles = (layers, stylers) => {
-  let counter = 0;
-
-  layers.map((layer) => {
-    const cleanedStylers = cleanStylers(layer, stylers);
-
-    cleanedStylers.map((styler) => {
-      if (layer[styler.layerStyleId] === '') return;
-
-      styler.detachStyle(layer);
-      counter++;
-    });
-  });
-
-  if (counter === 0) {
-    figmaNotifyAndClose(`🤔 No style was applied on any of the selected layers. Idk...`, TIMEOUT);
-    return;
-  }
-  figmaNotifyAndClose(`💔 Detached ${counter} styles. Layers will miss you...`, TIMEOUT);
 };
 
 export const removeAllLayerStyles = (layers, stylers) => {
@@ -255,32 +257,33 @@ export const getAllStylesByName = (name, stylers) => {
   const collectedStyles = [];
 
   stylers.map((styler) => {
-    const nameMatch = styler.getStyleByName(name);
+    const style = styler.getStyleByName(name);
+    const layerPropType = styler.layerPropertyType;
 
-    if (isArrayEmpty(nameMatch)) return;
+    if (isArrayEmpty(style)) return;
 
-    collectedStyles.push(nameMatch);
+    collectedStyles.push({ layerPropType, style });
   });
 
   return collectedStyles;
 };
 
 export const getStylesheets = (styles, stylers) => {
-  const uniqueStylesNames = getAllUniqueStylesName(styles, stylers, true);
+  const uniqueStylesNames = getAllUniqueStylesName(styles, stylers);
 
   return uniqueStylesNames.map((name) => {
     const collectedStyles = getAllStylesByName(name, stylers);
-    const type = collectedStyles.some((style) => style.type === 'TEXT') ? 'TEXT' : 'FRAME';
+    const type = collectedStyles.some(({ style }) => style.type === 'TEXT') ? 'TEXT' : 'FRAME';
 
     return {
       name,
       type,
-      styles: collectedStyles,
+      collectedStyles,
     };
   });
 };
 
-export const extractAllStyles = async (stylers) => {
+export const extractAllStyles = (stylers) => {
   const styles = [
     ...figma.getLocalPaintStyles(),
     ...figma.getLocalEffectStyles(),
@@ -292,51 +295,73 @@ export const extractAllStyles = async (stylers) => {
     figmaNotifyAndClose(`😵 There is no style in this file. Ouch...`, TIMEOUT);
     return;
   }
-
   const stylesheets = getStylesheets(styles, stylers);
+  const stylesheetsByType = groupBy(stylesheets, 'type');
+  let selection: any = [];
 
-  const stylesheetsContainer = figma.createFrame();
-  setAutoFlow(stylesheetsContainer, { direction: 'HORIZONTAL', gutter: 32 });
-  stylesheetsContainer.x = 0;
-  stylesheetsContainer.y = 0;
+  const mainContainer = figma.createFrame();
+  setAutoFlow(mainContainer, { direction: 'HORIZONTAL', gutter: 128 });
+  editObjectColor(mainContainer, 'fills', '#000000');
+  mainContainer.x = 0;
+  mainContainer.y = 0;
 
   const textsContainer = figma.createFrame();
   setAutoFlow(textsContainer, { direction: 'VERTICAL', gutter: 32 });
-  stylesheetsContainer.appendChild(textsContainer);
+  editObjectColor(textsContainer, 'fills', '#000000');
+  mainContainer.appendChild(textsContainer);
 
   const visualsContainer = figma.createFrame();
-  setAutoFlow(visualsContainer, { direction: 'HORIZONTAL', gutter: 48 });
-  stylesheetsContainer.appendChild(visualsContainer);
+  setAutoFlow(visualsContainer, { direction: 'VERTICAL', gutter: 32 });
+  editObjectColor(visualsContainer, 'fills', '#000000');
+  mainContainer.appendChild(visualsContainer);
 
-  const createdLayers = [];
+  [...stylesheetsByType.TEXT].map(async (stylesheet) => {
+    const newLayer: any = figma.createText();
+    const cleanedStylers = cleanStylers(newLayer, stylers);
 
-  stylesheets.map((stylesheet) => {
-    if (stylesheet.type === 'TEXT') {
-      const newLayer = figma.createText();
+    stylesheet.collectedStyles.map(({ layerPropType, style }) =>
+      cleanedStylers.map((styler) => {
+        if (styler.layerPropertyType !== layerPropType) return;
 
-      stylesheet.styles.map(async (style) => {
-        stylers.map((styler) => styler.applyStyle(newLayer, style));
-        await figma.loadFontAsync(style.fontName);
-        newLayer.characters = stylesheet.name;
-      });
+        styler.applyStyle(newLayer, style);
+      }),
+    );
+    await figma.loadFontAsync(newLayer.fontName);
 
-      editObjectColor(newLayer, 'fills', '#ffffff');
-      textsContainer.appendChild(newLayer);
-      createdLayers.push(newLayer);
-    }
-    // visual container
-    else {
+    newLayer.characters = stylesheet.name;
+    editObjectColor(newLayer, 'fills', '#ffffff');
+    textsContainer.appendChild(newLayer);
+    selection.push(newLayer);
+  });
+
+  chunk([...stylesheetsByType.FRAME], 3).map((stylesheets) => {
+    const chunkContainer = figma.createFrame();
+    setAutoFlow(chunkContainer, { direction: 'HORIZONTAL', gutter: 32 });
+    editObjectColor(chunkContainer, 'fills', '#000000');
+    visualsContainer.appendChild(chunkContainer);
+
+    stylesheets.map((stylesheet) => {
       const newLayer = figma.createFrame();
+      const cleanedStylers = cleanStylers(newLayer, stylers);
 
-      stylesheet.styles.map((style) => stylers.map((styler) => styler.applyStyle(newLayer, style)));
+      stylesheet.collectedStyles.map(({ layerPropType, style }) =>
+        cleanedStylers.map((styler) => {
+          if (styler.layerPropertyType !== layerPropType) return;
+
+          styler.applyStyle(newLayer, style);
+        }),
+      );
 
       newLayer.name = stylesheet.name;
       newLayer.resize(80, 80);
 
-      visualsContainer.appendChild(newLayer);
-      createdLayers.push(newLayer);
-    }
+      chunkContainer.appendChild(newLayer);
+      selection.push(newLayer);
+    });
   });
 
-  figma.closePlugin();
+  setTimeout(() => {
+    ungroupEachToCanvas(selection);
+    figma.closePlugin();
+  }, 100);
 };

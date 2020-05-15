@@ -62,7 +62,13 @@ export const hasFillAndStroke = (layer) => !isArrayEmpty(layer.fills) && !isArra
 // ungroup layer
 export const ungroup = (layer) => {
   const parent = layer.parent;
+  if (parent.type === 'PAGE') return;
+  setAutoFlow(parent, { direction: 'NONE' });
+
   const parentOfParent = parent.parent;
+  if (parentOfParent.type !== 'PAGE') {
+    setAutoFlow(parentOfParent, { direction: 'NONE' });
+  }
 
   layer.x = parent.x + layer.relativeTransform[0][2];
   layer.y = parent.y + layer.relativeTransform[1][2];
@@ -72,6 +78,15 @@ export const ungroup = (layer) => {
 };
 
 // ungroup all layers
-export const ungroupAll = (layers) => {
-  layers.map((layer) => ungroup(layer));
+export const ungroupEachToCanvas = (layers) => {
+  let numberOfLayers = layers.length;
+  while (numberOfLayers > 0) {
+    layers.map((layer) => {
+      if (layer.parent.type === 'PAGE') {
+        numberOfLayers -= 1;
+        return;
+      }
+      ungroup(layer);
+    });
+  }
 };
