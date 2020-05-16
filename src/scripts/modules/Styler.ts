@@ -12,7 +12,6 @@ export class Styler {
   layerStyleId: string;
   prefix: string;
   suffix: string;
-  createStyleCommand: string;
 
   constructor(options: {
     styleType: string;

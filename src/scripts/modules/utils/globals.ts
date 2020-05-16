@@ -2,6 +2,7 @@ import { Styler } from '../styler';
 
 // this is the timeout for all notification alerts
 export const TIMEOUT = 8000;
+export const CMD = figma.command;
 
 // creating each style one by one
 export const filler = new Styler({

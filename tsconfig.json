@@ -5,7 +5,14 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "removeComments": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "mapRoot": ".",
+    "sourceRoot": ".",
+    "typeRoots": ["./node_modules/@types", "./node_modules/@figma"]
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
 }

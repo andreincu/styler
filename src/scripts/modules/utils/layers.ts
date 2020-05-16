@@ -1,14 +1,6 @@
 import { clone } from './common';
 import { webRGBToFigmaRGB } from './convert-color';
-
-interface AutoLayoutProps {
-  layoutMode?: FrameNode['layoutMode'];
-  layoutAlign?: FrameNode['layoutAlign'];
-  counterAxisSizingMode?: FrameNode['counterAxisSizingMode'];
-  horizontalPadding?: FrameNode['horizontalPadding'];
-  verticalPadding?: FrameNode['verticalPadding'];
-  itemSpacing?: FrameNode['itemSpacing'];
-}
+import { colors } from './globals';
 
 // avoiding layers that have mixed properties
 const isContainer = (layer) => ['FRAME', 'COMPONENT', 'INSTANCE'].includes(layer.type);
@@ -22,9 +14,9 @@ export const cleanLayers = (layers) => {
 };
 
 // edit layer fill property
-export const editObjectColor = (layer, prop, rgba: number[]) => {
+export const editObjectColor = (layer, prop, rgba = [0, 0, 0, 1]) => {
   const color = webRGBToFigmaRGB(rgba);
-  const { r = 0, g = 0, b = 0, a = 1 } = color;
+  const { r, g, b, a } = color;
 
   const cloned = clone(layer[prop]);
 
@@ -34,15 +26,18 @@ export const editObjectColor = (layer, prop, rgba: number[]) => {
   return (layer[prop] = cloned);
 };
 
-export const setAutoLayout = (frame: FrameNode, options?: AutoLayoutProps) => {
-  const {
-    layoutMode = 'NONE',
-    layoutAlign = 'MIN',
-    counterAxisSizingMode = 'AUTO',
-    horizontalPadding = 0,
-    verticalPadding = 0,
-    itemSpacing = 0,
-  } = options;
+export const setAutoLayout = (
+  frame: FrameNode,
+  options: AutoLayoutProps = {
+    layoutMode: 'NONE',
+    layoutAlign: 'MIN',
+    counterAxisSizingMode: 'AUTO',
+    horizontalPadding: 0,
+    verticalPadding: 0,
+    itemSpacing: 0,
+  },
+) => {
+  const { layoutMode, layoutAlign, counterAxisSizingMode, horizontalPadding, verticalPadding, itemSpacing } = options;
 
   frame.layoutMode = layoutMode;
   frame.layoutAlign = layoutAlign;
@@ -54,18 +49,24 @@ export const setAutoLayout = (frame: FrameNode, options?: AutoLayoutProps) => {
   return frame;
 };
 
-export const createFrameLayer = (options?: {
-  color?: number[];
-  position?: { x: number; y: number };
-  autoLayoutProps?: AutoLayoutProps;
-}) => {
-  const { color, position = { x: 0, y: 0 }, autoLayoutProps } = options;
+export const createFrameLayer = (
+  options: FrameLayer = {
+    color: colors.black,
+    size: { width: 80, height: 80 },
+    position: { x: 0, y: 0 },
+    parent: figma.currentPage,
+  },
+) => {
+  const { color, size, position, autoLayoutProps, parent } = options;
+  const { width, height } = size;
 
   const newLayer = figma.createFrame();
-  editObjectColor(newLayer, 'fills', color || [0, 0, 0]);
+  editObjectColor(newLayer, 'fills', color);
   setAutoLayout(newLayer, autoLayoutProps);
   newLayer.x = position.x;
   newLayer.y = position.y;
+  newLayer.resize(width, height);
+  parent.appendChild(newLayer);
 
   return newLayer;
 };
