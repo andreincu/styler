@@ -295,6 +295,7 @@ export const extractAllStyles = (stylers) => {
     figmaNotifyAndClose(`😵 There is no style in this file. Ouch...`, TIMEOUT);
     return;
   }
+  editObjectColor(figma.currentPage, 'backgrounds', '#000000');
   const stylesheets = getStylesheets(styles, stylers);
   const stylesheetsByType = groupBy(stylesheets, 'type');
   let selection: any = [];
