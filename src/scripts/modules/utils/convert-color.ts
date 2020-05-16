@@ -98,5 +98,5 @@ function hexToFigmaRGB(color: string): RGB | RGBA {
 
 export { figmaRGBToWebRGB, webRGBToFigmaRGB, figmaRGBToHex, hexToFigmaRGB };
 
-type webRGB = [number, number, number];
-type webRGBA = [number, number, number, number];
+type webRGB = number[];
+type webRGBA = number[];

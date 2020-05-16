@@ -6,7 +6,7 @@
   "ui": "dist/index.html",
   "menu": [
     {
-      "name": "Extract Styleguides (New)",
+      "name": "Extract Styles (New)",
       "command": "extract-styles"
     },
     {

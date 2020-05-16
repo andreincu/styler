@@ -1,8 +1,8 @@
+import { TIMEOUT, colors } from './utils/globals';
 import { addAffixTo, ucFirst, isArrayEmpty, figmaNotifyAndClose, uniq, groupBy, chunk } from './utils/common';
-import { editObjectColor, setAutoFlow, ungroupEachToCanvas } from './utils/layers';
+import { editObjectColor, setAutoLayout, ungroupEachToCanvas } from './utils/layers';
 
 const toStyleId = (prop) => (prop === undefined ? undefined : addAffixTo(prop.toLocaleLowerCase(), '', 'StyleId'));
-const TIMEOUT = 8000;
 
 export class Styler {
   styleType: string;
@@ -290,30 +290,31 @@ export const extractAllStyles = (stylers) => {
     ...figma.getLocalGridStyles(),
     ...figma.getLocalTextStyles(),
   ];
+  let counter = 0;
 
   if (isArrayEmpty(styles)) {
     figmaNotifyAndClose(`😵 There is no style in this file. Ouch...`, TIMEOUT);
     return;
   }
-  editObjectColor(figma.currentPage, 'backgrounds', '#000000');
+  editObjectColor(figma.currentPage, 'backgrounds', colors.black);
   const stylesheets = getStylesheets(styles, stylers);
   const stylesheetsByType = groupBy(stylesheets, 'type');
   let selection: any = [];
 
   const mainContainer = figma.createFrame();
-  setAutoFlow(mainContainer, { direction: 'HORIZONTAL', gutter: 128 });
-  editObjectColor(mainContainer, 'fills', '#000000');
+  setAutoLayout(mainContainer, { layoutMode: 'HORIZONTAL', itemSpacing: 128 });
+  editObjectColor(mainContainer, 'fills', colors.black);
   mainContainer.x = 0;
   mainContainer.y = 0;
 
   const textsContainer = figma.createFrame();
-  setAutoFlow(textsContainer, { direction: 'VERTICAL', gutter: 32 });
-  editObjectColor(textsContainer, 'fills', '#000000');
+  setAutoLayout(textsContainer, { layoutMode: 'VERTICAL', itemSpacing: 32 });
+  editObjectColor(textsContainer, 'fills', colors.black);
   mainContainer.appendChild(textsContainer);
 
   const visualsContainer = figma.createFrame();
-  setAutoFlow(visualsContainer, { direction: 'VERTICAL', gutter: 32 });
-  editObjectColor(visualsContainer, 'fills', '#000000');
+  setAutoLayout(visualsContainer, { layoutMode: 'VERTICAL', itemSpacing: 32 });
+  editObjectColor(visualsContainer, 'fills', colors.black);
   mainContainer.appendChild(visualsContainer);
 
   [...stylesheetsByType.TEXT].map(async (stylesheet) => {
@@ -330,15 +331,16 @@ export const extractAllStyles = (stylers) => {
     await figma.loadFontAsync(newLayer.fontName);
 
     newLayer.characters = stylesheet.name;
-    editObjectColor(newLayer, 'fills', '#ffffff');
+    editObjectColor(newLayer, 'fills', colors.white);
     textsContainer.appendChild(newLayer);
     selection.push(newLayer);
+    counter++;
   });
 
   chunk([...stylesheetsByType.FRAME], 3).map((stylesheets) => {
     const chunkContainer = figma.createFrame();
-    setAutoFlow(chunkContainer, { direction: 'HORIZONTAL', gutter: 32 });
-    editObjectColor(chunkContainer, 'fills', '#000000');
+    setAutoLayout(chunkContainer, { layoutMode: 'HORIZONTAL', itemSpacing: 32 });
+    editObjectColor(chunkContainer, 'fills', colors.black);
     visualsContainer.appendChild(chunkContainer);
 
     stylesheets.map((stylesheet) => {
@@ -358,11 +360,12 @@ export const extractAllStyles = (stylers) => {
 
       chunkContainer.appendChild(newLayer);
       selection.push(newLayer);
+      counter++;
     });
   });
 
   setTimeout(() => {
     ungroupEachToCanvas(selection);
-    figma.closePlugin();
+    figmaNotifyAndClose(`😺 Created ${counter} layers. Uhuu...`, TIMEOUT);
   }, 100);
 };

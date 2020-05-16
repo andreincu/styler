@@ -1,5 +1,14 @@
-import { clone, isArrayEmpty } from './common';
-import { hexToFigmaRGB } from './convert-color';
+import { clone } from './common';
+import { webRGBToFigmaRGB } from './convert-color';
+
+interface AutoLayoutProps {
+  layoutMode?: FrameNode['layoutMode'];
+  layoutAlign?: FrameNode['layoutAlign'];
+  counterAxisSizingMode?: FrameNode['counterAxisSizingMode'];
+  horizontalPadding?: FrameNode['horizontalPadding'];
+  verticalPadding?: FrameNode['verticalPadding'];
+  itemSpacing?: FrameNode['itemSpacing'];
+}
 
 // avoiding layers that have mixed properties
 const isContainer = (layer) => ['FRAME', 'COMPONENT', 'INSTANCE'].includes(layer.type);
@@ -13,61 +22,63 @@ export const cleanLayers = (layers) => {
 };
 
 // edit layer fill property
-export const editObjectColor = (layer, prop, hex = '#000000') => {
+export const editObjectColor = (layer, prop, rgba: number[]) => {
+  const color = webRGBToFigmaRGB(rgba);
+  const { r = 0, g = 0, b = 0, a = 1 } = color;
+
   const cloned = clone(layer[prop]);
 
-  cloned[0].color = hexToFigmaRGB(hex);
+  cloned[0].color = { r, g, b };
+  cloned[0].opacity = a;
+
   return (layer[prop] = cloned);
 };
 
-// {direction: FrameNode['layoutMode'] = 'HORIZONTAL',
-// alignment: FrameNode['layoutAlign'] = 'MIN',
-// axisMode: FrameNode['counterAxisSizingMode'] = 'AUTO',
-// paddingX = 0,
-// paddingY = 0,
-// gutter = 0,}
-// set frame to Auto-Layout
-export const setAutoFlow = (
-  frame,
-  options: {
-    direction?: FrameNode['layoutMode'];
-    alignment?: FrameNode['layoutAlign'];
-    axisMode?: FrameNode['counterAxisSizingMode'];
-    paddingX?: number;
-    paddingY?: number;
-    gutter?: number;
-  },
-) => {
+export const setAutoLayout = (frame: FrameNode, options?: AutoLayoutProps) => {
   const {
-    direction = 'HORIZONTAL',
-    alignment = 'MIN',
-    axisMode = 'AUTO',
-    paddingX = 0,
-    paddingY = 0,
-    gutter = 0,
+    layoutMode = 'NONE',
+    layoutAlign = 'MIN',
+    counterAxisSizingMode = 'AUTO',
+    horizontalPadding = 0,
+    verticalPadding = 0,
+    itemSpacing = 0,
   } = options;
 
-  frame.layoutMode = direction;
-  frame.layoutAlign = alignment;
-  frame.counterAxisSizingMode = axisMode;
-  frame.horizontalPadding = paddingX;
-  frame.verticalPadding = paddingY;
-  frame.itemSpacing = gutter;
+  frame.layoutMode = layoutMode;
+  frame.layoutAlign = layoutAlign;
+  frame.counterAxisSizingMode = counterAxisSizingMode;
+  frame.horizontalPadding = horizontalPadding;
+  frame.verticalPadding = verticalPadding;
+  frame.itemSpacing = itemSpacing;
 
   return frame;
 };
 
-export const hasFillAndStroke = (layer) => !isArrayEmpty(layer.fills) && !isArrayEmpty(layer.strokes);
+export const createFrameLayer = (options?: {
+  color?: number[];
+  position?: { x: number; y: number };
+  autoLayoutProps?: AutoLayoutProps;
+}) => {
+  const { color, position = { x: 0, y: 0 }, autoLayoutProps } = options;
+
+  const newLayer = figma.createFrame();
+  editObjectColor(newLayer, 'fills', color || [0, 0, 0]);
+  setAutoLayout(newLayer, autoLayoutProps);
+  newLayer.x = position.x;
+  newLayer.y = position.y;
+
+  return newLayer;
+};
 
 // ungroup layer
 export const ungroup = (layer) => {
   const parent = layer.parent;
   if (parent.type === 'PAGE') return;
-  setAutoFlow(parent, { direction: 'NONE' });
+  setAutoLayout(parent, { layoutMode: 'NONE' });
 
   const parentOfParent = parent.parent;
   if (parentOfParent.type !== 'PAGE') {
-    setAutoFlow(parentOfParent, { direction: 'NONE' });
+    setAutoLayout(parentOfParent, { layoutMode: 'NONE' });
   }
 
   layer.x = parent.x + layer.relativeTransform[0][2];

@@ -1,5 +1,7 @@
+import { stylers, TIMEOUT } from './modules/utils/globals';
+import { cleanLayers } from './modules/utils/layers';
+import { isArrayEmpty, figmaNotifyAndClose } from './modules/utils/common';
 import {
-  Styler,
   generateAllLayerStyles,
   applyAllLayerStyles,
   detachAllLayerStyles,
@@ -7,54 +9,13 @@ import {
   removeLayerStylesByType,
   extractAllStyles,
 } from './modules/styler';
-import { cleanLayers } from './modules/utils/layers';
-import { isArrayEmpty, figmaNotifyAndClose } from './modules/utils/common';
 
 (function main() {
   figma.showUI(__html__, { visible: false });
 
   const CMD = figma.command;
-  const TIMEOUT = 8000;
-
-  // creating each style one by one
-  const filler = new Styler({
-    styleType: 'paint',
-    styleProperties: ['paints'],
-    layerProperties: ['fills'],
-    layerPropertyType: 'fill',
-    suffix: '-fill', // here it will be a variable in the future
-  });
-  const strokeer = new Styler({
-    styleType: 'paint',
-    styleProperties: ['paints'],
-    layerProperties: ['strokes'],
-    layerPropertyType: 'stroke',
-    suffix: '-stroke', // here it will be a variable in the future
-  });
-  const effecter = new Styler({
-    styleType: 'effect',
-    styleProperties: ['effects'],
-  });
-  const grider = new Styler({
-    styleType: 'grid',
-    styleProperties: ['layoutGrids'],
-  });
-  const texter = new Styler({
-    styleType: 'text',
-    styleProperties: [
-      'fontName',
-      'fontSize',
-      'letterSpacing',
-      'lineHeight',
-      'paragraphIndent',
-      'paragraphSpacing',
-      'textCase',
-      'textDecoration',
-    ],
-  });
 
   const layers = cleanLayers(figma.currentPage.selection);
-  const stylers = [filler, strokeer, effecter, grider, texter];
 
   // REMOVE THIS CONDITION AT THE END!!!!
   if (CMD === 'test') {
