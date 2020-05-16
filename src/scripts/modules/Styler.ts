@@ -1,6 +1,15 @@
-import { TIMEOUT, colors } from './utils/globals';
-import { addAffixTo, ucFirst, isArrayEmpty, figmaNotifyAndClose, uniq, groupBy, chunk } from './utils/common';
-import { editObjectColor, setAutoLayout, ungroupEachToCanvas } from './utils/layers';
+import { TIMEOUT, colors } from './globals';
+import { addAffixTo, ucFirst, isArrayEmpty, figmaNotifyAndClose, uniq, groupBy, chunk } from './utils';
+import { editObjectColor, createFrameLayer, ungroupEachToCanvas } from './layers';
+
+interface StylerOptions {
+  styleType: string;
+  styleProperties: string[];
+  layerProperties?: string[];
+  layerPropertyType?: string;
+  prefix?: string;
+  suffix?: string;
+}
 
 const toStyleId = (prop) => (prop === undefined ? undefined : addAffixTo(prop.toLocaleLowerCase(), '', 'StyleId'));
 
@@ -13,21 +22,21 @@ export class Styler {
   prefix: string;
   suffix: string;
 
-  constructor(options: {
-    styleType: string;
-    styleProperties: string[];
-    layerProperties?: string[];
-    layerPropertyType?: string;
-    prefix?: string;
-    suffix?: string;
-  }) {
-    this.styleType = (options.styleType || '').toLocaleUpperCase();
-    this.styleProperties = options.styleProperties || options.layerProperties;
-    this.layerProperties = options.layerProperties || options.styleProperties;
-    this.layerPropertyType = (options.layerPropertyType || options.styleType).toLocaleUpperCase();
+  constructor({
+    styleType = '',
+    styleProperties = [''],
+    layerProperties = styleProperties,
+    layerPropertyType = styleType,
+    prefix = '',
+    suffix = '',
+  } = {}) {
+    this.styleType = styleType.toLocaleUpperCase();
+    this.styleProperties = styleProperties;
+    this.layerProperties = layerProperties;
+    this.layerPropertyType = layerPropertyType.toLocaleUpperCase();
     this.layerStyleId = toStyleId(this.layerPropertyType);
-    this.prefix = options.prefix || '';
-    this.suffix = options.suffix || '';
+    this.prefix = prefix;
+    this.suffix = suffix;
   }
 
   applyStyle = (layer, style) => {
@@ -36,9 +45,7 @@ export class Styler {
     return (layer[this.layerStyleId] = style.id);
   };
 
-  createStyle = async (layer) => {
-    if (layer.type === 'TEXT') await figma.loadFontAsync(layer.fontName);
-
+  createStyle = (layer) => {
     const createCommand = addAffixTo(ucFirst(this.styleType), 'create', 'Style');
     const newStyle = figma[createCommand]();
 
@@ -64,9 +71,7 @@ export class Styler {
 
   renameStyle = (layer, style) => (style.name = addAffixTo(layer.name, this.prefix, this.suffix));
 
-  updateStyle = async (layer, style) => {
-    if (layer.type === 'TEXT') await figma.loadFontAsync(layer.fontName);
-
+  updateStyle = (layer, style) => {
     this.detachStyle(layer);
     this.styleProperties.map((prop, index) => (style[prop] = layer[this.layerProperties[index]]));
     this.applyStyle(layer, style);
@@ -144,10 +149,14 @@ export const generateAllLayerStyles = (layers, stylers) => {
     // stylers are the links between layers and styles that are created by figma code inconsistency or design decision itself (which are not bad and simply exist)
     const cleanedStylers = cleanStylers(layer, stylers);
 
-    cleanedStylers.map((styler) => {
+    cleanedStylers.map(async (styler) => {
       // we don't care about empty properties
       if (styler.isPropEmpty(layer) || styler.isPropMixed(layer)) {
         return;
+      }
+
+      if (layer.type === 'TEXT') {
+        await figma.loadFontAsync(layer.fontName);
       }
 
       const idMatch = styler.getStyleById(layer);
@@ -282,7 +291,7 @@ export const getStylesheets = (styles, stylers) => {
   });
 };
 
-export const extractAllStyles = (stylers) => {
+export const extractAllStyles = async (stylers) => {
   const styles = [
     ...figma.getLocalPaintStyles(),
     ...figma.getLocalEffectStyles(),
@@ -295,29 +304,32 @@ export const extractAllStyles = (stylers) => {
     figmaNotifyAndClose(`😵 There is no style in this file. Ouch...`, TIMEOUT);
     return;
   }
+
+  let selection = [];
+
   editObjectColor(figma.currentPage, 'backgrounds', colors.black);
   const stylesheets = getStylesheets(styles, stylers);
   const stylesheetsByType = groupBy(stylesheets, 'type');
-  let selection: any = [];
 
-  const mainContainer = figma.createFrame();
-  setAutoLayout(mainContainer, { layoutMode: 'HORIZONTAL', itemSpacing: 128 });
-  editObjectColor(mainContainer, 'fills', colors.black);
-  mainContainer.x = 0;
-  mainContainer.y = 0;
+  const mainContainer = await createFrameLayer({
+    layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 128 },
+    color: colors.transparent,
+  });
 
-  const textsContainer = figma.createFrame();
-  setAutoLayout(textsContainer, { layoutMode: 'VERTICAL', itemSpacing: 32 });
-  editObjectColor(textsContainer, 'fills', colors.black);
-  mainContainer.appendChild(textsContainer);
+  const textsContainer = await createFrameLayer({
+    layoutProps: { layoutMode: 'VERTICAL', itemSpacing: 32 },
+    color: colors.transparent,
+    parent: mainContainer,
+  });
 
-  const visualsContainer = figma.createFrame();
-  setAutoLayout(visualsContainer, { layoutMode: 'VERTICAL', itemSpacing: 32 });
-  editObjectColor(visualsContainer, 'fills', colors.black);
-  mainContainer.appendChild(visualsContainer);
+  const visualsContainer = await createFrameLayer({
+    layoutProps: { layoutMode: 'VERTICAL', itemSpacing: 32 },
+    color: colors.transparent,
+    parent: mainContainer,
+  });
 
   [...stylesheetsByType.TEXT].map(async (stylesheet) => {
-    const newLayer: any = figma.createText();
+    const newLayer = figma.createText();
     const cleanedStylers = cleanStylers(newLayer, stylers);
 
     stylesheet.collectedStyles.map(({ layerPropType, style }) =>
@@ -327,7 +339,8 @@ export const extractAllStyles = (stylers) => {
         styler.applyStyle(newLayer, style);
       }),
     );
-    await figma.loadFontAsync(newLayer.fontName);
+
+    await figma.loadFontAsync(newLayer.fontName as FontName);
 
     newLayer.characters = stylesheet.name;
     editObjectColor(newLayer, 'fills', colors.white);
@@ -336,11 +349,12 @@ export const extractAllStyles = (stylers) => {
     counter++;
   });
 
-  chunk([...stylesheetsByType.FRAME], 3).map((stylesheets) => {
-    const chunkContainer = figma.createFrame();
-    setAutoLayout(chunkContainer, { layoutMode: 'HORIZONTAL', itemSpacing: 32 });
-    editObjectColor(chunkContainer, 'fills', colors.black);
-    visualsContainer.appendChild(chunkContainer);
+  chunk([...stylesheetsByType.FRAME], 3).map(async (stylesheets) => {
+    const chunkContainer = await createFrameLayer({
+      layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 32 },
+      color: colors.transparent,
+      parent: visualsContainer,
+    });
 
     stylesheets.map((stylesheet) => {
       const newLayer = figma.createFrame();
@@ -366,5 +380,5 @@ export const extractAllStyles = (stylers) => {
   setTimeout(() => {
     ungroupEachToCanvas(selection);
     figmaNotifyAndClose(`😺 Created ${counter} layers. Uhuu...`, TIMEOUT);
-  }, 100);
+  }, 200);
 };

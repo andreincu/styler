@@ -1,16 +1,11 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "lib": ["es6", "dom", "ES2019", "es2020"],
+    "target": "es2020",
+    "module": "ES2020",
+    "lib": ["dom"],
     "moduleResolution": "node",
-    "resolveJsonModule": true,
     "removeComments": true,
     "esModuleInterop": true,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "mapRoot": ".",
-    "sourceRoot": ".",
     "typeRoots": ["./node_modules/@types", "./node_modules/@figma"]
   },
   "include": ["src/**/*"],

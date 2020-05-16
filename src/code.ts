@@ -1,6 +1,6 @@
-import { stylers, TIMEOUT, CMD } from './modules/utils/globals';
-import { cleanLayers, createFrameLayer } from './modules/utils/layers';
-import { isArrayEmpty, figmaNotifyAndClose } from './modules/utils/common';
+import { stylers, TIMEOUT, CMD } from './scripts/modules/globals';
+import { cleanLayers, createFrameLayer } from './scripts/modules/layers';
+import { isArrayEmpty, figmaNotifyAndClose } from './scripts/modules/utils';
 import {
   generateAllLayerStyles,
   applyAllLayerStyles,
@@ -8,16 +8,16 @@ import {
   removeAllLayerStyles,
   removeLayerStylesByType,
   extractAllStyles,
-} from './modules/styler';
+} from './scripts/modules/styler';
 
 (function main() {
   figma.showUI(__html__, { visible: false });
-  createFrameLayer();
 
   const layers = cleanLayers(figma.currentPage.selection);
 
   // REMOVE THIS CONDITION AT THE END!!!!
   if (CMD === 'test') {
+    createFrameLayer({});
     // let counter = 0;
     // const allStyles = [
     //   ...figma.getLocalEffectStyles(),

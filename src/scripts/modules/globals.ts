@@ -1,4 +1,4 @@
-import { Styler } from '../styler';
+import { Styler } from './styler';
 
 // this is the timeout for all notification alerts
 export const TIMEOUT = 8000;
