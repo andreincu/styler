@@ -3,15 +3,13 @@ import { addAffixTo, ucFirst, isArrayEmpty, figmaNotifyAndClose, uniq, groupBy, 
 import { editObjectColor, createFrameLayer, ungroupEachToCanvas } from './layers';
 
 interface StylerOptions {
-  styleType: string;
-  styleProperties: string[];
+  styleType?: string;
+  styleProperties?: string[];
   layerProperties?: string[];
   layerPropertyType?: string;
   prefix?: string;
   suffix?: string;
 }
-
-const toStyleId = (prop) => (prop === undefined ? undefined : addAffixTo(prop.toLocaleLowerCase(), '', 'StyleId'));
 
 export class Styler {
   styleType: string;
@@ -22,19 +20,21 @@ export class Styler {
   prefix: string;
   suffix: string;
 
-  constructor({
-    styleType = '',
-    styleProperties = [''],
-    layerProperties = styleProperties,
-    layerPropertyType = styleType,
-    prefix = '',
-    suffix = '',
-  } = {}) {
+  constructor(options: StylerOptions = {}) {
+    const {
+      styleType = '',
+      styleProperties,
+      layerProperties,
+      layerPropertyType = styleType,
+      prefix = '',
+      suffix = '',
+    } = options;
+
     this.styleType = styleType.toLocaleUpperCase();
-    this.styleProperties = styleProperties;
-    this.layerProperties = layerProperties;
+    this.styleProperties = styleProperties || layerProperties;
+    this.layerProperties = layerProperties || styleProperties;
     this.layerPropertyType = layerPropertyType.toLocaleUpperCase();
-    this.layerStyleId = toStyleId(this.layerPropertyType);
+    this.layerStyleId = addAffixTo(layerPropertyType.toLocaleLowerCase(), '', 'StyleId');
     this.prefix = prefix;
     this.suffix = suffix;
   }
@@ -308,8 +308,7 @@ export const extractAllStyles = async (stylers) => {
   let selection = [];
 
   editObjectColor(figma.currentPage, 'backgrounds', colors.black);
-  const stylesheets = getStylesheets(styles, stylers);
-  const stylesheetsByType = groupBy(stylesheets, 'type');
+  const stylesheetsByType = groupBy(getStylesheets(styles, stylers), 'type');
 
   const mainContainer = await createFrameLayer({
     layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 128 },
@@ -330,6 +329,8 @@ export const extractAllStyles = async (stylers) => {
 
   [...stylesheetsByType.TEXT].map(async (stylesheet) => {
     const newLayer = figma.createText();
+    await figma.loadFontAsync(newLayer.fontName as FontName);
+
     const cleanedStylers = cleanStylers(newLayer, stylers);
 
     stylesheet.collectedStyles.map(({ layerPropType, style }) =>
@@ -339,8 +340,6 @@ export const extractAllStyles = async (stylers) => {
         styler.applyStyle(newLayer, style);
       }),
     );
-
-    await figma.loadFontAsync(newLayer.fontName as FontName);
 
     newLayer.characters = stylesheet.name;
     editObjectColor(newLayer, 'fills', colors.white);

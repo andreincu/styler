@@ -1,4 +1,4 @@
-import { clone } from './utils';
+import { clone, groupBy } from './utils';
 import { webRGBToFigmaRGB } from './convert-color';
 import { colors } from './globals';
 
@@ -15,8 +15,10 @@ export interface FrameLayer {
   color?: number[];
   layoutProps?: AutoLayoutProps;
   parent?: ChildrenMixin;
-  position?: { x?: number; y?: number };
-  size?: { width?: number; height?: number };
+  xPos?: number;
+  yPos?: number;
+  width?: number;
+  height?: number;
 }
 
 // avoiding layers that have mixed properties
@@ -24,9 +26,10 @@ const isContainer = (layer) => ['FRAME', 'COMPONENT', 'INSTANCE'].includes(layer
 const isShape = (layer) => ['RECTANGLE', 'ELLIPSE', 'POLYGON', 'STAR'].includes(layer.type);
 const isText = (layer) => layer.type === 'TEXT';
 
+const excludeGroups = (layers) => layers.filter((layer) => isContainer(layer) || isShape(layer) || isText(layer));
+
 // cleanup selection
 export const cleanLayers = (layers) => {
-  layers.map((layer) => console.log(layer.name));
   return layers.filter((layer) => isContainer(layer) || isShape(layer) || isText(layer));
 };
 
@@ -43,45 +46,53 @@ export const editObjectColor = (layer, prop, rgba = [0, 0, 0, 1]) => {
   return (layer[prop] = cloned);
 };
 
-export const setAutoLayout = (frame: FrameNode, options: AutoLayoutProps) => {
-  let { layoutMode, layoutAlign, counterAxisSizingMode, horizontalPadding, verticalPadding, itemSpacing } = options;
+export const setAutoLayout = (frame: FrameNode, options: AutoLayoutProps = {}) => {
+  const {
+    layoutMode = 'VERTICAL',
+    layoutAlign = 'MIN',
+    counterAxisSizingMode = 'AUTO',
+    horizontalPadding = 0,
+    verticalPadding = 0,
+    itemSpacing = 0,
+  } = options;
 
-  frame.layoutMode = layoutMode || 'VERTICAL';
-  frame.layoutAlign = layoutAlign || 'MIN';
-  frame.counterAxisSizingMode = counterAxisSizingMode || 'AUTO';
-  frame.horizontalPadding = horizontalPadding || 0;
-  frame.verticalPadding = verticalPadding || 0;
-  frame.itemSpacing = itemSpacing || 0;
+  if (!frame) {
+    return;
+  }
+
+  frame.layoutMode = layoutMode;
+  frame.layoutAlign = layoutAlign;
+  frame.counterAxisSizingMode = counterAxisSizingMode;
+  frame.horizontalPadding = horizontalPadding;
+  frame.verticalPadding = verticalPadding;
+  frame.itemSpacing = itemSpacing;
+
+  return frame;
 };
 
-export const createFrameLayer = async (options: FrameLayer = {}) => {
+export const createFrameLayer = (options: FrameLayer = {}) => {
   let {
-    layoutProps,
+    layoutProps = {},
     color = colors.black,
-    position = { x: 0, y: 0 },
-    size = { width: 80, height: 80 },
+    xPos = 0,
+    yPos = xPos,
+    width = 80,
+    height = width,
     parent = figma.currentPage,
   } = options;
 
-  layoutProps.layoutMode = layoutProps.layoutMode || 'VERTICAL';
-  layoutProps.layoutAlign = layoutProps.layoutAlign || 'MIN';
-  layoutProps.counterAxisSizingMode = layoutProps.counterAxisSizingMode || 'AUTO';
-  layoutProps.horizontalPadding = layoutProps.horizontalPadding || 0;
-  layoutProps.verticalPadding = layoutProps.verticalPadding || 0;
-  layoutProps.itemSpacing = layoutProps.itemSpacing || 0;
-
   const newLayer = figma.createFrame();
 
+  newLayer.x = xPos;
+  newLayer.y = yPos;
+  newLayer.resize(width, height);
   editObjectColor(newLayer, 'fills', color);
-  newLayer.x = position.x;
-  newLayer.y = position.y;
-
-  newLayer.resize(size.width, size.height);
-  setAutoLayout(newLayer, layoutProps);
 
   parent.appendChild(newLayer);
 
-  return await newLayer;
+  setAutoLayout(newLayer, layoutProps);
+
+  return newLayer;
 };
 
 // ungroup layer
@@ -115,3 +126,27 @@ export const ungroupEachToCanvas = (layers) => {
     });
   }
 };
+
+// remove unwanted layers from array
+// reorder layers to be sorted as in layer panel
+export const cleanSelection = (): SceneNode => {
+  const selection = excludeGroups(figma.currentPage.selection);
+  const selectionByParent = Object.values(groupBy(selection, 'parent'));
+  const layers: any = [];
+
+  selectionByParent.map((group: []) => {
+    const orderedGroup: SceneNode[] = [...group].sort((current: any, next: any) => {
+      return current.parent.children.indexOf(current) - next.parent.children.indexOf(next);
+    });
+    layers.push(orderedGroup);
+  });
+
+  return layers.flat();
+};
+
+// var layers = figma.currentPage.selection;
+// console.log([...layers].map(layer => layer.parent.children.indexOf(layer)));
+
+// var newArray = [...layers].sort((current, next) => current.parent.children.indexOf(current).localeCompare(next.parent.children.indexOf(next)));
+
+// newArray.map(layer => layer.name)
