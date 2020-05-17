@@ -1,24 +1,22 @@
-import { stylers, TIMEOUT, CMD } from './scripts/modules/globals';
-import { cleanLayers, cleanSelection } from './scripts/modules/layers';
-import { isArrayEmpty, figmaNotifyAndClose, groupBy } from './scripts/modules/utils';
+import { NOTIFICATION_TIMEOUT, CMD } from './scripts/modules/globals';
+import { figmaNotifyAndClose } from './scripts/modules/utils';
 import {
-  generateAllLayerStyles,
-  applyAllLayerStyles,
-  detachAllLayerStyles,
-  removeAllLayerStyles,
-  removeLayerStylesByType,
+  // generateAllLayerStyles,
+  // applyAllLayerStyles,
+  // detachAllLayerStyles,
+  // removeAllLayerStyles,
+  // removeLayerStylesByType,
   extractAllStyles,
+  changeStyles,
 } from './scripts/modules/styler';
 
 (function main() {
   figma.showUI(__html__, { visible: false });
 
-  const layers = cleanSelection();
-
   // REMOVE THIS CONDITION AT THE END!!!!
   if (CMD === 'test') {
     // console.log(temp);
-    debugger;
+    // debugger;
 
     // createFrameLayer();
     // let counter = 0;
@@ -32,43 +30,40 @@ import {
     //   style.remove();
     //   counter++;
     // });
-    figmaNotifyAndClose(`🔥 Removed all`, TIMEOUT);
+    figmaNotifyAndClose(`🔥 Removed all`, NOTIFICATION_TIMEOUT);
     return;
   }
   // REMOVE THIS CONDITION AT THE END!!!!
   if (CMD === 'extract-styles') {
-    extractAllStyles(stylers);
+    extractAllStyles();
     return;
   }
 
-  if (isArrayEmpty(layers)) {
-    figmaNotifyAndClose(`🥰 You must select at least 1 layer. Yea...`, TIMEOUT);
-    return;
-  }
-
-  // generate
+  /* // generate
   if (CMD === 'generate-styles') {
-    generateAllLayerStyles(layers, stylers);
+    generateAllLayerStyles(selection);
   }
   // apply
   else if (CMD === 'apply-styles') {
-    applyAllLayerStyles(layers, stylers);
+    applyAllLayerStyles(selection);
   }
   // detach
   else if (CMD === 'detach-styles') {
-    detachAllLayerStyles(layers, stylers);
+    detachAllLayerStyles(selection);
   }
   // remove
   else if (CMD === 'remove-styles') {
-    removeAllLayerStyles(layers, stylers);
-  }
-  // remove by type
-  else if (CMD.includes('remove')) {
-    removeLayerStylesByType(layers, stylers, CMD);
-  }
+    removeAllLayerStyles(selection);
+  } */
+  // // remove by type
+  // else if (CMD.includes('remove')) {
+  //   removeLayerStylesByType(selection);
+  // }
 
   // error
   else {
-    figma.notify(`😬 Ups. Nothing happened...`);
+    changeStyles();
+
+    figma.closePlugin();
   }
 })();

@@ -1,53 +1,49 @@
-import { TIMEOUT, colors } from './globals';
+import { NOTIFICATION_TIMEOUT, colors, texter, stylers, messages, counter, CMD } from './globals';
 import { addAffixTo, ucFirst, isArrayEmpty, figmaNotifyAndClose, uniq, groupBy, chunk } from './utils';
-import { editObjectColor, createFrameLayer, ungroupEachToCanvas } from './layers';
+import { editObjectColor, createFrameLayer, ungroupEachToCanvas, cleanSelection } from './layers';
 
 interface StylerOptions {
   styleType?: string;
-  styleProperties?: string[];
-  layerProperties?: string[];
-  layerPropertyType?: string;
+  styleProps?: string[];
+  layerProps?: string[];
+  layerPropType?: string;
   prefix?: string;
   suffix?: string;
 }
 
 export class Styler {
   styleType: string;
-  styleProperties: string[];
-  layerProperties: string[];
-  layerPropertyType: string;
-  layerStyleId: string;
+  styleProps: string[];
+  layerProps: string[];
+  layerPropType: string;
+  layerStyleID: string;
   prefix: string;
   suffix: string;
 
   constructor(options: StylerOptions = {}) {
-    const {
-      styleType = '',
-      styleProperties,
-      layerProperties,
-      layerPropertyType = styleType,
-      prefix = '',
-      suffix = '',
-    } = options;
+    const { styleType = '', layerPropType = styleType, prefix = '', suffix = '', styleProps, layerProps } = options;
 
     this.styleType = styleType.toLocaleUpperCase();
-    this.styleProperties = styleProperties || layerProperties;
-    this.layerProperties = layerProperties || styleProperties;
-    this.layerPropertyType = layerPropertyType.toLocaleUpperCase();
-    this.layerStyleId = addAffixTo(layerPropertyType.toLocaleLowerCase(), '', 'StyleId');
+    this.styleProps = styleProps || layerProps;
+    this.layerProps = layerProps || styleProps;
+    this.layerPropType = layerPropType.toLocaleUpperCase();
+    this.layerStyleID = addAffixTo(layerPropType.toLocaleLowerCase(), '', 'StyleId');
     this.prefix = prefix;
     this.suffix = suffix;
   }
 
-  applyStyle = (layer, style) => {
-    if (!style) return;
+  applyStyle = (layer: SceneNode, style: BaseStyle) => {
+    if (!style || layer[this.layerStyleID] === undefined) {
+      console.log(`Apply: ${this.layerStyleID} not found || No style found for ${layer.name}`);
+      return;
+    }
 
-    return (layer[this.layerStyleId] = style.id);
+    layer[this.layerStyleID] = style.id;
+    counter.applied++;
   };
 
-  createStyle = (layer) => {
-    const createCommand = addAffixTo(ucFirst(this.styleType), 'create', 'Style');
-    const newStyle = figma[createCommand]();
+  createStyle = (layer: SceneNode) => {
+    const newStyle = figma[addAffixTo(ucFirst(this.styleType), 'create', 'Style')]();
 
     this.renameStyle(layer, newStyle);
     this.updateStyle(layer, newStyle);
@@ -55,89 +51,117 @@ export class Styler {
     return newStyle;
   };
 
-  detachStyle = (layer) => (layer[this.layerStyleId] = '');
+  detachStyle = (layer) => {
+    if (!layer[this.layerStyleID]) {
+      console.log(`Detach: ${this.layerPropType} not found.`);
+      return;
+    }
+
+    layer[this.layerStyleID] = '';
+    counter.detached++;
+  };
 
   getLocalStyles = () => {
     const getCommand = addAffixTo(ucFirst(this.styleType), 'getLocal', 'Styles');
     return figma[getCommand]();
   };
 
-  getStyleById = (layer) => figma.getStyleById(layer[this.layerStyleId]);
+  getStyleById = (layer) => figma.getStyleById(layer[this.layerStyleID]);
 
   getStyleByName = (name) => {
     const stylesByType = this.getLocalStyles();
     return stylesByType.find((style) => style.name === addAffixTo(name, this.prefix, this.suffix));
   };
 
-  renameStyle = (layer, style) => (style.name = addAffixTo(layer.name, this.prefix, this.suffix));
+  renameStyle = (layer: SceneNode, style: BaseStyle) => {
+    if (!style) {
+      console.log(`Rename: No style found for ${layer.name}`);
+      return;
+    }
 
-  updateStyle = (layer, style) => {
-    this.detachStyle(layer);
-    this.styleProperties.map((prop, index) => (style[prop] = layer[this.layerProperties[index]]));
-    this.applyStyle(layer, style);
-
-    return style;
+    style.name = addAffixTo(layer.name, this.prefix, this.suffix);
   };
 
-  isPropMixed = (layer) => this.layerProperties.some((prop) => layer[prop] === figma.mixed);
+  updateStyle = (layer: SceneNode, style: BaseStyle) => {
+    this.detachStyle(layer);
+    this.styleProps.map((prop, index) => {
+      if (!style || layer[this.layerProps[index]] === undefined) {
+        console.log(`Update: ${this.layerProps[index]} not found || No style found for ${layer.name}`);
+        return;
+      }
 
-  // I could actually check the entire array, but I don't think is necessary
-  isPropEmpty = (layer) => isArrayEmpty(layer[this.layerProperties[0]]);
+      style[prop] = layer[this.layerProps[index]];
+    });
+    this.applyStyle(layer, style);
+  };
+
+  generateStyle = (layer: SceneNode, { nameMatch, idMatch }: any = {}) => {
+    if (this.isPropMixed(layer) || this.isPropEmpty(layer)) {
+      console.log(`Generate: We have some mixed or empty props.`);
+      return;
+    }
+
+    if (!idMatch && !nameMatch) {
+      this.createStyle(layer);
+      counter.created++;
+    } else if (idMatch && !nameMatch) {
+      this.renameStyle(layer, idMatch);
+      counter.renamed++;
+    } else if (idMatch !== nameMatch) {
+      this.updateStyle(layer, nameMatch);
+      counter.updated++;
+    } else {
+      counter.ignored++;
+    }
+  };
+
+  isPropEmpty = (layer: SceneNode) => isArrayEmpty(layer[this.layerProps[0]]);
+  isPropMixed = (layer: SceneNode) => this.layerProps.some((prop) => layer[prop] === figma.mixed);
 }
 
-function cleanStylers(layer, stylers) {
-  if (layer.type === 'TEXT') {
-    return stylers.filter((styler) => styler.layerPropertyType === 'TEXT');
+export const changeStyles = () => {
+  const selection = cleanSelection();
+
+  if (isArrayEmpty(selection)) {
+    figmaNotifyAndClose(messages.selection.empty, NOTIFICATION_TIMEOUT);
+    return;
   }
 
-  return stylers.filter((styler) => styler.layerPropertyType !== 'TEXT');
+  selection.map((layer) => {
+    if (layer.type === 'TEXT') {
+      (async () => {
+        await figma.loadFontAsync(layer.fontName as FontName);
+
+        [texter].map((styler) => {
+          tempName(layer, styler);
+        });
+      })();
+    } else {
+      stylers.map((styler) => {
+        tempName(layer, styler);
+      });
+    }
+  });
+  console.log(counter);
+};
+
+function tempName(layer, styler) {
+  const idMatch = styler.getStyleById(layer);
+  const nameMatch = styler.getStyleByName(layer.name);
+
+  if (CMD === 'generate-styles') {
+    styler.generateStyle(layer, { nameMatch, idMatch });
+  } else if (CMD === 'apply-styles') {
+    styler.applyStyle(layer, nameMatch);
+  } else if (CMD === 'detach-styles') {
+    styler.detachStyle(layer);
+  }
 }
 
-export const applyAllLayerStyles = (layers, stylers) => {
-  let counter = 0;
+/* 
 
-  layers.map((layer) => {
-    const cleanedStylers = cleanStylers(layer, stylers);
 
-    cleanedStylers.map((styler) => {
-      const nameMatch = styler.getStyleByName(layer.name);
-
-      if (!nameMatch) return;
-
-      styler.applyStyle(layer, nameMatch);
-      counter++;
-    });
-  });
-
-  if (counter === 0) {
-    figmaNotifyAndClose(`🤔 There is no style that has this layer name. Maybe? Renam...`, TIMEOUT);
-    return;
-  }
-  figmaNotifyAndClose(`✌️ Applied ${counter} styles. He he...`, TIMEOUT);
-};
-
-export const detachAllLayerStyles = (layers, stylers) => {
-  let counter = 0;
-
-  layers.map((layer) => {
-    const cleanedStylers = cleanStylers(layer, stylers);
-
-    cleanedStylers.map((styler) => {
-      if (layer[styler.layerStyleId] === '') return;
-
-      styler.detachStyle(layer);
-      counter++;
-    });
-  });
-
-  if (counter === 0) {
-    figmaNotifyAndClose(`🤔 No style was applied on any of the selected layers. Idk...`, TIMEOUT);
-    return;
-  }
-  figmaNotifyAndClose(`💔 Detached ${counter} styles. Layers will miss you...`, TIMEOUT);
-};
-
-export const generateAllLayerStyles = (layers, stylers) => {
+export const generateAllLayerStyles = (layers) => {
   const counter = {
     created: 0,
     ignored: 0,
@@ -147,9 +171,8 @@ export const generateAllLayerStyles = (layers, stylers) => {
 
   layers.map((layer) => {
     // stylers are the links between layers and styles that are created by figma code inconsistency or design decision itself (which are not bad and simply exist)
-    const cleanedStylers = cleanStylers(layer, stylers);
 
-    cleanedStylers.map(async (styler) => {
+    stylers.map(async (styler) => {
       // we don't care about empty properties
       if (styler.isPropEmpty(layer) || styler.isPropMixed(layer)) {
         return;
@@ -188,7 +211,7 @@ export const generateAllLayerStyles = (layers, stylers) => {
   });
 
   if (counter.created === 0 && counter.updated === 0 && counter.renamed === 0 && counter.ignored === 0) {
-    figmaNotifyAndClose(`😭 We do not support empty or mixed properties. Oh, Noo...`, TIMEOUT);
+    figmaNotifyAndClose(`😭 We do not support empty or mixed properties. Oh, Noo...`, NOTIFICATION_TIMEOUT);
     return;
   }
   figmaNotifyAndClose(
@@ -198,17 +221,15 @@ export const generateAllLayerStyles = (layers, stylers) => {
       🌈 Renamed: ${counter.renamed} -
       😶 No changes: ${counter.ignored}
     `,
-    TIMEOUT,
+    NOTIFICATION_TIMEOUT,
   );
 };
 
-export const removeAllLayerStyles = (layers, stylers) => {
+export const removeAllLayerStyles = (layers) => {
   let counter = 0;
 
   layers.map((layer) => {
-    const cleanedStylers = cleanStylers(layer, stylers);
-
-    cleanedStylers.map((styler) => {
+    stylers.map((styler) => {
       const idMatch = styler.getStyleById(layer);
       if (!idMatch) return;
 
@@ -218,19 +239,22 @@ export const removeAllLayerStyles = (layers, stylers) => {
   });
 
   if (counter === 0) {
-    figmaNotifyAndClose(`🤔 No style was applied on any of the selected layers. Yep, it's not weird...`, TIMEOUT);
+    figmaNotifyAndClose(
+      `🤔 No style was applied on any of the selected layers. Yep, it's not weird...`,
+      NOTIFICATION_TIMEOUT,
+    );
     return;
   }
-  figmaNotifyAndClose(`🔥 Removed ${counter} styles. Rrr...`, TIMEOUT);
+  figmaNotifyAndClose(`🔥 Removed ${counter} styles. Rrr...`, NOTIFICATION_TIMEOUT);
 };
 
-export const removeLayerStylesByType = (layers, stylers, CMD) => {
+export const removeLayerStylesByType = (layers, CMD) => {
   let counter = 0;
   const removeType = CMD.split('-')[1];
 
   layers.map((layer) => {
     stylers
-      .filter((styler) => styler.layerPropertyType === removeType.toLocaleUpperCase())
+      .filter((styler) => styler.layerPropType === removeType.toLocaleUpperCase())
       .map((styler) => {
         const idMatch = styler.getStyleById(layer);
         if (!idMatch) return;
@@ -241,16 +265,19 @@ export const removeLayerStylesByType = (layers, stylers, CMD) => {
   });
 
   if (counter === 0) {
-    figmaNotifyAndClose(`🤔 No ${removeType} style was applied on any of the selected layers. Whaa...`, TIMEOUT);
+    figmaNotifyAndClose(
+      `🤔 No ${removeType} style was applied on any of the selected layers. Whaa...`,
+      NOTIFICATION_TIMEOUT,
+    );
     return;
   }
-  figmaNotifyAndClose(`🔥 Removed ${counter} ${removeType} styles. Ups...`, TIMEOUT);
-};
+  figmaNotifyAndClose(`🔥 Removed ${counter} ${removeType} styles. Ups...`, NOTIFICATION_TIMEOUT);
+}; */
 
-export const getAllUniqueStylesName = (styles, stylers, sort = false): string[] => {
+export const getAllUniqueStylesName = (styles): string[] => {
   const allStylesName = styles.map((style) => style.name);
   const affixes = stylers
-    .map((styler) => [styler.suffix, styler.prefix])
+    .map((styler) => [styler.prefix, styler.suffix])
     .flat()
     .filter(Boolean)
     .join('|');
@@ -258,15 +285,15 @@ export const getAllUniqueStylesName = (styles, stylers, sort = false): string[] 
 
   const namesWithoutAffixes = allStylesName.map((style) => style.replace(regexAffixes, ''));
 
-  return uniq(namesWithoutAffixes, sort) as string[];
+  return uniq(namesWithoutAffixes) as string[];
 };
 
-export const getAllStylesByName = (name, stylers) => {
+export const getAllStylesByName = (name) => {
   const collectedStyles = [];
 
   stylers.map((styler) => {
     const style = styler.getStyleByName(name);
-    const layerPropType = styler.layerPropertyType;
+    const layerPropType = styler.layerPropType;
 
     if (isArrayEmpty(style)) return;
 
@@ -276,11 +303,11 @@ export const getAllStylesByName = (name, stylers) => {
   return collectedStyles;
 };
 
-export const getStylesheets = (styles, stylers) => {
-  const uniqueStylesNames = getAllUniqueStylesName(styles, stylers);
+export const getStylesheets = (styles) => {
+  const uniqueStylesNames = getAllUniqueStylesName(styles);
 
   return uniqueStylesNames.map((name) => {
-    const collectedStyles = getAllStylesByName(name, stylers);
+    const collectedStyles = getAllStylesByName(name);
     const type = collectedStyles.some(({ style }) => style.type === 'TEXT') ? 'TEXT' : 'FRAME';
 
     return {
@@ -291,7 +318,7 @@ export const getStylesheets = (styles, stylers) => {
   });
 };
 
-export const extractAllStyles = async (stylers) => {
+export const extractAllStyles = () => {
   const styles = [
     ...figma.getLocalPaintStyles(),
     ...figma.getLocalEffectStyles(),
@@ -301,27 +328,27 @@ export const extractAllStyles = async (stylers) => {
   let counter = 0;
 
   if (isArrayEmpty(styles)) {
-    figmaNotifyAndClose(`😵 There is no style in this file. Ouch...`, TIMEOUT);
+    figmaNotifyAndClose(`😵 There is no style in this file. Ouch...`, NOTIFICATION_TIMEOUT);
     return;
   }
 
   let selection = [];
 
   editObjectColor(figma.currentPage, 'backgrounds', colors.black);
-  const stylesheetsByType = groupBy(getStylesheets(styles, stylers), 'type');
+  const stylesheetsByType = groupBy(getStylesheets(styles), 'type');
 
-  const mainContainer = await createFrameLayer({
+  const mainContainer = createFrameLayer({
     layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 128 },
     color: colors.transparent,
   });
 
-  const textsContainer = await createFrameLayer({
+  const textsContainer = createFrameLayer({
     layoutProps: { layoutMode: 'VERTICAL', itemSpacing: 32 },
     color: colors.transparent,
     parent: mainContainer,
   });
 
-  const visualsContainer = await createFrameLayer({
+  const visualsContainer = createFrameLayer({
     layoutProps: { layoutMode: 'VERTICAL', itemSpacing: 32 },
     color: colors.transparent,
     parent: mainContainer,
@@ -331,15 +358,11 @@ export const extractAllStyles = async (stylers) => {
     const newLayer = figma.createText();
     await figma.loadFontAsync(newLayer.fontName as FontName);
 
-    const cleanedStylers = cleanStylers(newLayer, stylers);
+    stylesheet.collectedStyles.map(({ layerPropType, style }) => {
+      if (texter.layerPropType !== layerPropType) return;
 
-    stylesheet.collectedStyles.map(({ layerPropType, style }) =>
-      cleanedStylers.map((styler) => {
-        if (styler.layerPropertyType !== layerPropType) return;
-
-        styler.applyStyle(newLayer, style);
-      }),
-    );
+      texter.applyStyle(newLayer, style);
+    });
 
     newLayer.characters = stylesheet.name;
     editObjectColor(newLayer, 'fills', colors.white);
@@ -348,8 +371,8 @@ export const extractAllStyles = async (stylers) => {
     counter++;
   });
 
-  chunk([...stylesheetsByType.FRAME], 3).map(async (stylesheets) => {
-    const chunkContainer = await createFrameLayer({
+  chunk([...stylesheetsByType.FRAME], 3).map((stylesheets) => {
+    const chunkContainer = createFrameLayer({
       layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 32 },
       color: colors.transparent,
       parent: visualsContainer,
@@ -357,11 +380,10 @@ export const extractAllStyles = async (stylers) => {
 
     stylesheets.map((stylesheet) => {
       const newLayer = figma.createFrame();
-      const cleanedStylers = cleanStylers(newLayer, stylers);
 
       stylesheet.collectedStyles.map(({ layerPropType, style }) =>
-        cleanedStylers.map((styler) => {
-          if (styler.layerPropertyType !== layerPropType) return;
+        stylers.map((styler) => {
+          if (styler.layerPropType !== layerPropType) return;
 
           styler.applyStyle(newLayer, style);
         }),
@@ -378,6 +400,6 @@ export const extractAllStyles = async (stylers) => {
 
   setTimeout(() => {
     ungroupEachToCanvas(selection);
-    figmaNotifyAndClose(`😺 Created ${counter} layers. Uhuu...`, TIMEOUT);
-  }, 200);
+    figmaNotifyAndClose(`😺 Created ${counter} layers. Uhuu...`, NOTIFICATION_TIMEOUT);
+  }, 1000);
 };

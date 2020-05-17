@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es2020",
-    "module": "ES2020",
-    "lib": ["dom"],
+    "target": "ES2019",
+    "module": "ES6",
+    "lib": ["ES2019", "ES2020", "dom"],
     "moduleResolution": "node",
     "removeComments": true,
     "esModuleInterop": true,

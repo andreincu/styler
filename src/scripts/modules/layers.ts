@@ -28,11 +28,6 @@ const isText = (layer) => layer.type === 'TEXT';
 
 const excludeGroups = (layers) => layers.filter((layer) => isContainer(layer) || isShape(layer) || isText(layer));
 
-// cleanup selection
-export const cleanLayers = (layers) => {
-  return layers.filter((layer) => isContainer(layer) || isShape(layer) || isText(layer));
-};
-
 // edit layer fill property
 export const editObjectColor = (layer, prop, rgba = [0, 0, 0, 1]) => {
   const color = webRGBToFigmaRGB(rgba);
@@ -129,7 +124,7 @@ export const ungroupEachToCanvas = (layers) => {
 
 // remove unwanted layers from array
 // reorder layers to be sorted as in layer panel
-export const cleanSelection = (): SceneNode => {
+export const cleanSelection = (): SceneNode[] => {
   const selection = excludeGroups(figma.currentPage.selection);
   const selectionByParent = Object.values(groupBy(selection, 'parent'));
   const layers: any = [];
@@ -143,10 +138,3 @@ export const cleanSelection = (): SceneNode => {
 
   return layers.flat();
 };
-
-// var layers = figma.currentPage.selection;
-// console.log([...layers].map(layer => layer.parent.children.indexOf(layer)));
-
-// var newArray = [...layers].sort((current, next) => current.parent.children.indexOf(current).localeCompare(next.parent.children.indexOf(next)));
-
-// newArray.map(layer => layer.name)
