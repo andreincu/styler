@@ -60,7 +60,8 @@ export const texter = new Styler({
   ],
 });
 
-export const stylers = [filler, strokeer, effecter, grider];
+export const allStylers = [filler, strokeer, effecter, grider, texter];
+export const stylersWithoutTexter = [filler, strokeer, effecter, grider];
 
 /* 
 --- COLORS

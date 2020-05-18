@@ -1,4 +1,4 @@
-import { clone, groupBy } from './utils';
+import { clone, groupBy, isArrayEmpty } from './utils';
 import { webRGBToFigmaRGB } from './convert-color';
 import { colors } from './globals';
 
@@ -15,21 +15,29 @@ export interface FrameLayer {
   color?: number[];
   layoutProps?: AutoLayoutProps;
   parent?: ChildrenMixin;
+  name?: string;
   xPos?: number;
+  size?: number;
   yPos?: number;
   width?: number;
   height?: number;
 }
 
-// avoiding layers that have mixed properties
+export interface TextLayer {
+  characters?: string;
+  color?: number[];
+  parent?: any;
+  xPos?: number;
+  yPos?: number;
+}
+
 const isContainer = (layer) => ['FRAME', 'COMPONENT', 'INSTANCE'].includes(layer.type);
 const isShape = (layer) => ['RECTANGLE', 'ELLIPSE', 'POLYGON', 'STAR'].includes(layer.type);
 const isText = (layer) => layer.type === 'TEXT';
 
 const excludeGroups = (layers) => layers.filter((layer) => isContainer(layer) || isShape(layer) || isText(layer));
 
-// edit layer fill property
-export const editObjectColor = (layer, prop, rgba = [0, 0, 0, 1]) => {
+export const changeColor = (layer, prop, rgba = [0, 0, 0, 1]) => {
   const color = webRGBToFigmaRGB(rgba);
   const { r, g, b, a } = color;
 
@@ -41,9 +49,9 @@ export const editObjectColor = (layer, prop, rgba = [0, 0, 0, 1]) => {
   return (layer[prop] = cloned);
 };
 
-export const setAutoLayout = (frame: FrameNode, options: AutoLayoutProps = {}) => {
+export const changeLayoutProps = (frame: FrameNode, options: AutoLayoutProps = {}) => {
   const {
-    layoutMode = 'VERTICAL',
+    layoutMode = 'NONE',
     layoutAlign = 'MIN',
     counterAxisSizingMode = 'AUTO',
     horizontalPadding = 0,
@@ -65,52 +73,80 @@ export const setAutoLayout = (frame: FrameNode, options: AutoLayoutProps = {}) =
   return frame;
 };
 
-export const createFrameLayer = (options: FrameLayer = {}) => {
-  let {
-    layoutProps = {},
-    color = colors.black,
+export const createTextLayer = async (options: TextLayer = {}) => {
+  const {
+    characters = 'Text',
+    color = colors.transparent,
+    parent = figma.currentPage,
     xPos = 0,
     yPos = xPos,
-    width = 80,
-    height = width,
+  } = options;
+
+  const newLayer = figma.createText();
+  await figma.loadFontAsync(newLayer.fontName as FontName);
+
+  newLayer.characters = characters;
+  newLayer.x = xPos;
+  newLayer.y = yPos;
+
+  changeColor(newLayer, 'fills', color);
+  parent.appendChild(newLayer);
+
+  return newLayer;
+};
+
+export const createFrameLayer = (options: FrameLayer = {}) => {
+  const {
+    color = colors.transparent,
+    layoutProps = {},
+    name = 'Container',
     parent = figma.currentPage,
+    size = 80,
+    width = size,
+    height = width,
+    xPos = 0,
+    yPos = xPos,
   } = options;
 
   const newLayer = figma.createFrame();
+  newLayer.resize(width, height);
 
   newLayer.x = xPos;
   newLayer.y = yPos;
-  newLayer.resize(width, height);
-  editObjectColor(newLayer, 'fills', color);
+  newLayer.name = name;
+  changeColor(newLayer, 'fills', color);
 
   parent.appendChild(newLayer);
 
-  setAutoLayout(newLayer, layoutProps);
+  changeLayoutProps(newLayer, layoutProps);
 
   return newLayer;
 };
 
 // ungroup layer
 export const ungroup = (layer) => {
-  const parent = layer.parent;
-  if (parent.type === 'PAGE') return;
-  setAutoLayout(parent, { layoutMode: 'NONE' });
+  const layerParent = layer.parent;
+  const layerGrandParent = layerParent.parent;
 
-  const parentOfParent = parent.parent;
-  if (parentOfParent.type !== 'PAGE') {
-    setAutoLayout(parentOfParent, { layoutMode: 'NONE' });
+  if (layerParent.type !== 'PAGE') {
+    changeLayoutProps(layerParent, { layoutMode: 'NONE' });
+  }
+  if (layerGrandParent.type !== 'PAGE') {
+    changeLayoutProps(layerGrandParent, { layoutMode: 'NONE' });
   }
 
-  layer.x = parent.x + layer.relativeTransform[0][2];
-  layer.y = parent.y + layer.relativeTransform[1][2];
-  parentOfParent.appendChild(layer);
+  layerGrandParent.appendChild(layer);
 
-  if (parent.children.length === 0) parent.remove();
+  layer.x = layerParent.x + layer.relativeTransform[0][2];
+  layer.y = layerParent.y + layer.relativeTransform[1][2];
+
+  if (layerParent.children.length === 0) layerParent.remove();
 };
 
 // ungroup all layers
-export const ungroupEachToCanvas = (layers) => {
+export const ungroupToCanvas = (layers: SceneNode[]) => {
   let numberOfLayers = layers.length;
+
   while (numberOfLayers > 0) {
     layers.map((layer) => {
       if (layer.parent.type === 'PAGE') {

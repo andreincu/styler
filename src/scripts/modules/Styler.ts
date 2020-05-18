@@ -1,17 +1,18 @@
 import {
   NOTIFICATION_TIMEOUT,
-  colors,
-  texter,
-  stylers,
-  counter,
   CMD,
+  colors,
+  counter,
   filler,
   strokeer,
   effecter,
   grider,
+  texter,
+  allStylers,
+  stylersWithoutTexter,
 } from './globals';
 import { addAffixTo, ucFirst, isArrayEmpty, figmaNotifyAndClose, uniq, groupBy, chunk } from './utils';
-import { editObjectColor, createFrameLayer, ungroupEachToCanvas, cleanSelection } from './layers';
+import { changeColor, createFrameLayer, ungroupToCanvas, cleanSelection, createTextLayer } from './layers';
 
 interface StylerOptions {
   styleType?: string;
@@ -203,55 +204,33 @@ export const showStyleNofication = () => {
 };
 
 export const getStylersByLayerType = (layer: SceneNode): Styler[] => {
-  const stylers = [];
-  if (layer.type === 'TEXT') {
-    stylers.push(texter);
-  } else {
-    stylers.push(filler, strokeer, effecter, grider);
-  }
-  return stylers;
+  return layer.type === 'TEXT' ? [texter] : [filler, strokeer, effecter, grider];
 };
 
-export const getAllUniqueStylesName = (styles): string[] => {
-  const allStylesName = styles.map((style) => style.name);
-  const affixes = stylers
+export const getUniqueStylesName = (styles: BaseStyle[]) => {
+  const names = styles.map((style) => style.name);
+  const affixes = allStylers
     .map((styler) => [styler.prefix, styler.suffix])
     .flat()
     .filter(Boolean)
     .join('|');
-  const regexAffixes = new RegExp('\\b(?:' + affixes + ')\\b', 'g');
 
-  const namesWithoutAffixes = allStylesName.map((style) => style.replace(regexAffixes, ''));
+  const regexAffixes = new RegExp('\\b(?:' + affixes + ')\\b', 'g');
+  const namesWithoutAffixes = names.map((style) => style.replace(regexAffixes, ''));
 
   return uniq(namesWithoutAffixes) as string[];
 };
 
-export const getAllStylesByName = (name) => {
-  const collectedStyles = [];
-
-  stylers.map((styler) => {
-    const style = styler.getStyleByName(name);
-    const layerPropType = styler.layerPropType;
-
-    if (isArrayEmpty(style)) return;
-
-    collectedStyles.push({ layerPropType, style });
-  });
-
-  return collectedStyles;
-};
-
-export const getStylesheets = (styles) => {
-  const uniqueStylesNames = getAllUniqueStylesName(styles);
+export const getStyleguides = (styles) => {
+  const uniqueStylesNames = getUniqueStylesName(styles);
 
   return uniqueStylesNames.map((name) => {
-    const collectedStyles = getAllStylesByName(name);
-    const type = collectedStyles.some(({ style }) => style.type === 'TEXT') ? 'TEXT' : 'FRAME';
+    const nameMatch = texter.getStyleByName(name);
+    const type = !nameMatch ? 'FRAME' : 'TEXT';
 
     return {
       name,
       type,
-      collectedStyles,
     };
   });
 };
@@ -263,81 +242,69 @@ export const extractAllStyles = () => {
     ...figma.getLocalGridStyles(),
     ...figma.getLocalTextStyles(),
   ];
-  let counter = 0;
 
-  if (isArrayEmpty(styles)) {
+  if (!styles) {
     figmaNotifyAndClose(`😵 There is no style in this file. Ouch...`, NOTIFICATION_TIMEOUT);
     return;
   }
 
   let selection = [];
+  const canvas = figma.currentPage;
+  const styguides = getStyleguides(styles);
+  const styleguidesByType = groupBy(styguides, 'type');
 
-  editObjectColor(figma.currentPage, 'backgrounds', colors.black);
-  const stylesheetsByType = groupBy(getStylesheets(styles), 'type');
+  changeColor(canvas, 'backgrounds', colors.black);
 
   const mainContainer = createFrameLayer({
     layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 128 },
-    color: colors.transparent,
   });
 
   const textsContainer = createFrameLayer({
     layoutProps: { layoutMode: 'VERTICAL', itemSpacing: 32 },
-    color: colors.transparent,
     parent: mainContainer,
   });
 
   const visualsContainer = createFrameLayer({
     layoutProps: { layoutMode: 'VERTICAL', itemSpacing: 32 },
-    color: colors.transparent,
     parent: mainContainer,
   });
 
-  [...stylesheetsByType.TEXT].map(async (stylesheet) => {
-    const newLayer = figma.createText();
-    await figma.loadFontAsync(newLayer.fontName as FontName);
-
-    stylesheet.collectedStyles.map(({ layerPropType, style }) => {
-      if (texter.layerPropType !== layerPropType) return;
-
-      texter.applyStyle(newLayer, style);
-    });
-
-    newLayer.characters = stylesheet.name;
-    editObjectColor(newLayer, 'fills', colors.white);
-    textsContainer.appendChild(newLayer);
-    selection.push(newLayer);
-    counter++;
-  });
-
-  chunk([...stylesheetsByType.FRAME], 3).map((stylesheets) => {
+  chunk([...styleguidesByType.FRAME], 3).map((styleguides) => {
     const chunkContainer = createFrameLayer({
       layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 32 },
-      color: colors.transparent,
       parent: visualsContainer,
     });
 
-    stylesheets.map((stylesheet) => {
-      const newLayer = figma.createFrame();
+    styleguides.map((styleguide) => {
+      const newLayer = createFrameLayer({ name: styleguide.name, size: 80, parent: chunkContainer });
 
-      stylesheet.collectedStyles.map(({ layerPropType, style }) =>
-        stylers.map((styler) => {
-          if (styler.layerPropType !== layerPropType) return;
+      stylersWithoutTexter.map((styler) => {
+        const nameMatch = styler.getStyleByName(newLayer.name);
 
-          styler.applyStyle(newLayer, style);
-        }),
-      );
+        styler.applyStyle(newLayer, nameMatch);
+      });
 
-      newLayer.name = stylesheet.name;
-      newLayer.resize(80, 80);
-
-      chunkContainer.appendChild(newLayer);
       selection.push(newLayer);
-      counter++;
+      counter.extracted++;
     });
   });
 
-  setTimeout(() => {
-    ungroupEachToCanvas(selection);
-    figmaNotifyAndClose(`😺 Created ${counter} layers. Uhuu...`, NOTIFICATION_TIMEOUT);
-  }, 1000);
+  [...styleguidesByType.TEXT].map(async (styleguide) => {
+    const newLayer = await createTextLayer({
+      characters: styleguide.name,
+      color: colors.white,
+      parent: textsContainer,
+    });
+
+    const nameMatch = texter.getStyleByName(newLayer.name);
+    texter.applyStyle(newLayer, nameMatch);
+
+    selection.push(newLayer);
+    counter.extracted++;
+  });
+
+  ungroupToCanvas(selection);
+  figmaNotifyAndClose(`😺 Created ${counter.extracted} layers. Uhuu...`, NOTIFICATION_TIMEOUT);
+  // setTimeout(() => {
+  // }, 1000);
 };

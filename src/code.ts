@@ -1,10 +1,15 @@
-import { NOTIFICATION_TIMEOUT, CMD } from './scripts/modules/globals';
+import { NOTIFICATION_TIMEOUT, CMD, filler } from './scripts/modules/globals';
 import { figmaNotifyAndClose, isArrayEmpty } from './scripts/modules/utils';
 import { extractAllStyles, showStyleNofication, getStylersByLayerType } from './scripts/modules/styler';
-import { cleanSelection } from './scripts/modules/layers';
+import { cleanSelection, createFrameLayer } from './scripts/modules/layers';
 
 (function main() {
   figma.showUI(__html__, { visible: false });
+
+  if (CMD === 'test') {
+    figma.closePlugin();
+    return;
+  }
 
   // creating layers based on styles
   if (CMD === 'extract-all-styles') {
