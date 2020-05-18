@@ -1,4 +1,15 @@
-import { NOTIFICATION_TIMEOUT, colors, texter, stylers, messages, counter, CMD } from './globals';
+import {
+  NOTIFICATION_TIMEOUT,
+  colors,
+  texter,
+  stylers,
+  counter,
+  CMD,
+  filler,
+  strokeer,
+  effecter,
+  grider,
+} from './globals';
 import { addAffixTo, ucFirst, isArrayEmpty, figmaNotifyAndClose, uniq, groupBy, chunk } from './utils';
 import { editObjectColor, createFrameLayer, ungroupEachToCanvas, cleanSelection } from './layers';
 
@@ -95,6 +106,18 @@ export class Styler {
     this.applyStyle(layer, style);
   };
 
+  removeStyle = (style: BaseStyle) => {
+    if (!style) {
+      return;
+    }
+
+    const cmdType = CMD.split('-')[1];
+    if (cmdType === this.layerPropType.toLocaleLowerCase() || cmdType === 'all') {
+      style.remove();
+      counter.removed++;
+    }
+  };
+
   generateStyle = (layer: SceneNode, { nameMatch, idMatch }: any = {}) => {
     if (this.isPropMixed(layer) || this.isPropEmpty(layer)) {
       console.log(`Generate: We have some mixed or empty props.`);
@@ -113,166 +136,81 @@ export class Styler {
     } else {
       counter.ignored++;
     }
+    counter.generated++;
   };
 
   isPropEmpty = (layer: SceneNode) => isArrayEmpty(layer[this.layerProps[0]]);
   isPropMixed = (layer: SceneNode) => this.layerProps.some((prop) => layer[prop] === figma.mixed);
 }
 
-export const changeStyles = () => {
-  const selection = cleanSelection();
+export const showMessage = (counter, messages: any = {}) => {
+  const { empty = '', single = '', multiple = '' } = messages;
 
-  if (isArrayEmpty(selection)) {
-    figmaNotifyAndClose(messages.selection.empty, NOTIFICATION_TIMEOUT);
-    return;
+  if (counter === 0) {
+    figmaNotifyAndClose(empty, NOTIFICATION_TIMEOUT);
+  } else if (counter === 1) {
+    figmaNotifyAndClose(single, NOTIFICATION_TIMEOUT);
+  } else {
+    figmaNotifyAndClose(multiple, NOTIFICATION_TIMEOUT);
   }
-
-  selection.map((layer) => {
-    if (layer.type === 'TEXT') {
-      (async () => {
-        await figma.loadFontAsync(layer.fontName as FontName);
-
-        [texter].map((styler) => {
-          tempName(layer, styler);
-        });
-      })();
-    } else {
-      stylers.map((styler) => {
-        tempName(layer, styler);
-      });
-    }
-  });
-  console.log(counter);
 };
 
-function tempName(layer, styler) {
-  const idMatch = styler.getStyleById(layer);
-  const nameMatch = styler.getStyleByName(layer.name);
+export const showStyleNofication = () => {
+  const generateMessage = `
+    🔨 Created: ${counter.created} -
+    ✨ Updated: ${counter.updated} -
+    🌈 Renamed: ${counter.renamed} -
+    😶 No changes: ${counter.ignored}
+  `;
 
-  if (CMD === 'generate-styles') {
-    styler.generateStyle(layer, { nameMatch, idMatch });
-  } else if (CMD === 'apply-styles') {
-    styler.applyStyle(layer, nameMatch);
-  } else if (CMD === 'detach-styles') {
-    styler.detachStyle(layer);
-  }
-}
-
-/* 
-
-
-export const generateAllLayerStyles = (layers) => {
-  const counter = {
-    created: 0,
-    ignored: 0,
-    renamed: 0,
-    updated: 0,
+  const messages = {
+    applied: {
+      empty: `🤔 There is no style that has this layer name. Maybe? Renam...`,
+      single: `✌️ Applied only ${counter.applied} style. He he...`,
+      multiple: `✌️ Applied ${counter.applied} styles. He he...`,
+    },
+    detached: {
+      empty: `🤔 No style was applied on any of the selected layers. Idk...`,
+      single: `💔 Detached only ${counter.detached} style. Layers will miss you...`,
+      multiple: `💔 Detached ${counter.detached} styles. Layers will miss you...`,
+    },
+    extracted: {
+      empty: `😵 There is no style in this file. Ouch...`,
+      single: `😺 Created only ${counter.extracted} layer. Uhuu...`,
+      multiple: `😺 Created ${counter.extracted} layers. Uhuu...`,
+    },
+    generated: {
+      empty: `😭 We do not support empty or mixed properties. Oh, Noo...`,
+      single: generateMessage,
+      multiple: generateMessage,
+    },
+    removed: {
+      empty: `🤔 No style was applied on any of the selected layers. Yep, it's not weird...`,
+      single: `🔥 Removed only ${counter.removed} style. Rrr...`,
+      multiple: `🔥 Removed ${counter.removed} styles. Rrr...`,
+    },
   };
 
-  layers.map((layer) => {
-    // stylers are the links between layers and styles that are created by figma code inconsistency or design decision itself (which are not bad and simply exist)
-
-    stylers.map(async (styler) => {
-      // we don't care about empty properties
-      if (styler.isPropEmpty(layer) || styler.isPropMixed(layer)) {
-        return;
-      }
-
-      if (layer.type === 'TEXT') {
-        await figma.loadFontAsync(layer.fontName);
-      }
-
-      const idMatch = styler.getStyleById(layer);
-      const nameMatch = styler.getStyleByName(layer.name);
-
-      // create
-      if (!idMatch && !nameMatch) {
-        styler.createStyle(layer);
-        counter.created++;
-      }
-
-      // rename
-      else if (idMatch && !nameMatch) {
-        styler.renameStyle(layer, idMatch);
-        counter.renamed++;
-      }
-
-      // update
-      else if ((!idMatch && nameMatch) || idMatch !== nameMatch) {
-        styler.updateStyle(layer, nameMatch);
-        counter.updated++;
-      }
-
-      // ignore
-      else {
-        counter.ignored++;
-      }
-    });
-  });
-
-  if (counter.created === 0 && counter.updated === 0 && counter.renamed === 0 && counter.ignored === 0) {
-    figmaNotifyAndClose(`😭 We do not support empty or mixed properties. Oh, Noo...`, NOTIFICATION_TIMEOUT);
-    return;
+  if (CMD === 'generate-all-styles') {
+    showMessage(counter.generated, messages.generated);
+  } else if (CMD === 'apply-all-styles') {
+    showMessage(counter.applied, messages.applied);
+  } else if (CMD === 'detach-all-styles') {
+    showMessage(counter.detached, messages.detached);
+  } else if (CMD.includes('remove')) {
+    showMessage(counter.removed, messages.removed);
   }
-  figmaNotifyAndClose(
-    `
-      🔨 Created: ${counter.created} -
-      ✨ Updated: ${counter.updated} -
-      🌈 Renamed: ${counter.renamed} -
-      😶 No changes: ${counter.ignored}
-    `,
-    NOTIFICATION_TIMEOUT,
-  );
 };
 
-export const removeAllLayerStyles = (layers) => {
-  let counter = 0;
-
-  layers.map((layer) => {
-    stylers.map((styler) => {
-      const idMatch = styler.getStyleById(layer);
-      if (!idMatch) return;
-
-      idMatch.remove();
-      counter++;
-    });
-  });
-
-  if (counter === 0) {
-    figmaNotifyAndClose(
-      `🤔 No style was applied on any of the selected layers. Yep, it's not weird...`,
-      NOTIFICATION_TIMEOUT,
-    );
-    return;
+export const getStylersByLayerType = (layer: SceneNode): Styler[] => {
+  const stylers = [];
+  if (layer.type === 'TEXT') {
+    stylers.push(texter);
+  } else {
+    stylers.push(filler, strokeer, effecter, grider);
   }
-  figmaNotifyAndClose(`🔥 Removed ${counter} styles. Rrr...`, NOTIFICATION_TIMEOUT);
+  return stylers;
 };
-
-export const removeLayerStylesByType = (layers, CMD) => {
-  let counter = 0;
-  const removeType = CMD.split('-')[1];
-
-  layers.map((layer) => {
-    stylers
-      .filter((styler) => styler.layerPropType === removeType.toLocaleUpperCase())
-      .map((styler) => {
-        const idMatch = styler.getStyleById(layer);
-        if (!idMatch) return;
-
-        idMatch.remove();
-        counter++;
-      });
-  });
-
-  if (counter === 0) {
-    figmaNotifyAndClose(
-      `🤔 No ${removeType} style was applied on any of the selected layers. Whaa...`,
-      NOTIFICATION_TIMEOUT,
-    );
-    return;
-  }
-  figmaNotifyAndClose(`🔥 Removed ${counter} ${removeType} styles. Ups...`, NOTIFICATION_TIMEOUT);
-}; */
 
 export const getAllUniqueStylesName = (styles): string[] => {
   const allStylesName = styles.map((style) => style.name);

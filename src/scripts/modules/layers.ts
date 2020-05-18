@@ -122,8 +122,11 @@ export const ungroupEachToCanvas = (layers) => {
   }
 };
 
-// remove unwanted layers from array
-// reorder layers to be sorted as in layer panel
+/* 
+--- clean Selection
+--- remove unwanted layers from array
+--- reorder layers to be sorted as in layer panel 
+*/
 export const cleanSelection = (): SceneNode[] => {
   const selection = excludeGroups(figma.currentPage.selection);
   const selectionByParent = Object.values(groupBy(selection, 'parent'));

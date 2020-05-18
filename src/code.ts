@@ -1,69 +1,48 @@
 import { NOTIFICATION_TIMEOUT, CMD } from './scripts/modules/globals';
-import { figmaNotifyAndClose } from './scripts/modules/utils';
-import {
-  // generateAllLayerStyles,
-  // applyAllLayerStyles,
-  // detachAllLayerStyles,
-  // removeAllLayerStyles,
-  // removeLayerStylesByType,
-  extractAllStyles,
-  changeStyles,
-} from './scripts/modules/styler';
+import { figmaNotifyAndClose, isArrayEmpty } from './scripts/modules/utils';
+import { extractAllStyles, showStyleNofication, getStylersByLayerType } from './scripts/modules/styler';
+import { cleanSelection } from './scripts/modules/layers';
 
 (function main() {
   figma.showUI(__html__, { visible: false });
 
-  // REMOVE THIS CONDITION AT THE END!!!!
-  if (CMD === 'test') {
-    // console.log(temp);
-    // debugger;
-
-    // createFrameLayer();
-    // let counter = 0;
-    // const allStyles = [
-    //   ...figma.getLocalEffectStyles(),
-    //   ...figma.getLocalPaintStyles(),
-    //   ...figma.getLocalGridStyles(),
-    //   ...figma.getLocalTextStyles(),
-    // ];
-    // allStyles.map((style) => {
-    //   style.remove();
-    //   counter++;
-    // });
-    figmaNotifyAndClose(`🔥 Removed all`, NOTIFICATION_TIMEOUT);
-    return;
-  }
-  // REMOVE THIS CONDITION AT THE END!!!!
-  if (CMD === 'extract-styles') {
+  // creating layers based on styles
+  if (CMD === 'extract-all-styles') {
     extractAllStyles();
-    return;
   }
 
-  /* // generate
-  if (CMD === 'generate-styles') {
-    generateAllLayerStyles(selection);
-  }
-  // apply
-  else if (CMD === 'apply-styles') {
-    applyAllLayerStyles(selection);
-  }
-  // detach
-  else if (CMD === 'detach-styles') {
-    detachAllLayerStyles(selection);
-  }
-  // remove
-  else if (CMD === 'remove-styles') {
-    removeAllLayerStyles(selection);
-  } */
-  // // remove by type
-  // else if (CMD.includes('remove')) {
-  //   removeLayerStylesByType(selection);
-  // }
-
-  // error
+  // changing styles based on layer selection
   else {
-    changeStyles();
+    const selection = cleanSelection();
 
-    figma.closePlugin();
+    if (isArrayEmpty(selection)) {
+      figmaNotifyAndClose(`🥰 You must select at least 1 layer. Yea...`, NOTIFICATION_TIMEOUT);
+      return;
+    }
+
+    selection.map((layer) => {
+      const stylers = getStylersByLayerType(layer);
+
+      stylers.map(async (styler) => {
+        if (layer.type === 'TEXT') {
+          await figma.loadFontAsync(layer.fontName as FontName);
+        }
+
+        const idMatch = styler.getStyleById(layer);
+        const nameMatch = styler.getStyleByName(layer.name);
+
+        if (CMD === 'generate-all-styles') {
+          styler.generateStyle(layer, { nameMatch, idMatch });
+        } else if (CMD === 'apply-all-styles') {
+          styler.applyStyle(layer, nameMatch);
+        } else if (CMD === 'detach-all-styles') {
+          styler.detachStyle(layer);
+        } else if (CMD.includes('remove')) {
+          styler.removeStyle(idMatch);
+        }
+      });
+    });
+
+    showStyleNofication();
   }
 })();

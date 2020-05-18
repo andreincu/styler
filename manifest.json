@@ -7,29 +7,29 @@
   "menu": [
     {
       "name": "Extract Styles (New)",
-      "command": "extract-styles"
+      "command": "extract-all-styles"
     },
     {
       "separator": true
     },
     {
       "name": "Generate Styles",
-      "command": "generate-styles"
+      "command": "generate-all-styles"
     },
     {
       "separator": true
     },
     {
       "name": "Apply Styles",
-      "command": "apply-styles"
+      "command": "apply-all-styles"
     },
     {
       "name": "Detach Styles",
-      "command": "detach-styles"
+      "command": "detach-all-styles"
     },
     {
       "name": "Remove Styles",
-      "command": "remove-styles"
+      "command": "remove-all-styles"
     },
     {
       "name": "zzTest",
