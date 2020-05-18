@@ -156,7 +156,7 @@ export const showMessage = (counter, messages: any = {}) => {
   }
 };
 
-export const showStyleNofication = () => {
+export const showNofication = () => {
   const generateMessage = `
     🔨 Created: ${counter.created} -
     ✨ Updated: ${counter.updated} -
@@ -192,7 +192,9 @@ export const showStyleNofication = () => {
     },
   };
 
-  if (CMD === 'generate-all-styles') {
+  if (CMD === 'extract-all-styles') {
+    showMessage(counter.extracted, messages.extracted);
+  } else if (CMD === 'generate-all-styles') {
     showMessage(counter.generated, messages.generated);
   } else if (CMD === 'apply-all-styles') {
     showMessage(counter.applied, messages.applied);
@@ -243,68 +245,76 @@ export const extractAllStyles = () => {
     ...figma.getLocalTextStyles(),
   ];
 
-  if (!styles) {
-    figmaNotifyAndClose(`😵 There is no style in this file. Ouch...`, NOTIFICATION_TIMEOUT);
-    return;
-  }
+  const selection = [];
+  const styleguides = getStyleguides(styles);
 
-  let selection = [];
-  const canvas = figma.currentPage;
-  const styguides = getStyleguides(styles);
-  const styleguidesByType = groupBy(styguides, 'type');
+  if (styleguides.length > 0) {
+    const canvas = figma.currentPage;
+    const styleguidesByType = groupBy(styleguides, 'type');
 
-  changeColor(canvas, 'backgrounds', colors.black);
+    debugger;
+    changeColor(canvas, 'backgrounds', colors.black);
 
-  const mainContainer = createFrameLayer({
-    layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 128 },
-  });
-
-  const textsContainer = createFrameLayer({
-    layoutProps: { layoutMode: 'VERTICAL', itemSpacing: 32 },
-    parent: mainContainer,
-  });
-
-  const visualsContainer = createFrameLayer({
-    layoutProps: { layoutMode: 'VERTICAL', itemSpacing: 32 },
-    parent: mainContainer,
-  });
-
-  chunk([...styleguidesByType.FRAME], 3).map((styleguides) => {
-    const chunkContainer = createFrameLayer({
-      layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 32 },
-      parent: visualsContainer,
+    const mainContainer = createFrameLayer({
+      layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 128 },
     });
 
-    styleguides.map((styleguide) => {
-      const newLayer = createFrameLayer({ name: styleguide.name, size: 80, parent: chunkContainer });
-
-      stylersWithoutTexter.map((styler) => {
-        const nameMatch = styler.getStyleByName(newLayer.name);
-
-        styler.applyStyle(newLayer, nameMatch);
+    if (!!styleguidesByType.TEXT) {
+      const textsContainer = createFrameLayer({
+        layoutProps: { layoutMode: 'VERTICAL', itemSpacing: 32 },
+        parent: mainContainer,
       });
 
-      selection.push(newLayer);
-      counter.extracted++;
-    });
-  });
+      [...styleguidesByType.TEXT].map(async (styleguide) => {
+        const newLayer = await createTextLayer({
+          characters: styleguide.name,
+          color: colors.white,
+          parent: textsContainer,
+        });
 
-  [...styleguidesByType.TEXT].map(async (styleguide) => {
-    const newLayer = await createTextLayer({
-      characters: styleguide.name,
-      color: colors.white,
-      parent: textsContainer,
-    });
+        const nameMatch = texter.getStyleByName(newLayer.name);
+        texter.applyStyle(newLayer, nameMatch);
 
-    const nameMatch = texter.getStyleByName(newLayer.name);
-    texter.applyStyle(newLayer, nameMatch);
+        selection.push(newLayer);
+        counter.extracted++;
+      });
+    }
 
-    selection.push(newLayer);
-    counter.extracted++;
-  });
+    if (!!styleguidesByType.FRAME) {
+      const visualsContainer = createFrameLayer({
+        layoutProps: { layoutMode: 'VERTICAL', itemSpacing: 32 },
+        parent: mainContainer,
+      });
 
-  ungroupToCanvas(selection);
-  figmaNotifyAndClose(`😺 Created ${counter.extracted} layers. Uhuu...`, NOTIFICATION_TIMEOUT);
-  // setTimeout(() => {
-  // }, 1000);
+      chunk([...styleguidesByType.FRAME], 3).map((styleguides) => {
+        const chunkContainer = createFrameLayer({
+          layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 32 },
+          parent: visualsContainer,
+        });
+
+        styleguides.map((styleguide) => {
+          const newLayer = createFrameLayer({ name: styleguide.name, size: 80, parent: chunkContainer });
+
+          stylersWithoutTexter.map((styler) => {
+            const nameMatch = styler.getStyleByName(newLayer.name);
+
+            styler.applyStyle(newLayer, nameMatch);
+          });
+
+          selection.push(newLayer);
+          counter.extracted++;
+        });
+      });
+    }
+  }
+
+  setInterval(() => {
+    if (counter.extracted === styleguides.length) {
+      ungroupToCanvas(selection);
+      showNofication();
+      clearInterval();
+    } else {
+      figma.notify(`😴 Waiting for text layers to be created...`);
+    }
+  }, 50);
 };
