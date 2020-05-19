@@ -6,7 +6,7 @@
   "ui": "dist/ui.html",
   "menu": [
     {
-      "name": "Extract Styles (New)",
+      "name": "Extract Styles",
       "command": "extract-all-styles"
     },
     {
@@ -32,10 +32,6 @@
       "command": "remove-all-styles"
     },
     {
-      "name": "zzTest",
-      "command": "test"
-    },
-    {
       "name": "Remove by type",
       "menu": [
         {
@@ -59,6 +55,10 @@
           "command": "remove-grid-styles"
         }
       ]
+    },
+    {
+      "name": "Customize plugin",
+      "command": "customize-plugin"
     }
   ]
 }

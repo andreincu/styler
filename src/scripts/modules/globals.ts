@@ -1,4 +1,4 @@
-import { Styler } from './styler';
+import { Styler } from './styles';
 
 /* 
 --- CONSTANTS

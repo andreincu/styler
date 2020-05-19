@@ -1,18 +1,18 @@
 import {
-  NOTIFICATION_TIMEOUT,
+  allStylers,
   CMD,
   colors,
   counter,
-  filler,
-  strokeer,
   effecter,
+  filler,
   grider,
-  texter,
-  allStylers,
+  NOTIFICATION_TIMEOUT,
+  strokeer,
   stylersWithoutTexter,
+  texter,
 } from './globals';
-import { addAffixTo, ucFirst, isArrayEmpty, figmaNotifyAndClose, uniq, groupBy, chunk } from './utils';
-import { changeColor, createFrameLayer, ungroupToCanvas, cleanSelection, createTextLayer } from './layers';
+import { changeColor, cleanSelection, createFrameLayer, createTextLayer, ungroupToCanvas } from './layers';
+import { addAffixTo, chunk, figmaNotifyAndClose, groupBy, isArrayEmpty, ucFirst, uniq } from './utils';
 
 interface StylerOptions {
   styleType?: string;
@@ -205,10 +205,6 @@ export const showNofication = () => {
   }
 };
 
-export const getStylersByLayerType = (layer: SceneNode): Styler[] => {
-  return layer.type === 'TEXT' ? [texter] : [filler, strokeer, effecter, grider];
-};
-
 export const getUniqueStylesName = (styles: BaseStyle[]) => {
   const names = styles.map((style) => style.name);
   const affixes = allStylers
@@ -223,6 +219,10 @@ export const getUniqueStylesName = (styles: BaseStyle[]) => {
   return uniq(namesWithoutAffixes) as string[];
 };
 
+export const getStylersByLayerType = (layer: SceneNode): Styler[] => {
+  return layer.type === 'TEXT' ? [texter] : [filler, strokeer, effecter, grider];
+};
+
 export const getStyleguides = (styles) => {
   const uniqueStylesNames = getUniqueStylesName(styles);
 
@@ -235,6 +235,42 @@ export const getStyleguides = (styles) => {
       type,
     };
   });
+};
+
+export const changeAllStyles = async () => {
+  const selection = cleanSelection();
+
+  if (!selection) {
+    figmaNotifyAndClose(`🥰 You must select at least 1 layer. Yea...`, NOTIFICATION_TIMEOUT);
+    return;
+  }
+
+  await Promise.all(
+    selection.map(async (layer) => {
+      const stylers = getStylersByLayerType(layer);
+
+      if (layer.type === 'TEXT') {
+        await figma.loadFontAsync(layer.fontName as FontName);
+      }
+
+      stylers.map((styler) => {
+        const idMatch = styler.getStyleById(layer);
+        const nameMatch = styler.getStyleByName(layer.name);
+
+        if (CMD === 'generate-all-styles') {
+          styler.generateStyle(layer, { nameMatch, idMatch });
+        } else if (CMD === 'apply-all-styles') {
+          styler.applyStyle(layer, nameMatch);
+        } else if (CMD === 'detach-all-styles') {
+          styler.detachStyle(layer);
+        } else if (CMD.includes('remove')) {
+          styler.removeStyle(idMatch);
+        }
+      });
+    }),
+  );
+
+  showNofication();
 };
 
 export const extractAllStyles = async () => {
