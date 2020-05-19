@@ -237,7 +237,7 @@ export const getStyleguides = (styles) => {
   });
 };
 
-export const extractAllStyles = () => {
+export const extractAllStyles = async () => {
   const styles = [
     ...figma.getLocalPaintStyles(),
     ...figma.getLocalEffectStyles(),
@@ -251,8 +251,8 @@ export const extractAllStyles = () => {
   if (styleguides.length > 0) {
     const canvas = figma.currentPage;
     const styleguidesByType = groupBy(styleguides, 'type');
+    console.log(styleguidesByType);
 
-    debugger;
     changeColor(canvas, 'backgrounds', colors.black);
 
     const mainContainer = createFrameLayer({
@@ -265,19 +265,21 @@ export const extractAllStyles = () => {
         parent: mainContainer,
       });
 
-      [...styleguidesByType.TEXT].map(async (styleguide) => {
-        const newLayer = await createTextLayer({
-          characters: styleguide.name,
-          color: colors.white,
-          parent: textsContainer,
-        });
+      await Promise.all(
+        styleguidesByType.TEXT.map(async (styleguide) => {
+          const newLayer = await createTextLayer({
+            characters: styleguide.name,
+            color: colors.white,
+            parent: textsContainer,
+          });
 
-        const nameMatch = texter.getStyleByName(newLayer.name);
-        texter.applyStyle(newLayer, nameMatch);
+          const nameMatch = texter.getStyleByName(newLayer.name);
+          texter.applyStyle(newLayer, nameMatch);
 
-        selection.push(newLayer);
-        counter.extracted++;
-      });
+          selection.push(newLayer);
+          counter.extracted++;
+        }),
+      );
     }
 
     if (!!styleguidesByType.FRAME) {
@@ -286,7 +288,7 @@ export const extractAllStyles = () => {
         parent: mainContainer,
       });
 
-      chunk([...styleguidesByType.FRAME], 3).map((styleguides) => {
+      chunk(styleguidesByType.FRAME, 3).map((styleguides) => {
         const chunkContainer = createFrameLayer({
           layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 32 },
           parent: visualsContainer,
@@ -307,14 +309,7 @@ export const extractAllStyles = () => {
       });
     }
   }
+  ungroupToCanvas(selection);
 
-  setInterval(() => {
-    if (counter.extracted === styleguides.length) {
-      ungroupToCanvas(selection);
-      showNofication();
-      clearInterval();
-    } else {
-      figma.notify(`😴 Waiting for text layers to be created...`);
-    }
-  }, 50);
+  showNofication();
 };

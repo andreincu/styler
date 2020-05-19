@@ -9,7 +9,7 @@ export const NOTIFICATION_TIMEOUT = 8000;
 /* 
 --- VARIABLES
  */
-export let counter = {
+export const counter = {
   applied: 0,
   created: 0,
   detached: 0,

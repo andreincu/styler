@@ -1,9 +1,9 @@
-import { NOTIFICATION_TIMEOUT, CMD } from './scripts/modules/globals';
+import { NOTIFICATION_TIMEOUT, CMD, counter } from './scripts/modules/globals';
 import { figmaNotifyAndClose } from './scripts/modules/utils';
 import { extractAllStyles, showNofication, getStylersByLayerType } from './scripts/modules/styler';
 import { cleanSelection } from './scripts/modules/layers';
 
-(function main() {
+(async function main() {
   figma.showUI(__html__, { visible: false });
 
   // creating layers based on styles
@@ -20,28 +20,30 @@ import { cleanSelection } from './scripts/modules/layers';
       return;
     }
 
-    selection.map((layer) => {
-      const stylers = getStylersByLayerType(layer);
+    await Promise.all(
+      selection.map(async (layer) => {
+        const stylers = getStylersByLayerType(layer);
 
-      stylers.map(async (styler) => {
         if (layer.type === 'TEXT') {
           await figma.loadFontAsync(layer.fontName as FontName);
         }
 
-        const idMatch = styler.getStyleById(layer);
-        const nameMatch = styler.getStyleByName(layer.name);
+        stylers.map((styler) => {
+          const idMatch = styler.getStyleById(layer);
+          const nameMatch = styler.getStyleByName(layer.name);
 
-        if (CMD === 'generate-all-styles') {
-          styler.generateStyle(layer, { nameMatch, idMatch });
-        } else if (CMD === 'apply-all-styles') {
-          styler.applyStyle(layer, nameMatch);
-        } else if (CMD === 'detach-all-styles') {
-          styler.detachStyle(layer);
-        } else if (CMD.includes('remove')) {
-          styler.removeStyle(idMatch);
-        }
-      });
-    });
+          if (CMD === 'generate-all-styles') {
+            styler.generateStyle(layer, { nameMatch, idMatch });
+          } else if (CMD === 'apply-all-styles') {
+            styler.applyStyle(layer, nameMatch);
+          } else if (CMD === 'detach-all-styles') {
+            styler.detachStyle(layer);
+          } else if (CMD.includes('remove')) {
+            styler.removeStyle(idMatch);
+          }
+        });
+      }),
+    );
 
     showNofication();
   }
