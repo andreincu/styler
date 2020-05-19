@@ -1,23 +1,42 @@
-const path = require('path');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const path = require('path');
 
-module.exports = (env, argv) => ({
-  mode: argv.mode === 'production' ? 'production' : 'development',
+const mode = process.env.NODE_ENV || 'development';
+const prod = mode === 'production';
 
-  // This is necessary because Figma's 'eval' works differently than normal eval
-  devtool: argv.mode === 'production' ? false : 'inline-source-map',
+module.exports = {
   entry: {
+    ui: './src/ui/index.js',
     code: './src/scripts/code.ts',
-    ui: './src/ui.ts',
   },
 
-  // Webpack tries these extensions for you if you omit the extension like "import './file'"
-  resolve: { extensions: ['.tsx', '.ts', '.jsx', '.js', '.css'] },
+  output: {
+    filename: '[name].js',
+    path: path.resolve(__dirname, 'dist/'),
+  },
+
+  resolve: {
+    alias: {
+      svelte: path.resolve('node_modules', 'svelte'),
+    },
+    mainFields: ['svelte', 'browser', 'module', 'main'],
+    extensions: ['.tsx', '.jsx', '.css', '.mjs', '.js', '.svelte', '.ts'],
+  },
 
   module: {
     rules: [
+      {
+        test: /\.svelte$/,
+        use: {
+          loader: 'svelte-loader',
+          options: {
+            emitCss: true,
+            hotReload: true,
+          },
+        },
+      },
       {
         test: /\.tsx?$/,
         use: [
@@ -30,20 +49,10 @@ module.exports = (env, argv) => ({
         ],
         exclude: /node_modules/,
       },
-      // Enables including CSS by doing "import './file.css'" in your TypeScript code
       {
         test: /\.(s[ac]ss|css)$/i,
-        use: [
-          // Creates `style` nodes from JS strings
-          'style-loader',
-          // Translates CSS into CommonJS
-          'css-loader',
-          // Compiles Sass to CSS
-          'sass-loader',
-        ],
+        use: ['style-loader', 'css-loader', 'sass-loader'],
       },
-
-      // Allows you to use "<%= require('./file.svg') %>" in your HTML code to get a data URI
       {
         test: /\.(png|jpg|gif|webp|svg)$/,
         loader: [{ loader: 'url-loader' }],
@@ -51,21 +60,20 @@ module.exports = (env, argv) => ({
     ],
   },
 
-  output: {
-    filename: '[name].js',
-    path: path.resolve(__dirname, 'dist'),
-  },
+  mode,
 
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      template: './src/ui.html',
+      template: './src/ui/index.html',
       filename: 'ui.html',
-      inlineSource: '.(js)$',
+      inlineSource: '.(js|css)$',
       chunks: ['ui'],
       minify: true,
       cache: false,
     }),
     new HtmlWebpackInlineSourcePlugin(HtmlWebpackPlugin),
   ],
-});
+
+  devtool: prod ? false : 'source-map',
+};
