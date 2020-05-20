@@ -4,11 +4,12 @@ import { Styler } from './styles';
 --- CONSTANTS
  */
 export const CMD = figma.command;
-export const NOTIFICATION_TIMEOUT = 8000;
 
 /* 
 --- VARIABLES
- */
+*/
+export let notificationTimeout = 6000;
+export let framesPerContainer = 5;
 export const counter = {
   applied: 0,
   created: 0,

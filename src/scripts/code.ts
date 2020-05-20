@@ -5,7 +5,13 @@ import { changeAllStyles, extractAllStyles } from './modules/styles';
   figma.showUI(__html__, { visible: false });
 
   if (CMD === 'customize-plugin') {
-    figma.showUI(__html__, { width: 400, height: 400 });
+    figma.showUI(__html__, { width: 520, height: 500 });
+
+    figma.ui.onmessage = (msg) => {
+      console.log(msg);
+      debugger;
+      figma.closePlugin();
+    };
   }
 
   // creating layers based on styles

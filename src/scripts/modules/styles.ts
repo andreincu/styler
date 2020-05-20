@@ -5,8 +5,9 @@ import {
   counter,
   effecter,
   filler,
+  framesPerContainer,
   grider,
-  NOTIFICATION_TIMEOUT,
+  notificationTimeout,
   strokeer,
   stylersWithoutTexter,
   texter,
@@ -148,11 +149,11 @@ export const showMessage = (counter, messages: any = {}) => {
   const { empty = '', single = '', multiple = '' } = messages;
 
   if (counter === 0) {
-    figmaNotifyAndClose(empty, NOTIFICATION_TIMEOUT);
+    figmaNotifyAndClose(empty, notificationTimeout);
   } else if (counter === 1) {
-    figmaNotifyAndClose(single, NOTIFICATION_TIMEOUT);
+    figmaNotifyAndClose(single, notificationTimeout);
   } else {
-    figmaNotifyAndClose(multiple, NOTIFICATION_TIMEOUT);
+    figmaNotifyAndClose(multiple, notificationTimeout);
   }
 };
 
@@ -241,7 +242,7 @@ export const changeAllStyles = async () => {
   const selection = cleanSelection();
 
   if (!selection) {
-    figmaNotifyAndClose(`🥰 You must select at least 1 layer. Yea...`, NOTIFICATION_TIMEOUT);
+    figmaNotifyAndClose(`🥰 You must select at least 1 layer. Yea...`, notificationTimeout);
     return;
   }
 
@@ -287,7 +288,6 @@ export const extractAllStyles = async () => {
   if (styleguides.length > 0) {
     const canvas = figma.currentPage;
     const styleguidesByType = groupBy(styleguides, 'type');
-    console.log(styleguidesByType);
 
     changeColor(canvas, 'backgrounds', colors.black);
 
@@ -324,7 +324,7 @@ export const extractAllStyles = async () => {
         parent: mainContainer,
       });
 
-      chunk(styleguidesByType.FRAME, 3).map((styleguides) => {
+      chunk(styleguidesByType.FRAME, framesPerContainer).map((styleguides) => {
         const chunkContainer = createFrameLayer({
           layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 32 },
           parent: visualsContainer,
