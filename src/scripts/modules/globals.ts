@@ -4,6 +4,7 @@ import { Styler } from './styles';
 --- CONSTANTS
  */
 export const CMD = figma.command;
+export const key = 'settings';
 
 /* 
 --- VARIABLES
@@ -25,6 +26,7 @@ export const counter = {
 /* 
 --- STYLERS
  */
+
 export const filler = new Styler({
   styleType: 'paint',
   styleProps: ['paints'],
@@ -72,3 +74,20 @@ export const black = [0, 0, 0, 1];
 export const transparent = [0, 0, 0, 0];
 
 export const colors = { white, black, transparent };
+
+export const getGlobalsFromUI = (settings) => {
+  filler.prefix = settings.filler.prefix;
+  filler.suffix = settings.filler.suffix;
+
+  strokeer.prefix = settings.strokeer.prefix;
+  strokeer.suffix = settings.strokeer.suffix;
+
+  effecter.prefix = settings.effecter.prefix;
+  effecter.suffix = settings.effecter.suffix;
+
+  grider.prefix = settings.grider.prefix;
+  grider.suffix = settings.grider.suffix;
+
+  texter.prefix = settings.texter.prefix;
+  texter.suffix = settings.texter.suffix;
+};

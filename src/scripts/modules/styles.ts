@@ -86,6 +86,14 @@ export class Styler {
     return stylesByType.find((style) => style.name === addAffixTo(name, this.prefix, this.suffix));
   };
 
+  changeStyleDescription = (layer: SceneNode, style: BaseStyle) => {
+    const idMatch = this.getStyleById(layer);
+    let previousName;
+    !idMatch ? (previousName = '') : (previousName = idMatch.name);
+
+    return previousName === '' ? (style.description = ``) : (style.description = `Previous style:\n${previousName}`);
+  };
+
   renameStyle = (layer: SceneNode, style: BaseStyle) => {
     if (!style) {
       console.log(`Rename: No style found for ${layer.name}`);
@@ -96,6 +104,8 @@ export class Styler {
   };
 
   updateStyle = (layer: SceneNode, style: BaseStyle) => {
+    this.changeStyleDescription(layer, style);
+
     this.detachStyle(layer);
     this.styleProps.map((prop, index) => {
       if (!style || layer[this.layerProps[index]] === undefined) {
