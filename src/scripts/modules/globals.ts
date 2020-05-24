@@ -4,13 +4,13 @@ import { Styler } from './styles';
 --- CONSTANTS
  */
 export const CMD = figma.command;
-export const key = 'settings';
 
 /* 
 --- VARIABLES
 */
 export let notificationTimeout = 6000;
 export let framesPerContainer = 5;
+export let addPreviousStyleToDescription = true;
 export const counter = {
   applied: 0,
   created: 0,
@@ -28,13 +28,14 @@ export const counter = {
  */
 
 export const filler = new Styler({
+  name: 'filler',
   styleType: 'paint',
   styleProps: ['paints'],
   layerProps: ['fills'],
   layerPropType: 'fill',
-  suffix: '', // here it will be a variable in the future
 });
 export const strokeer = new Styler({
+  name: 'strokeer',
   styleType: 'paint',
   styleProps: ['paints'],
   layerProps: ['strokes'],
@@ -42,14 +43,17 @@ export const strokeer = new Styler({
   suffix: '-stroke', // here it will be a variable in the future
 });
 export const effecter = new Styler({
+  name: 'effecter',
   styleType: 'effect',
   styleProps: ['effects'],
 });
 export const grider = new Styler({
+  name: 'grider',
   styleType: 'grid',
   styleProps: ['layoutGrids'],
 });
 export const texter = new Styler({
+  name: 'texter',
   styleType: 'text',
   styleProps: [
     'fontName',
@@ -75,19 +79,20 @@ export const transparent = [0, 0, 0, 0];
 
 export const colors = { white, black, transparent };
 
-export const getGlobalsFromUI = (settings) => {
-  filler.prefix = settings.filler.prefix;
-  filler.suffix = settings.filler.suffix;
+/* 
+--- client storage
+*/
 
-  strokeer.prefix = settings.strokeer.prefix;
-  strokeer.suffix = settings.strokeer.suffix;
+export const clientStorageKey = 'codeSettings';
 
-  effecter.prefix = settings.effecter.prefix;
-  effecter.suffix = settings.effecter.suffix;
+export const changeGlobals = (settings: any = {}) => {
+  allStylers.map((styler) => {
+    const stylerName = styler.name;
+    styler.prefix = settings[stylerName]?.prefix || styler.prefix;
+    styler.suffix = settings[stylerName]?.suffix || styler.suffix;
+  });
 
-  grider.prefix = settings.grider.prefix;
-  grider.suffix = settings.grider.suffix;
-
-  texter.prefix = settings.texter.prefix;
-  texter.suffix = settings.texter.suffix;
+  notificationTimeout = settings.notificationTimeout || notificationTimeout;
+  framesPerContainer = settings.framesPerContainer || framesPerContainer;
+  addPreviousStyleToDescription = settings.addPreviousStyleToDescription || addPreviousStyleToDescription;
 };

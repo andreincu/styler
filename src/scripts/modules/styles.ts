@@ -16,6 +16,7 @@ import { changeColor, cleanSelection, createFrameLayer, createTextLayer, ungroup
 import { addAffixTo, chunk, figmaNotifyAndClose, groupBy, isArrayEmpty, ucFirst, uniq } from './utils';
 
 interface StylerOptions {
+  name?: string;
   styleType?: string;
   styleProps?: string[];
   layerProps?: string[];
@@ -25,6 +26,7 @@ interface StylerOptions {
 }
 
 export class Styler {
+  name: string;
   styleType: string;
   styleProps: string[];
   layerProps: string[];
@@ -34,8 +36,17 @@ export class Styler {
   suffix: string;
 
   constructor(options: StylerOptions = {}) {
-    const { styleType = '', layerPropType = styleType, prefix = '', suffix = '', styleProps, layerProps } = options;
+    const {
+      name = 'styler',
+      styleType = '',
+      layerPropType = styleType,
+      prefix = '',
+      suffix = '',
+      styleProps,
+      layerProps,
+    } = options;
 
+    this.name = name;
     this.styleType = styleType.toLocaleUpperCase();
     this.styleProps = styleProps || layerProps;
     this.layerProps = layerProps || styleProps;
@@ -91,7 +102,7 @@ export class Styler {
     let previousName;
     !idMatch ? (previousName = '') : (previousName = idMatch.name);
 
-    return previousName === '' ? (style.description = ``) : (style.description = `Previous style:\n${previousName}`);
+    return (style.description = `Previous named style:\n${previousName}`);
   };
 
   renameStyle = (layer: SceneNode, style: BaseStyle) => {

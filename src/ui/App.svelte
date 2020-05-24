@@ -1,55 +1,79 @@
 <script>
-  const uiSettings = {
-    filler: {
-      prefix: '',
-      suffix: '-test',
-    },
-    strokeer: {
-      prefix: '',
-      suffix: '-stroke',
-    },
-    effecter: {
-      prefix: '',
-      suffix: '',
-    },
-    grider: {
-      prefix: '',
-      suffix: '',
-    },
-    texter: {
-      prefix: '',
-      suffix: '',
-    },
-
-    notificationTimeout: 6000,
-    framesPerContainer: 5,
+  let filler = {
+    prefix: '',
+    suffix: '-test',
+  };
+  let strokeer = {
+    prefix: '',
+    suffix: '-stroke',
+  };
+  let effecter = {
+    prefix: '',
+    suffix: '',
+  };
+  let grider = {
+    prefix: '',
+    suffix: '',
+  };
+  let texter = {
+    prefix: '',
+    suffix: '',
   };
 
+  let notificationTimeout = 6000;
+  let framesPerContainer = 5;
+  let addPreviousStyleToDescription = true;
+
   onmessage = (e) => {
-    const settings = e.data.pluginMessage.uiSettings;
+    const codeSettings = e.data.pluginMessage.codeSettings;
 
-    uiSettings.filler.prefix = settings.filler.prefix;
-    uiSettings.filler.suffix = settings.filler.suffix;
+    if (!codeSettings) {
+      return;
+    }
 
-    uiSettings.strokeer.prefix = settings.strokeer.prefix;
-    uiSettings.strokeer.suffix = settings.strokeer.suffix;
+    if (codeSettings.filler) {
+      filler = codeSettings.filler;
+    }
+    if (codeSettings.strokeer) {
+      strokeer = codeSettings.strokeer;
+    }
+    if (codeSettings.effecter) {
+      effecter = codeSettings.effecter;
+    }
+    if (codeSettings.grider) {
+      grider = codeSettings.grider;
+    }
+    if (codeSettings.texter) {
+      texter = codeSettings.texter;
+    }
 
-    uiSettings.effecter.prefix = settings.effecter.prefix;
-    uiSettings.effecter.suffix = settings.effecter.suffix;
-
-    uiSettings.grider.prefix = settings.grider.prefix;
-    uiSettings.grider.suffix = settings.grider.suffix;
-
-    uiSettings.texter.prefix = settings.texter.prefix;
-    uiSettings.texter.suffix = settings.texter.suffix;
+    if (codeSettings.notificationTimeout) {
+      notificationTimeout = codeSettings.notificationTimeout;
+    }
+    if (codeSettings.framesPerContainer) {
+      framesPerContainer = codeSettings.framesPerContainer;
+    }
+    if (codeSettings.addPreviousStyleToDescription) {
+      addPreviousStyleToDescription = codeSettings.addPreviousStyleToDescription;
+    }
+    console.log(codeSettings);
   };
 
   const handleClick = () => {
     parent.postMessage(
       {
         pluginMessage: {
-          type: 'save',
-          uiSettings,
+          type: 'save-settings',
+          uiSettings: {
+            filler,
+            strokeer,
+            effecter,
+            grider,
+            texter,
+            notificationTimeout,
+            framesPerContainer,
+            addPreviousStyleToDescription,
+          },
         },
       },
       '*',
@@ -91,7 +115,7 @@
   <div>
     <h1>Advanced settings</h1>
     <h2>Notification timeout</h2>
-    <input type="number" bind:value="{uiSettings.notificationTimeout}" />
+    <input type="number" bind:value="{notificationTimeout}" />
 
     <h2>Style settings</h2>
     <table>
@@ -103,52 +127,52 @@
       <tr>
         <td>Fills</td>
         <td>
-          <input type="text" bind:value="{uiSettings.filler.prefix}" placeholder="No affix is set" />
+          <input type="text" bind:value="{filler.prefix}" placeholder="No affix is set" />
         </td>
         <td>
-          <input type="text" bind:value="{uiSettings.filler.suffix}" placeholder="No affix is set" />
+          <input type="text" bind:value="{filler.suffix}" placeholder="No affix is set" />
         </td>
       </tr>
       <tr>
         <td>Strokes</td>
         <td>
-          <input type="text" bind:value="{uiSettings.strokeer.prefix}" placeholder="No affix is set" />
+          <input type="text" bind:value="{strokeer.prefix}" placeholder="No affix is set" />
         </td>
         <td>
-          <input type="text" bind:value="{uiSettings.strokeer.suffix}" placeholder="No affix is set" />
+          <input type="text" bind:value="{strokeer.suffix}" placeholder="No affix is set" />
         </td>
       </tr>
       <tr>
         <td>Effects</td>
         <td>
-          <input type="text" bind:value="{uiSettings.effecter.prefix}" placeholder="No affix is set" />
+          <input type="text" bind:value="{effecter.prefix}" placeholder="No affix is set" />
         </td>
         <td>
-          <input type="text" bind:value="{uiSettings.effecter.suffix}" placeholder="No affix is set" />
+          <input type="text" bind:value="{effecter.suffix}" placeholder="No affix is set" />
         </td>
       </tr>
       <tr>
         <td>Layout Grids</td>
         <td>
-          <input type="text" bind:value="{uiSettings.grider.prefix}" placeholder="No affix is set" />
+          <input type="text" bind:value="{grider.prefix}" placeholder="No affix is set" />
         </td>
         <td>
-          <input type="text" bind:value="{uiSettings.grider.suffix}" placeholder="No affix is set" />
+          <input type="text" bind:value="{grider.suffix}" placeholder="No affix is set" />
         </td>
       </tr>
       <tr>
         <td>Texts</td>
         <td>
-          <input type="text" bind:value="{uiSettings.texter.prefix}" placeholder="No affix is set" />
+          <input type="text" bind:value="{texter.prefix}" placeholder="No affix is set" />
         </td>
         <td>
-          <input type="text" bind:value="{uiSettings.texter.suffix}" placeholder="No affix is set" />
+          <input type="text" bind:value="{texter.suffix}" placeholder="No affix is set" />
         </td>
       </tr>
     </table>
 
     <h2>Number of frames per row</h2>
-    <input type="number" bind:value="{uiSettings.framesPerContainer}" />
+    <input type="number" bind:value="{framesPerContainer}" />
   </div>
   <div class="footer">
     <button class="button button--primary" on:click|once="{handleClick}">

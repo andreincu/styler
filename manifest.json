@@ -59,6 +59,10 @@
     {
       "name": "Customize plugin",
       "command": "customize-plugin"
+    },
+    {
+      "name": "zzTest",
+      "command": "test"
     }
   ]
 }
