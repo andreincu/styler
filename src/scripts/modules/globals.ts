@@ -10,7 +10,7 @@ export const CMD = figma.command;
 */
 export let notificationTimeout = 6000;
 export let framesPerContainer = 5;
-export let addPreviousStyleToDescription = true;
+export let addPreviousStyleToDescription = false;
 export const counter = {
   applied: 0,
   created: 0,

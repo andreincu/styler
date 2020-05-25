@@ -11,6 +11,7 @@ import {
   strokeer,
   stylersWithoutTexter,
   texter,
+  addPreviousStyleToDescription,
 } from './globals';
 import { changeColor, cleanSelection, createFrameLayer, createTextLayer, ungroupToCanvas } from './layers';
 import { addAffixTo, chunk, figmaNotifyAndClose, groupBy, isArrayEmpty, ucFirst, uniq } from './utils';
@@ -102,7 +103,7 @@ export class Styler {
     let previousName;
     !idMatch ? (previousName = '') : (previousName = idMatch.name);
 
-    return (style.description = `Previous named style:\n${previousName}`);
+    return (style.description = `Previous style:\n${previousName}`);
   };
 
   renameStyle = (layer: SceneNode, style: BaseStyle) => {
@@ -115,7 +116,9 @@ export class Styler {
   };
 
   updateStyle = (layer: SceneNode, style: BaseStyle) => {
-    this.changeStyleDescription(layer, style);
+    if (addPreviousStyleToDescription) {
+      this.changeStyleDescription(layer, style);
+    }
 
     this.detachStyle(layer);
     this.styleProps.map((prop, index) => {
