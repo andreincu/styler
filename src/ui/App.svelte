@@ -1,7 +1,10 @@
 <script>
+  import { GlobalCSS } from 'figma-plugin-ds-svelte';
+  import { Checkbox, Button } from 'figma-plugin-ds-svelte';
+
   let filler = {
     prefix: '',
-    suffix: '-test',
+    suffix: '',
   };
   let strokeer = {
     prefix: '',
@@ -22,7 +25,7 @@
 
   let notificationTimeout = 6000;
   let framesPerContainer = 5;
-  let addPreviousStyleToDescription = true;
+  let addPreviousStyleToDescription = false;
 
   onmessage = (e) => {
     const codeSettings = e.data.pluginMessage.codeSettings;
@@ -56,7 +59,6 @@
     if (codeSettings.addPreviousStyleToDescription) {
       addPreviousStyleToDescription = codeSettings.addPreviousStyleToDescription;
     }
-    console.log(codeSettings);
   };
 
   const handleClick = () => {
@@ -174,9 +176,8 @@
     <h2>Number of frames per row</h2>
     <input type="number" bind:value="{framesPerContainer}" />
   </div>
-  <div class="footer">
-    <button class="button button--primary" on:click|once="{handleClick}">
-      Save settings
-    </button>
-  </div>
+
+  <Checkbox bind:checked="{addPreviousStyleToDescription}">Show previous style in description</Checkbox>
+
+  <Button on:click|once="{handleClick}">Save settings</Button>
 </main>
