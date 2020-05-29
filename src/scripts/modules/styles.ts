@@ -100,10 +100,8 @@ export class Styler {
 
   changeStyleDescription = (layer: SceneNode, style: BaseStyle) => {
     const idMatch = this.getStyleById(layer);
-    let previousName;
-    !idMatch ? (previousName = '') : (previousName = idMatch.name);
 
-    return (style.description = `Previous style:\n${previousName}`);
+    return !idMatch ? style.description : (style.description = `Previous style:\n${idMatch.name}`);
   };
 
   renameStyle = (layer: SceneNode, style: BaseStyle) => {
@@ -133,7 +131,7 @@ export class Styler {
   };
 
   removeStyle = (style: BaseStyle) => {
-    if (!style) {
+    if (!style || style.remote === true) {
       return;
     }
 
@@ -150,17 +148,29 @@ export class Styler {
       return;
     }
 
-    if (!idMatch && !nameMatch) {
-      this.createStyle(layer);
-      counter.created++;
-    } else if (idMatch && !nameMatch) {
-      this.renameStyle(layer, idMatch);
-      counter.renamed++;
-    } else if (idMatch !== nameMatch) {
-      this.updateStyle(layer, nameMatch);
-      counter.updated++;
+    if (idMatch && idMatch.remote === true) {
+      if (!nameMatch) {
+        this.createStyle(layer);
+        counter.created++;
+      } else if (idMatch !== nameMatch) {
+        this.updateStyle(layer, nameMatch);
+        counter.updated++;
+      } else {
+        counter.ignored++;
+      }
     } else {
-      counter.ignored++;
+      if (!idMatch && !nameMatch) {
+        this.createStyle(layer);
+        counter.created++;
+      } else if (idMatch && !nameMatch) {
+        this.renameStyle(layer, idMatch);
+        counter.renamed++;
+      } else if (idMatch !== nameMatch) {
+        this.updateStyle(layer, nameMatch);
+        counter.updated++;
+      } else {
+        counter.ignored++;
+      }
     }
     counter.generated++;
   };
@@ -191,7 +201,7 @@ export const showNofication = () => {
 
   const messages = {
     applied: {
-      empty: `🤔 There is no style that has this layer name. Maybe? Renam...`,
+      empty: `🤔 No local style found to apply. Maybe? Renam...`,
       single: `✌️ Applied only ${counter.applied} style. He he...`,
       multiple: `✌️ Applied ${counter.applied} styles. He he...`,
     },
@@ -201,7 +211,7 @@ export const showNofication = () => {
       multiple: `💔 Detached ${counter.detached} styles. Layers will miss you...`,
     },
     extracted: {
-      empty: `😵 There is no style in this file. Ouch...`,
+      empty: `😵 No local style found to extract. Ouch...`,
       single: `😺 Created only ${counter.extracted} layer. Uhuu...`,
       multiple: `😺 Created ${counter.extracted} layers. Uhuu...`,
     },
@@ -211,7 +221,7 @@ export const showNofication = () => {
       multiple: generateMessage,
     },
     removed: {
-      empty: `🤔 No style was applied on any of the selected layers. Yep, it's not weird...`,
+      empty: `🤔 No local style was applied on any of the selected layers. Yep, it's not weird...`,
       single: `🔥 Removed only ${counter.removed} style. Rrr...`,
       multiple: `🔥 Removed ${counter.removed} styles. Rrr...`,
     },
