@@ -1,5 +1,5 @@
 <script>
-  import Checkbox from './svelte-components/Checkbox.svelte';
+  import Checkbox from './components/Checkbox.svelte';
 
   let filler = {
     prefix: '',
@@ -82,13 +82,14 @@
   };
 </script>
 
-<style>
+<style lang="scss">
   table {
     width: 100%;
     text-align: left;
     margin: 0 -0.25rem;
     border-collapse: collapse;
     table-layout: fixed;
+    font-size: 0.875rem;
   }
 
   table th,
@@ -100,24 +101,40 @@
     width: 100%;
   }
 
-  input {
-    border: 1px solid lightgrey;
-    padding: 0.25rem;
+  section {
+    padding: 0.25rem 1rem;
+  }
+
+  main {
+    padding: 0.5rem 0;
+  }
+
+  button {
+    width: 100%;
   }
 </style>
 
 <main>
-  <div>
-    <h1>Advanced settings</h1>
-    <h2>Notification timeout</h2>
+
+  <section>
+    <h2>Customize plugin</h2>
+  </section>
+  <section>
+    <h3>Notification timeout</h3>
     <input type="number" bind:value={notificationTimeout} />
+  </section>
 
-    <h2>Number of frames per row</h2>
+  <section>
+    <h3>Number of frames per row</h3>
     <input type="number" bind:value={framesPerContainer} />
+  </section>
 
+  <section>
     <Checkbox bind:checked={addPreviousStyleToDescription}>Show previous style in description</Checkbox>
+  </section>
 
-    <h2>Style settings</h2>
+  <section>
+    <h3>Style settings</h3>
     <table>
       <tr>
         <th>Style type</th>
@@ -127,51 +144,52 @@
       <tr>
         <td>Fills</td>
         <td>
-          <input type="text" bind:value={filler.prefix} placeholder="No affix is set" />
+          <input type="text" bind:value={filler.prefix} placeholder="" />
         </td>
         <td>
-          <input type="text" bind:value={filler.suffix} placeholder="No affix is set" />
+          <input type="text" bind:value={filler.suffix} placeholder="" />
         </td>
       </tr>
       <tr>
         <td>Strokes</td>
         <td>
-          <input type="text" bind:value={strokeer.prefix} placeholder="No affix is set" />
+          <input type="text" bind:value={strokeer.prefix} placeholder="" />
         </td>
         <td>
-          <input type="text" bind:value={strokeer.suffix} placeholder="No affix is set" />
+          <input type="text" bind:value={strokeer.suffix} placeholder="" />
         </td>
       </tr>
       <tr>
         <td>Effects</td>
         <td>
-          <input type="text" bind:value={effecter.prefix} placeholder="No affix is set" />
+          <input type="text" bind:value={effecter.prefix} placeholder="" />
         </td>
         <td>
-          <input type="text" bind:value={effecter.suffix} placeholder="No affix is set" />
+          <input type="text" bind:value={effecter.suffix} placeholder="" />
         </td>
       </tr>
       <tr>
         <td>Layout Grids</td>
         <td>
-          <input type="text" bind:value={grider.prefix} placeholder="No affix is set" />
+          <input type="text" bind:value={grider.prefix} placeholder="" />
         </td>
         <td>
-          <input type="text" bind:value={grider.suffix} placeholder="No affix is set" />
+          <input type="text" bind:value={grider.suffix} placeholder="" />
         </td>
       </tr>
       <tr>
         <td>Texts</td>
         <td>
-          <input type="text" bind:value={texter.prefix} placeholder="No affix is set" />
+          <input type="text" bind:value={texter.prefix} placeholder="" />
         </td>
         <td>
-          <input type="text" bind:value={texter.suffix} placeholder="No affix is set" />
+          <input type="text" bind:value={texter.suffix} placeholder="" />
         </td>
       </tr>
     </table>
+  </section>
 
-  </div>
-
-  <button>Save settings</button>
+  <section>
+    <button on:click={handleClick}>Save settings</button>
+  </section>
 </main>

@@ -1,0 +1,74 @@
+/* variables */
+$color-primary: red;
+$color-secondary: lightgrey;
+
+:root {
+  /* global tokens */
+  --transition-short: 0.2s;
+  --action-primary-hover: #{darken($color-primary, 12%)};
+  --action-secondary-hover: #{darken($color-secondary, 12%)};
+
+  /* component tokens */
+
+  // Buttons
+  --button-primary: #{$color-primary};
+  --button-secondary-border: #{$color-secondary};
+
+  --button-primary: #{$color-primary};
+  --button-secondary-border: #{$color-secondary};
+
+  // Checkbox
+  --checkbox-gutter: 4px;
+  --checkbox-size: 24px;
+  --checkbox-on: #{$color-primary};
+  --checkbox-off: #{$color-secondary};
+}
+
+/* global properties */
+*,
+*:before,
+*:after {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+  font-family: inherit;
+  font-weight: inherit;
+}
+
+html {
+  box-sizing: border-box;
+  font-family: 'Inter';
+  font-size: 100%;
+  font-weight: normal;
+}
+
+svg {
+  width: inherit;
+  height: inherit;
+}
+h1,
+h2,
+h3,
+p {
+  margin-bottom: 0.5rem;
+}
+
+h1 {
+  font-size: 1.5rem;
+  line-height: 2.5rem;
+}
+
+h2 {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+h3 {
+  font-size: 1rem;
+  line-height: 1.25rem;
+}
+
+p {
+  font-size: 0.875rem;
+  line-height: 1.125rem;
+}

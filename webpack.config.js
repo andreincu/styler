@@ -8,8 +8,8 @@ const prod = mode === 'production';
 
 module.exports = {
   entry: {
-    ui: './src/ui.js',
-    code: './src/code.ts',
+    ui: './src/ui/main.js',
+    code: './src/code/main.ts',
   },
 
   output: {
@@ -29,13 +29,8 @@ module.exports = {
     rules: [
       {
         test: /\.svelte$/,
-        use: {
-          loader: 'svelte-loader',
-          options: {
-            emitCss: true,
-            hotReload: true,
-          },
-        },
+        exclude: /node_modules/,
+        loader: 'svelte-loader',
       },
       {
         test: /\.(s[ac]ss|css)$/i,
@@ -47,14 +42,7 @@ module.exports = {
       },
       {
         test: /\.tsx?$/,
-        use: [
-          {
-            loader: 'ts-loader',
-            // options: {
-            //   transpileOnly: true,
-            // },
-          },
-        ],
+        loader: 'ts-loader',
         exclude: /node_modules/,
       },
       {
@@ -69,7 +57,7 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      template: './src/ui.html',
+      template: './src/ui/main.html',
       filename: 'ui.html',
       inlineSource: '.(js|css)$',
       chunks: ['ui'],

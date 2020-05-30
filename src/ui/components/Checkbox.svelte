@@ -11,7 +11,8 @@
 <style lang="scss">
   .checkbox-group {
     display: flex;
-    margin: -0.25rem;
+    max-width: 100%;
+    margin: calc(-1 * (var(--checkbox-gutter)));
   }
 
   .checkbox-toggle {
@@ -19,9 +20,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    flex: 0 0 24px;
-    margin: 0.25rem;
-    height: 24px;
+    flex: 0 0 var(--checkbox-size);
+    margin: var(--checkbox-gutter);
+    height: var(--checkbox-size);
   }
 
   /* checkbox-off */
@@ -29,7 +30,7 @@
     position: relative;
     width: 18px;
     height: 18px;
-    background: var(--component-checkbox-off);
+    background: var(--checkbox-off);
     border-radius: 4px;
     transition: opacity 0.2s ease-out;
   }
@@ -48,12 +49,17 @@
   }
 
   label:hover .checkbox-bg {
-    background: lighten(red, 10%);
+    background: var(--action-secondary-hover);
+    transition: background 0.2s ease-in;
   }
 
   input:checked ~ .checkbox-toggle .checkbox-bg {
-    opacity: 1;
-    background: var(--component-checkbox-on);
+    background: var(--checkbox-on);
+  }
+
+  label:hover input:checked ~ .checkbox-toggle .checkbox-bg {
+    background: var(--action-primary-hover);
+    transition: background 0.2s ease-in;
   }
 
   input:checked ~ .checkbox-toggle .checkbox-bg:before {
@@ -80,16 +86,18 @@
   }
 
   label span {
-    line-height: 24px;
-    margin: 0.25rem;
+    line-height: 20px;
+    margin: var(--checkbox-gutter);
   }
 
   @keyframes ripple {
     from {
-      transform: translate(-50%, -50%) scale(0);
+      background: var(--checkbox-off);
+      transform: translate(-50%, -50%) scale(0.9);
       opacity: 1;
     }
     to {
+      background: var(--checkbox-on);
       transform: translate(-50%, -50%) scale(1.5);
       opacity: 0;
     }
@@ -102,7 +110,7 @@
 
     <div class="checkbox-toggle">
       <div class="checkbox-icon">
-        <Icon bind:iconName />
+        <Icon class="checkbox-icon" bind:iconName />
       </div>
       <div class="checkbox-bg" />
     </div>
