@@ -1,5 +1,5 @@
-import { CMD, clientStorageKey, changeGlobals } from './modules/globals';
-import { changeAllStyles, extractAllStyles } from './modules/styles';
+import { CMD, clientStorageKey, changeGlobals } from './js-modules/globals';
+import { changeAllStyles, extractAllStyles } from './js-modules/styles';
 
 figma.showUI(__html__, { visible: false });
 

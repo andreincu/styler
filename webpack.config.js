@@ -8,8 +8,8 @@ const prod = mode === 'production';
 
 module.exports = {
   entry: {
-    ui: './src/ui/index.js',
-    code: './src/scripts/code.ts',
+    ui: './src/ui.js',
+    code: './src/code.ts',
   },
 
   output: {
@@ -38,6 +38,14 @@ module.exports = {
         },
       },
       {
+        test: /\.(s[ac]ss|css)$/i,
+        use: ['style-loader', 'css-loader', 'sass-loader'],
+      },
+      {
+        test: /\.(svg)$/i,
+        loader: 'svg-inline-loader',
+      },
+      {
         test: /\.tsx?$/,
         use: [
           {
@@ -50,12 +58,8 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
-        test: /\.(s[ac]ss|css)$/i,
-        use: ['style-loader', 'css-loader', 'sass-loader'],
-      },
-      {
-        test: /\.(png|jpg|gif|webp|svg)$/,
-        loader: [{ loader: 'url-loader' }],
+        test: /\.(png|jpg|gif|webp)$/,
+        loader: 'file-loader',
       },
     ],
   },
@@ -65,7 +69,7 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      template: './src/ui/index.html',
+      template: './src/ui.html',
       filename: 'ui.html',
       inlineSource: '.(js|css)$',
       chunks: ['ui'],
