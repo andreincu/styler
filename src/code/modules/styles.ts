@@ -12,6 +12,7 @@ import {
   stylersWithoutTexter,
   texter,
   addPreviousStyleToDescription,
+  selection,
 } from './globals';
 import { changeColor, cleanSelection, createFrameLayer, createTextLayer, ungroupToCanvas } from './layers';
 import { addAffixTo, chunk, figmaNotifyAndClose, groupBy, isArrayEmpty, ucFirst, uniq } from './utils';
@@ -148,30 +149,26 @@ export class Styler {
       return;
     }
 
-    if (idMatch && idMatch.remote === true) {
-      if (!nameMatch) {
-        this.createStyle(layer);
-        counter.created++;
-      } else if (idMatch !== nameMatch) {
-        this.updateStyle(layer, nameMatch);
-        counter.updated++;
-      } else {
-        counter.ignored++;
-      }
-    } else {
-      if (!idMatch && !nameMatch) {
-        this.createStyle(layer);
-        counter.created++;
-      } else if (idMatch && !nameMatch) {
-        this.renameStyle(layer, idMatch);
-        counter.renamed++;
-      } else if (idMatch !== nameMatch) {
-        this.updateStyle(layer, nameMatch);
-        counter.updated++;
-      } else {
-        counter.ignored++;
-      }
+    // create
+    if ((!idMatch || idMatch.remote) && !nameMatch) {
+      this.createStyle(layer);
+      counter.created++;
     }
+    // rename
+    else if (idMatch && !idMatch.remote && !nameMatch) {
+      this.renameStyle(layer, idMatch);
+      counter.renamed++;
+    }
+    // update
+    else if (idMatch !== nameMatch) {
+      this.updateStyle(layer, nameMatch);
+      counter.updated++;
+    }
+    // ignore
+    else {
+      counter.ignored++;
+    }
+
     counter.generated++;
   };
 
@@ -273,8 +270,6 @@ export const getStyleguides = (styles) => {
 };
 
 export const changeAllStyles = async () => {
-  const selection = cleanSelection();
-
   if (!selection) {
     figmaNotifyAndClose(`🥰 You must select at least 1 layer. Yea...`, notificationTimeout);
     return;

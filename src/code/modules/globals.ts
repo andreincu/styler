@@ -1,4 +1,5 @@
 import { Styler } from './styles';
+import { cleanSelection } from './layers';
 
 /* 
 --- CONSTANTS
@@ -8,6 +9,8 @@ export const CMD = figma.command;
 /* 
 --- VARIABLES
 */
+
+export const selection = cleanSelection();
 export let notificationTimeout = 6000;
 export let framesPerContainer = 5;
 export let addPreviousStyleToDescription = false;

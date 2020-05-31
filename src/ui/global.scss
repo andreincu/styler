@@ -1,8 +1,8 @@
-/* variables */
-$color-primary: red;
-$color-secondary: lightgrey;
-
 :root {
+  /* variables */
+  $color-primary: red;
+  $color-secondary: lightgrey;
+
   /* global tokens */
   --transition-short: 0.2s;
   --action-primary-hover: #{darken($color-primary, 12%)};
@@ -24,7 +24,25 @@ $color-secondary: lightgrey;
   --checkbox-off: #{$color-secondary};
 }
 
-/* global properties */
+/*  Fonts */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('https://rsms.me/inter/font-files/Inter-Medium.woff2?v=3.13') format('woff2'),
+    url('https://rsms.me/inter/font-files/Inter-Medium.woff?v=3.13') format('woff');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-weight: 700;
+  font-style: normal;
+  src: url('https://rsms.me/inter/font-files/Inter-Bold.woff2?v=3.13') format('woff2'),
+    url('https://rsms.me/inter/font-files/Inter-Bold.woff?v=3.13') format('woff');
+}
+
+/* Global styles */
 *,
 *:before,
 *:after {

@@ -92,11 +92,6 @@
     font-size: 0.875rem;
   }
 
-  table th,
-  table td {
-    padding: 0.25rem;
-  }
-
   table input {
     width: 100%;
   }

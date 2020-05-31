@@ -110,7 +110,7 @@
 
     <div class="checkbox-toggle">
       <div class="checkbox-icon">
-        <Icon class="checkbox-icon" bind:iconName />
+        <Icon bind:iconName />
       </div>
       <div class="checkbox-bg" />
     </div>
