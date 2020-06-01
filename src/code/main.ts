@@ -6,7 +6,7 @@ figma.showUI(__html__, { visible: false });
 // getting local stored settings and updating the globals
 figma.clientStorage.getAsync(clientStorageKey).then((codeSettings) => {
   if (CMD === 'customize-plugin') {
-    figma.showUI(__html__, { width: 320, height: 480 });
+    figma.showUI(__html__, { width: 360, height: 480 });
 
     figma.ui.postMessage({ codeSettings });
   }

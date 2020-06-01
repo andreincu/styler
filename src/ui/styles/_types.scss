@@ -1,0 +1,46 @@
+/*  Fonts */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('https://rsms.me/inter/font-files/Inter-Medium.woff2?v=3.13') format('woff2'),
+    url('https://rsms.me/inter/font-files/Inter-Medium.woff?v=3.13') format('woff');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('https://rsms.me/inter/font-files/SemiBold.woff2?v=3.13') format('woff2'),
+    url('https://rsms.me/inter/font-files/SemiBold.woff?v=3.13') format('woff');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-weight: 700;
+  font-style: normal;
+  src: url('https://rsms.me/inter/font-files/Inter-Bold.woff2?v=3.13') format('woff2'),
+    url('https://rsms.me/inter/font-files/Inter-Bold.woff?v=3.13') format('woff');
+}
+
+/* Text utilities */
+
+h1,
+.h1 {
+  font-size: var(--font-size-x-large);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-large);
+  margin: var(--size-xx-small) 0;
+  color: var(--font-color-important);
+}
+
+h2,
+.h2 {
+  font-size: var(--font-size-large);
+  font-weight: var(--font-weight-semibold);
+  margin: var(--size-xx-small) 0;
+  line-height: var(--line-height-large);
+  color: var(--font-color-important);
+}

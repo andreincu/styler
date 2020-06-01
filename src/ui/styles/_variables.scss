@@ -1,0 +1,73 @@
+:root {
+  /* color tokens */
+  --color-primary-base: red;
+  --color-secondary-base: lightgrey;
+
+  --color-neutral-x-strong: lighten(#cc0000, 30%);
+  --color-neutral-strong: lighten(#cc0000, 10%);
+  --color-neutral-base: #cc0000;
+  --color-neutral-weak: darken(#cc0000, 10%);
+  --color-neutral-x-weak: darken(#cc0000, 30%);
+
+  /* TYPOGRAPHY */
+  /* Text colors */
+  --font-color-important: rgba(0, 0, 0, 0.9);
+  --font-color-default: rgba(0, 0, 0, 0.68);
+  --font-color-faded: rgba(0, 0, 0, 0.32);
+
+  /* Font sizes */
+  --font-size-small: 1.2rem;
+  --font-size-medium: 1.4rem;
+  --font-size-large: 1.6rem;
+  --font-size-x-large: 1.8rem;
+
+  /* Font weights */
+  --font-weight-normal: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Line height */
+  --line-height-small: 1.6rem;
+  --line-height-large: 2.4rem;
+
+  /* SPACING + SIZING */
+  /* Positive spacing */
+  --size-xxx-small: 0.4rem;
+  --size-xx-small: 0.8rem;
+  --size-x-small: 1.6rem;
+  --size-small: 2.4rem;
+  --size-medium: 3.2rem;
+  --size-large: 4rem;
+  --size-x-large: 4.8rem;
+  --size-xx-large: 6.4rem;
+  --size-xxx-large: 8rem;
+
+  /* Negative spacing */
+  --negative-size-xxx-small: calc(var(--size-xxx-small) * -1);
+  --negative-size-xx-small: calc(var(--size-xx-small) * -1);
+  --negative-size-x-small: calc(var(--size-x-small) * -1);
+  --negative-size-small: calc(var(--size-small) * -1);
+  --negative-size-medium: calc(var(--size-medium) * -1);
+  --negative-size-large: calc(var(--size-large) * -1);
+  --negative-size-x-large: calc(var(--size-x-large) * -1);
+  --negative-size-xx-large: calc(var(--size-xx-large) * -1);
+  --negative-size-xxx-large: calc(var(--size-xxx-large) * -1);
+
+  /* BORDER RADIUS */
+  --border-radius-small: 0.2rem;
+  --border-radius-medium: 0.5rem;
+  --border-radius-large: 0.6rem;
+
+  /* INDEPENDENT TRANSFORM */
+  --translate-x: -50%;
+  --translate-y: -50%;
+  --rotate: 0deg;
+  --scale: 1;
+
+  /* TRANSITION */
+  --transition-x-fast: 0.1s;
+  --transition-fast: 0.2s;
+  --transition-medium: 0.3s;
+  --transition-slow: 0.4s;
+  --transition-x-slow: 0.5s;
+}

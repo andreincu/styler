@@ -11,96 +11,71 @@
 <style lang="scss">
   .checkbox-group {
     display: flex;
-    max-width: 100%;
-    margin: calc(-1 * (var(--checkbox-gutter)));
+    margin: var(--negative-size-xxx-small);
   }
 
   .checkbox-toggle {
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 var(--checkbox-size);
-    margin: var(--checkbox-gutter);
-    height: var(--checkbox-size);
+    flex: 0 0 var(--size-small);
+    height: var(--size-small);
+    margin: var(--size-xxx-small);
   }
 
-  /* checkbox-off */
-  .checkbox-bg {
-    position: relative;
-    width: 18px;
-    height: 18px;
-    background: var(--checkbox-off);
-    border-radius: 4px;
-    transition: opacity 0.2s ease-out;
-  }
-
-  .checkbox-bg:before {
+  .checkbox-toggle:before,
+  .checkbox-toggle:after {
+    background: var(--color-secondary-base);
+    display: inline-block;
     position: absolute;
-    display: block;
-    content: '';
     left: 50%;
     top: 50%;
+    content: '';
+    width: 75%;
+    height: 75%;
+    opacity: 1;
+    border-radius: var(--size-xxx-small);
+    transition: all var(--transition-fast) ease-out;
+    filter: brightness(100%);
+
     transform-origin: center center;
+    transform: translateX(var(--translate-x)) translateY(var(--translate-y)) rotate(var(--rotate)) scale(var(--scale));
+  }
+
+  .checkbox-toggle:before {
+    z-index: -2;
+  }
+  .checkbox-toggle:after {
     z-index: -1;
-    border-radius: inherit;
-    width: 100%;
-    height: 100%;
   }
 
-  label:hover .checkbox-bg {
-    background: var(--action-secondary-hover);
-    transition: background 0.2s ease-in;
+  label:hover .checkbox-toggle:after {
+    filter: brightness(80%);
   }
 
-  input:checked ~ .checkbox-toggle .checkbox-bg {
-    background: var(--checkbox-on);
+  input:checked ~ .checkbox-toggle:after {
+    background: var(--color-primary-base);
   }
 
-  label:hover input:checked ~ .checkbox-toggle .checkbox-bg {
-    background: var(--action-primary-hover);
-    transition: background 0.2s ease-in;
-  }
-
-  input:checked ~ .checkbox-toggle .checkbox-bg:before {
-    animation: ripple 0.3s ease-out;
+  input:checked ~ .checkbox-toggle:before {
+    background: var(--color-primary-base);
+    opacity: 0;
+    --scale: 1.5;
   }
 
   .checkbox-icon {
-    position: absolute;
-    display: block;
-    content: '';
-    left: 50%;
-    top: 50%;
-    transform-origin: center center;
-    transform: translate(-50%, -50%) scale(0);
+    display: inline-block;
     width: 100%;
     height: 100%;
-    z-index: 1;
-    transition: transform 0.2s ease-out;
+    transform: scale(0);
+    transition: transform var(--transition-fast) ease-out;
   }
 
   input:checked ~ .checkbox-toggle .checkbox-icon {
-    transform: translate(-50%, -50%) scale(1);
+    transform: scale(1);
     opacity: 1;
   }
 
   label span {
-    line-height: 20px;
-    margin: var(--checkbox-gutter);
-  }
-
-  @keyframes ripple {
-    from {
-      background: var(--checkbox-off);
-      transform: translate(-50%, -50%) scale(0.9);
-      opacity: 1;
-    }
-    to {
-      background: var(--checkbox-on);
-      transform: translate(-50%, -50%) scale(1.5);
-      opacity: 0;
-    }
+    margin: var(--size-xxx-small);
   }
 </style>
 
@@ -110,9 +85,8 @@
 
     <div class="checkbox-toggle">
       <div class="checkbox-icon">
-        <Icon bind:iconName />
+        <Icon {iconName} />
       </div>
-      <div class="checkbox-bg" />
     </div>
 
     <span>

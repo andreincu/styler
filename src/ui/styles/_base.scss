@@ -1,0 +1,51 @@
+/* Basics */
+*,
+*:before,
+*:after {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+  font-family: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+}
+
+html {
+  box-sizing: border-box;
+  font-family: 'Inter';
+  font-size: 62.5%;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'tnum' on, 'lnum' on, 'ss01' on, 'ss03' on, 'cv05' on, 'case' on;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-size: var(--font-size-medium);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-large);
+  color: var(--font-color-default);
+}
+
+/* Hyperlink styling */
+a {
+  color: var(--color-primary-base);
+  text-decoration: none;
+  cursor: pointer;
+}
+a:hover {
+  color: var(--color-primary-base);
+}
+a:active {
+  color: var(--color-primary-base);
+}
+a:focus {
+  text-decoration: underline;
+}
+
+/* Svg */
+svg {
+  width: inherit;
+  height: inherit;
+}

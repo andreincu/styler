@@ -10,10 +10,11 @@ export const CMD = figma.command;
 --- VARIABLES
 */
 
-export const selection = cleanSelection();
-export let notificationTimeout = 6000;
-export let framesPerContainer = 5;
+export let selection = cleanSelection();
 export let addPreviousStyleToDescription = false;
+export let updateUsingLocalStyles = false;
+export let framesPerContainer = 5;
+export let notificationTimeout = 6000;
 export const counter = {
   applied: 0,
   created: 0,
@@ -98,4 +99,5 @@ export const changeGlobals = (settings: any = {}) => {
   notificationTimeout = settings.notificationTimeout || notificationTimeout;
   framesPerContainer = settings.framesPerContainer || framesPerContainer;
   addPreviousStyleToDescription = settings.addPreviousStyleToDescription || addPreviousStyleToDescription;
+  updateUsingLocalStyles = settings.updateUsingLocalStyles || updateUsingLocalStyles;
 };

@@ -25,6 +25,7 @@
   let notificationTimeout = 6000;
   let framesPerContainer = 5;
   let addPreviousStyleToDescription = false;
+  let updateUsingLocalStyles = false;
 
   onmessage = (e) => {
     const codeSettings = e.data.pluginMessage.codeSettings;
@@ -58,6 +59,9 @@
     if (codeSettings.addPreviousStyleToDescription) {
       addPreviousStyleToDescription = codeSettings.addPreviousStyleToDescription;
     }
+    if (codeSettings.updateUsingLocalStyles) {
+      updateUsingLocalStyles = codeSettings.updateUsingLocalStyles;
+    }
   };
 
   const handleClick = () => {
@@ -74,6 +78,7 @@
             notificationTimeout,
             framesPerContainer,
             addPreviousStyleToDescription,
+            updateUsingLocalStyles,
           },
         },
       },
@@ -86,22 +91,17 @@
   table {
     width: 100%;
     text-align: left;
-    margin: 0 -0.25rem;
     border-collapse: collapse;
     table-layout: fixed;
-    font-size: 0.875rem;
   }
 
-  table input {
+  input {
     width: 100%;
+    border: 1px solid grey;
   }
 
   section {
-    padding: 0.25rem 1rem;
-  }
-
-  main {
-    padding: 0.5rem 0;
+    padding: var(--size-xx-small) var(--size-x-small);
   }
 
   button {
@@ -112,24 +112,21 @@
 <main>
 
   <section>
-    <h2>Customize plugin</h2>
-  </section>
-  <section>
-    <h3>Notification timeout</h3>
+    <h1>Customize plugin</h1>
+
+    <h2>Notification timeout</h2>
     <input type="number" bind:value={notificationTimeout} />
-  </section>
 
-  <section>
-    <h3>Number of frames per row</h3>
+    <h2>Number of frames per row</h2>
     <input type="number" bind:value={framesPerContainer} />
-  </section>
 
-  <section>
     <Checkbox bind:checked={addPreviousStyleToDescription}>Show previous style in description</Checkbox>
+
+    <Checkbox bind:checked={updateUsingLocalStyles}>Update using local styles</Checkbox>
   </section>
 
   <section>
-    <h3>Style settings</h3>
+    <h2>Style settings</h2>
     <table>
       <tr>
         <th>Style type</th>

@@ -13,6 +13,7 @@ import {
   texter,
   addPreviousStyleToDescription,
   selection,
+  updateUsingLocalStyles,
 } from './globals';
 import { changeColor, cleanSelection, createFrameLayer, createTextLayer, ungroupToCanvas } from './layers';
 import { addAffixTo, chunk, figmaNotifyAndClose, groupBy, isArrayEmpty, ucFirst, uniq } from './utils';
@@ -154,16 +155,30 @@ export class Styler {
       this.createStyle(layer);
       counter.created++;
     }
+    // updateUsingLocalStyles - enabled
     // rename
-    else if (idMatch && !idMatch.remote && !nameMatch) {
+    else if (idMatch && !idMatch.remote && !nameMatch && updateUsingLocalStyles === true) {
       this.renameStyle(layer, idMatch);
       counter.renamed++;
     }
     // update
-    else if (idMatch !== nameMatch) {
+    else if (idMatch !== nameMatch && updateUsingLocalStyles === true) {
       this.updateStyle(layer, nameMatch);
       counter.updated++;
     }
+
+    // updateUsingLocalStyles - disabled
+    // update
+    else if ((!idMatch || idMatch.remote) && nameMatch && updateUsingLocalStyles === false) {
+      this.updateStyle(layer, nameMatch);
+      counter.updated++;
+    }
+    // rename
+    else if (idMatch !== nameMatch && updateUsingLocalStyles === false) {
+      this.renameStyle(layer, idMatch);
+      counter.renamed++;
+    }
+
     // ignore
     else {
       counter.ignored++;
