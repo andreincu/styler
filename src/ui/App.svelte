@@ -1,5 +1,7 @@
 <script>
-  import Checkbox from './components/Checkbox.svelte';
+  import Checkbox from './components/Checkbox';
+  import Button from './components/Button';
+  import TextField from './components/TextField';
 
   let filler = {
     prefix: '',
@@ -26,6 +28,9 @@
   let framesPerContainer = 5;
   let addPreviousStyleToDescription = false;
   let updateUsingLocalStyles = false;
+
+  const previousExplainer = 'This option will change your styles description, by adding the previous style at update.';
+  const updateusingLocalExplainer = 'When this option is enabled, update and rename behaviour are changed.';
 
   onmessage = (e) => {
     const codeSettings = e.data.pluginMessage.codeSettings;
@@ -95,38 +100,33 @@
     table-layout: fixed;
   }
 
-  input {
-    width: 100%;
-    border: 1px solid grey;
-  }
-
   section {
     padding: var(--size-xx-small) var(--size-x-small);
-  }
-
-  button {
-    width: 100%;
   }
 </style>
 
 <main>
 
   <section>
-    <h1>Customize plugin</h1>
+    <h1 class="h2">Customize plugin</h1>
 
-    <h2>Notification timeout</h2>
-    <input type="number" bind:value={notificationTimeout} />
+    <h2 class="h3">Notification timeout</h2>
+    <TextField type="number" bind:value={notificationTimeout} unitMeasurement="'ms'" />
 
-    <h2>Number of frames per row</h2>
-    <input type="number" bind:value={framesPerContainer} />
+    <h2 class="h3">Number of frames per row</h2>
+    <TextField type="number" bind:value={framesPerContainer} unitMeasurement="'frames'" />
 
-    <Checkbox bind:checked={addPreviousStyleToDescription}>Show previous style in description</Checkbox>
+    <Checkbox bind:checked={addPreviousStyleToDescription} note={previousExplainer}>
+      Show previous style in description
+    </Checkbox>
 
-    <Checkbox bind:checked={updateUsingLocalStyles}>Update using local styles</Checkbox>
+    <Checkbox bind:checked={updateUsingLocalStyles} note={updateusingLocalExplainer}>
+      Update using local styles
+    </Checkbox>
   </section>
 
   <section>
-    <h2>Style settings</h2>
+    <h2 class="h3">Style settings</h2>
     <table>
       <tr>
         <th>Style type</th>
@@ -182,6 +182,6 @@
   </section>
 
   <section>
-    <button on:click={handleClick}>Save settings</button>
+    <Button on:click={handleClick}>Save settings</Button>
   </section>
 </main>

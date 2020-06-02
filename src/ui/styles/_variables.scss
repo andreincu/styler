@@ -1,30 +1,41 @@
 :root {
-  /* color tokens */
-  --color-primary-base: red;
-  --color-secondary-base: lightgrey;
+  $color-text: rgba(#021420, 95%);
+  $color-primary: #2989fb;
+  $color-secondary: #a1bbda;
+  $color-neutral: #f5f8fa;
 
-  --color-neutral-x-strong: lighten(#cc0000, 30%);
-  --color-neutral-strong: lighten(#cc0000, 10%);
-  --color-neutral-base: #cc0000;
-  --color-neutral-weak: darken(#cc0000, 10%);
-  --color-neutral-x-weak: darken(#cc0000, 30%);
+  /* color tokens */
+  --color-primary-strong: #{darken($color-primary, 10%)};
+  --color-primary-base: #{$color-primary};
+  --color-primary-weak: #{lighten($color-primary, 10%)};
+
+  --color-secondary-strong: #{darken($color-secondary, 20%)};
+  --color-secondary-base: #{$color-secondary};
+  --color-secondary-weak: #{lighten($color-secondary, 20%)};
+
+  --color-neutral-x-strong: #{darken($color-neutral, 10%)};
+  --color-neutral-strong: #{darken($color-neutral, 5%)};
+  --color-neutral-base: #{$color-neutral};
+  --color-neutral-weak: #{lighten($color-neutral, 5%)};
+  --color-neutral-x-weak: #{lighten($color-neutral, 10%)};
 
   /* TYPOGRAPHY */
   /* Text colors */
-  --font-color-important: rgba(0, 0, 0, 0.9);
-  --font-color-default: rgba(0, 0, 0, 0.68);
-  --font-color-faded: rgba(0, 0, 0, 0.32);
+  --text-color-important: #{$color-text};
+  --text-color-default: #{rgba($color-text, 70%)};
+  --text-color-faded: #{rgba($color-text, 40%)};
+  --text-color-contrast: #{invert($color-text)};
 
   /* Font sizes */
-  --font-size-small: 1.2rem;
-  --font-size-medium: 1.4rem;
-  --font-size-large: 1.6rem;
-  --font-size-x-large: 1.8rem;
+  --text-size-small: 1.3rem;
+  --text-size-medium: 1.4rem;
+  --text-size-large: 1.6rem;
+  --text-size-x-large: 1.8rem;
 
   /* Font weights */
-  --font-weight-normal: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
+  --text-weight-normal: 500;
+  --text-weight-semibold: 600;
+  --text-weight-bold: 700;
 
   /* Line height */
   --line-height-small: 1.6rem;

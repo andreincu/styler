@@ -29,18 +29,27 @@
 
 h1,
 .h1 {
-  font-size: var(--font-size-x-large);
-  font-weight: var(--font-weight-bold);
+  font-size: var(--text-size-x-large);
+  font-weight: var(--text-weight-bold);
   line-height: var(--line-height-large);
-  margin: var(--size-xx-small) 0;
-  color: var(--font-color-important);
+  margin: var(--size-xxx-small) 0;
+  color: var(--text-color-important);
 }
 
-h2,
-.h2 {
-  font-size: var(--font-size-large);
-  font-weight: var(--font-weight-semibold);
+h3,
+.h3 {
+  font-size: var(--text-size-large);
+  font-weight: var(--text-weight-semibold);
   margin: var(--size-xx-small) 0;
   line-height: var(--line-height-large);
-  color: var(--font-color-important);
+  color: var(--text-color-important);
+}
+
+h3,
+.h3 {
+  font-size: var(--text-size-medium);
+  font-weight: var(--text-weight-semibold);
+  margin: var(--size-xx-small) 0;
+  line-height: var(--line-height-large);
+  color: var(--text-color-important);
 }

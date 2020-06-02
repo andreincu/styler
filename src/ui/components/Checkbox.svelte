@@ -6,6 +6,7 @@
   export let checked = false;
   export let checkboxes = [{ value: '' }];
   export let group = [];
+  export let note;
 </script>
 
 <style lang="scss">
@@ -66,6 +67,7 @@
     width: 100%;
     height: 100%;
     transform: scale(0);
+    color: var(--text-color-contrast);
     transition: transform var(--transition-fast) ease-out;
   }
 
@@ -74,8 +76,16 @@
     opacity: 1;
   }
 
-  label span {
+  .label {
     margin: var(--size-xxx-small);
+  }
+
+  .helper {
+    font-size: var(--text-size-small);
+    font-weight: var(--text-weight-normal);
+    margin: 0;
+    line-height: var(--line-height-large);
+    color: var(--text-color-faded);
   }
 </style>
 
@@ -89,10 +99,15 @@
       </div>
     </div>
 
-    <span>
-      {#if checkboxes.length === 1}
-        <slot />
-      {:else}{checkbox.value}{/if}
-    </span>
+    <div class="label">
+      <span>
+        {#if checkboxes.length === 1}
+          <slot />
+        {:else}{checkbox.value}{/if}
+      </span>
+      {#if note}
+        <p class="helper">{note}</p>
+      {/if}
+    </div>
   </label>
 {/each}

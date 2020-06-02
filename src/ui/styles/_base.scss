@@ -22,10 +22,11 @@ html {
 }
 
 body {
-  font-size: var(--font-size-medium);
-  font-weight: var(--font-weight-normal);
+  font-size: var(--text-size-medium);
+  font-weight: var(--text-weight-normal);
   line-height: var(--line-height-large);
-  color: var(--font-color-default);
+  color: var(--text-color-default);
+  background: var(--color-neutral-base);
 }
 
 /* Hyperlink styling */
@@ -48,4 +49,6 @@ a:focus {
 svg {
   width: inherit;
   height: inherit;
+  // fill: currentColor;
+  stroke: currentColor;
 }
