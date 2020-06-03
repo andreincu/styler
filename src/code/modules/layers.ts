@@ -1,4 +1,4 @@
-import { clone, groupBy, isArrayEmpty } from './utils';
+import { clone, groupBy } from './utils';
 import { webRGBToFigmaRGB } from './convert-color';
 import { colors } from './globals';
 

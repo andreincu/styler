@@ -15,7 +15,7 @@ import {
   selection,
   updateUsingLocalStyles,
 } from './globals';
-import { changeColor, cleanSelection, createFrameLayer, createTextLayer, ungroupToCanvas } from './layers';
+import { changeColor, createFrameLayer, createTextLayer, ungroupToCanvas } from './layers';
 import { addAffixTo, chunk, figmaNotifyAndClose, groupBy, isArrayEmpty, ucFirst, uniq } from './utils';
 
 interface StylerOptions {
@@ -292,10 +292,18 @@ export const changeAllStyles = async () => {
 
   await Promise.all(
     selection.map(async (layer) => {
-      const stylers = getStylersByLayerType(layer);
+      const oldLayerName = layer.name;
+      let stylers = stylersWithoutTexter;
 
       if (layer.type === 'TEXT') {
         await figma.loadFontAsync(layer.fontName as FontName);
+
+        if (layer.name[0] === '-') {
+          layer.name = layer.name.slice(1);
+          stylers = [texter];
+        } else {
+          stylers.push(texter);
+        }
       }
 
       stylers.map((styler) => {
@@ -312,6 +320,8 @@ export const changeAllStyles = async () => {
           styler.removeStyle(idMatch);
         }
       });
+
+      layer.name = oldLayerName;
     }),
   );
 
