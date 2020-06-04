@@ -298,11 +298,11 @@ export const changeAllStyles = async () => {
       if (layer.type === 'TEXT') {
         await figma.loadFontAsync(layer.fontName as FontName);
 
-        if (layer.name[0] === '-') {
+        if (layer.name[0] === '+') {
           layer.name = layer.name.slice(1);
-          stylers = [texter];
-        } else {
           stylers.push(texter);
+        } else {
+          stylers = [texter];
         }
       }
 
