@@ -1,4 +1,4 @@
-import { Styler } from './styles';
+import { Styler } from './styler';
 import { cleanSelection } from './layers';
 
 /* 

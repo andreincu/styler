@@ -1,6 +1,6 @@
 import { clone, groupBy } from './utils';
 import { webRGBToFigmaRGB } from './convert-color';
-import { colors } from './globals';
+import { colors, texter, filler, effecter, stylersWithoutTexter } from './globals';
 
 interface AutoLayoutProps {
   layoutMode?: FrameNode['layoutMode'];
@@ -86,10 +86,20 @@ export const createTextLayer = async (options: TextLayer = {}) => {
   await figma.loadFontAsync(newLayer.fontName as FontName);
 
   newLayer.characters = characters;
+  newLayer.name = characters;
+  if (color) {
+    changeColor(newLayer, 'fills', color);
+  }
+
+  [texter, filler, effecter].map(async (styler) => {
+    const nameMatch = styler.getStyleByName(newLayer.name);
+
+    await styler.applyStyle(newLayer, nameMatch);
+  });
+
   newLayer.x = xPos;
   newLayer.y = yPos;
 
-  changeColor(newLayer, 'fills', color);
   parent.appendChild(newLayer);
 
   return newLayer;
@@ -109,12 +119,19 @@ export const createFrameLayer = (options: FrameLayer = {}) => {
   } = options;
 
   const newLayer = figma.createFrame();
-  newLayer.resize(width, height);
+  newLayer.name = name;
+  if (color) {
+    changeColor(newLayer, 'fills', color);
+  }
+  stylersWithoutTexter.map((styler) => {
+    const nameMatch = styler.getStyleByName(newLayer.name);
+
+    styler.applyStyle(newLayer, nameMatch);
+  });
 
   newLayer.x = xPos;
   newLayer.y = yPos;
-  newLayer.name = name;
-  changeColor(newLayer, 'fills', color);
+  newLayer.resize(width, height);
 
   parent.appendChild(newLayer);
 

@@ -52,3 +52,11 @@ svg {
   // fill: currentColor;
   stroke: currentColor;
 }
+
+input {
+  width: inherit;
+  border: 1px solid var(--color-neutral-strong);
+  background: var(--color-neutral-weak);
+  padding: var(--size-xxx-small) var(--size-xx-small);
+  max-width: 100%;
+}

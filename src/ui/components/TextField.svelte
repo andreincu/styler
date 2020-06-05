@@ -1,5 +1,4 @@
 <script>
-  export let type = 'text';
   export let value = '';
   export let placeholder = '';
   export let unitMeasurement = '';
@@ -32,15 +31,8 @@
   div:focus::after {
     --translate: var(--negative-size-small), -50%;
   }
-
-  input {
-    width: inherit;
-    border: 1px solid var(--color-neutral-strong);
-    background: var(--color-neutral-weak);
-    padding: var(--size-xxx-small) var(--size-xx-small);
-  }
 </style>
 
 <div style="--unitMeasurement: {unitMeasurement.toString()}">
-  <input {type} {value} {placeholder} />
+  <input type="number" bind:value {placeholder} />
 </div>

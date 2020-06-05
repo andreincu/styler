@@ -1,8 +1,6 @@
 import {
   allStylers,
-  CMD,
   colors,
-  counter,
   effecter,
   filler,
   framesPerContainer,
@@ -11,185 +9,13 @@ import {
   strokeer,
   stylersWithoutTexter,
   texter,
-  addPreviousStyleToDescription,
+  CMD,
   selection,
-  updateUsingLocalStyles,
+  counter,
+  black,
 } from './globals';
 import { changeColor, createFrameLayer, createTextLayer, ungroupToCanvas } from './layers';
-import { addAffixTo, chunk, figmaNotifyAndClose, groupBy, isArrayEmpty, ucFirst, uniq } from './utils';
-
-interface StylerOptions {
-  name?: string;
-  styleType?: string;
-  styleProps?: string[];
-  layerProps?: string[];
-  layerPropType?: string;
-  prefix?: string;
-  suffix?: string;
-}
-
-export class Styler {
-  name: string;
-  styleType: string;
-  styleProps: string[];
-  layerProps: string[];
-  layerPropType: string;
-  layerStyleID: string;
-  prefix: string;
-  suffix: string;
-
-  constructor(options: StylerOptions = {}) {
-    const {
-      name = 'styler',
-      styleType = '',
-      layerPropType = styleType,
-      prefix = '',
-      suffix = '',
-      styleProps,
-      layerProps,
-    } = options;
-
-    this.name = name;
-    this.styleType = styleType.toLocaleUpperCase();
-    this.styleProps = styleProps || layerProps;
-    this.layerProps = layerProps || styleProps;
-    this.layerPropType = layerPropType.toLocaleUpperCase();
-    this.layerStyleID = addAffixTo(layerPropType.toLocaleLowerCase(), '', 'StyleId');
-    this.prefix = prefix;
-    this.suffix = suffix;
-  }
-
-  applyStyle = (layer: SceneNode, style: BaseStyle) => {
-    if (!style || layer[this.layerStyleID] === undefined) {
-      console.log(`Apply: ${this.layerStyleID} not found || No style found for ${layer.name}`);
-      return;
-    }
-
-    layer[this.layerStyleID] = style.id;
-    counter.applied++;
-  };
-
-  createStyle = (layer: SceneNode) => {
-    const newStyle = figma[addAffixTo(ucFirst(this.styleType), 'create', 'Style')]();
-
-    this.renameStyle(layer, newStyle);
-    this.updateStyle(layer, newStyle);
-
-    return newStyle;
-  };
-
-  detachStyle = (layer) => {
-    if (!layer[this.layerStyleID]) {
-      console.log(`Detach: ${this.layerPropType} not found.`);
-      return;
-    }
-
-    layer[this.layerStyleID] = '';
-    counter.detached++;
-  };
-
-  getLocalStyles = () => {
-    const getCommand = addAffixTo(ucFirst(this.styleType), 'getLocal', 'Styles');
-    return figma[getCommand]();
-  };
-
-  getStyleById = (layer) => figma.getStyleById(layer[this.layerStyleID]);
-
-  getStyleByName = (name) => {
-    const stylesByType = this.getLocalStyles();
-    return stylesByType.find((style) => style.name === addAffixTo(name, this.prefix, this.suffix));
-  };
-
-  changeStyleDescription = (layer: SceneNode, style: BaseStyle) => {
-    const idMatch = this.getStyleById(layer);
-
-    return !idMatch ? style.description : (style.description = `Previous style:\n${idMatch.name}`);
-  };
-
-  renameStyle = (layer: SceneNode, style: BaseStyle) => {
-    if (!style) {
-      console.log(`Rename: No style found for ${layer.name}`);
-      return;
-    }
-
-    style.name = addAffixTo(layer.name, this.prefix, this.suffix);
-  };
-
-  updateStyle = (layer: SceneNode, style: BaseStyle) => {
-    if (addPreviousStyleToDescription) {
-      this.changeStyleDescription(layer, style);
-    }
-
-    this.detachStyle(layer);
-    this.styleProps.map((prop, index) => {
-      if (!style || layer[this.layerProps[index]] === undefined) {
-        console.log(`Update: ${this.layerProps[index]} not found || No style found for ${layer.name}`);
-        return;
-      }
-
-      style[prop] = layer[this.layerProps[index]];
-    });
-    this.applyStyle(layer, style);
-  };
-
-  removeStyle = (style: BaseStyle) => {
-    if (!style || style.remote === true) {
-      return;
-    }
-
-    const cmdType = CMD.split('-')[1];
-    if (cmdType === this.layerPropType.toLocaleLowerCase() || cmdType === 'all') {
-      style.remove();
-      counter.removed++;
-    }
-  };
-
-  generateStyle = (layer: SceneNode, { nameMatch, idMatch }: any = {}) => {
-    if (this.isPropMixed(layer) || this.isPropEmpty(layer)) {
-      console.log(`Generate: We have some mixed or empty props.`);
-      return;
-    }
-
-    // create
-    if ((!idMatch || idMatch.remote) && !nameMatch) {
-      this.createStyle(layer);
-      counter.created++;
-    }
-    // updateUsingLocalStyles - enabled
-    // rename
-    else if (idMatch && !idMatch.remote && !nameMatch && updateUsingLocalStyles === true) {
-      this.renameStyle(layer, idMatch);
-      counter.renamed++;
-    }
-    // update
-    else if (idMatch !== nameMatch && updateUsingLocalStyles === true) {
-      this.updateStyle(layer, nameMatch);
-      counter.updated++;
-    }
-
-    // updateUsingLocalStyles - disabled
-    // update
-    else if ((!idMatch || idMatch.remote) && nameMatch && updateUsingLocalStyles === false) {
-      this.updateStyle(layer, nameMatch);
-      counter.updated++;
-    }
-    // rename
-    else if (idMatch !== nameMatch && updateUsingLocalStyles === false) {
-      this.renameStyle(layer, idMatch);
-      counter.renamed++;
-    }
-
-    // ignore
-    else {
-      counter.ignored++;
-    }
-
-    counter.generated++;
-  };
-
-  isPropEmpty = (layer: SceneNode) => isArrayEmpty(layer[this.layerProps[0]]);
-  isPropMixed = (layer: SceneNode) => this.layerProps.some((prop) => layer[prop] === figma.mixed);
-}
+import { chunk, figmaNotifyAndClose, groupBy, uniq } from './utils';
 
 export const showMessage = (counter, messages: any = {}) => {
   const { empty = '', single = '', multiple = '' } = messages;
@@ -266,7 +92,7 @@ export const getUniqueStylesName = (styles: BaseStyle[]) => {
   return uniq(namesWithoutAffixes) as string[];
 };
 
-export const getStylersByLayerType = (layer: SceneNode): Styler[] => {
+export const getStylersByLayerType = (layer: SceneNode) => {
   return layer.type === 'TEXT' ? [texter] : [filler, strokeer, effecter, grider];
 };
 
@@ -285,7 +111,7 @@ export const getStyleguides = (styles) => {
 };
 
 export const changeAllStyles = async () => {
-  if (!selection) {
+  if (selection.length === 0) {
     figmaNotifyAndClose(`🥰 You must select at least 1 layer. Yea...`, notificationTimeout);
     return;
   }
@@ -293,27 +119,31 @@ export const changeAllStyles = async () => {
   await Promise.all(
     selection.map(async (layer) => {
       const oldLayerName = layer.name;
-      let stylers = stylersWithoutTexter;
+      let stylers = allStylers;
 
       if (layer.type === 'TEXT') {
         await figma.loadFontAsync(layer.fontName as FontName);
 
-        if (layer.name[0] === '+') {
-          layer.name = layer.name.slice(1);
-          stylers.push(texter);
-        } else {
+        if (layer.name[0] !== '+') {
           stylers = [texter];
         }
       }
 
+      if (layer.name[0] === '+') {
+        layer.name = layer.name.slice(1);
+      }
+
       stylers.map((styler) => {
         const idMatch = styler.getStyleById(layer);
-        const nameMatch = styler.getStyleByName(layer.name);
+        const nameMatch =
+          oldLayerName[0] === '+'
+            ? styler.getStyleByName(layer.name, { exactMatch: false })
+            : styler.getStyleByName(layer.name);
 
         if (CMD === 'generate-all-styles') {
           styler.generateStyle(layer, { nameMatch, idMatch });
         } else if (CMD === 'apply-all-styles') {
-          styler.applyStyle(layer, nameMatch);
+          styler.applyStyle(layer, nameMatch, { oldName: oldLayerName });
         } else if (CMD === 'detach-all-styles') {
           styler.detachStyle(layer);
         } else if (CMD.includes('remove')) {
@@ -330,26 +160,23 @@ export const changeAllStyles = async () => {
 
 export const extractAllStyles = async () => {
   const styles = [
+    ...figma.getLocalTextStyles(),
+    ...figma.getLocalGridStyles(),
     ...figma.getLocalPaintStyles(),
     ...figma.getLocalEffectStyles(),
-    ...figma.getLocalGridStyles(),
-    ...figma.getLocalTextStyles(),
   ];
 
   const selection = [];
   const styleguides = getStyleguides(styles);
 
   if (styleguides.length > 0) {
-    const canvas = figma.currentPage;
     const styleguidesByType = groupBy(styleguides, 'type');
-
-    changeColor(canvas, 'backgrounds', colors.black);
 
     const mainContainer = createFrameLayer({
       layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 128 },
     });
 
-    if (!!styleguidesByType.TEXT) {
+    if (styleguidesByType.TEXT) {
       const textsContainer = createFrameLayer({
         layoutProps: { layoutMode: 'VERTICAL', itemSpacing: 32 },
         parent: mainContainer,
@@ -359,12 +186,9 @@ export const extractAllStyles = async () => {
         styleguidesByType.TEXT.map(async (styleguide) => {
           const newLayer = await createTextLayer({
             characters: styleguide.name,
-            color: colors.white,
+            color: black,
             parent: textsContainer,
           });
-
-          const nameMatch = texter.getStyleByName(newLayer.name);
-          texter.applyStyle(newLayer, nameMatch);
 
           selection.push(newLayer);
           counter.extracted++;
@@ -372,7 +196,7 @@ export const extractAllStyles = async () => {
       );
     }
 
-    if (!!styleguidesByType.FRAME) {
+    if (styleguidesByType.FRAME) {
       const visualsContainer = createFrameLayer({
         layoutProps: { layoutMode: 'VERTICAL', itemSpacing: 32 },
         parent: mainContainer,
@@ -387,12 +211,6 @@ export const extractAllStyles = async () => {
         styleguides.map((styleguide) => {
           const newLayer = createFrameLayer({ name: styleguide.name, size: 80, parent: chunkContainer });
 
-          stylersWithoutTexter.map((styler) => {
-            const nameMatch = styler.getStyleByName(newLayer.name);
-
-            styler.applyStyle(newLayer, nameMatch);
-          });
-
           selection.push(newLayer);
           counter.extracted++;
         });
@@ -402,4 +220,18 @@ export const extractAllStyles = async () => {
   ungroupToCanvas(selection);
 
   showNofication();
+};
+
+export const checkStyleType = (style) => {
+  let type = 'FILL';
+  [filler, strokeer].map((styler) => {
+    if (
+      (styler.prefix !== '' || styler.suffix !== '') &&
+      style.name.indexOf(styler.prefix) === 0 &&
+      style.name.lastIndexOf(styler.suffix) !== -1
+    ) {
+      type = styler.layerPropType;
+    }
+  });
+  return type;
 };
