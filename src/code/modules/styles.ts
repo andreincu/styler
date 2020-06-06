@@ -118,8 +118,8 @@ export const changeAllStyles = async () => {
 
   await Promise.all(
     selection.map(async (layer) => {
-      const oldLayerName = layer.name;
       let stylers = allStylers;
+      const oldLayerName = layer.name;
 
       if (layer.type === 'TEXT') {
         await figma.loadFontAsync(layer.fontName as FontName);

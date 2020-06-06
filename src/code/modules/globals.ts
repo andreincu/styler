@@ -10,10 +10,11 @@ export const CMD = figma.command;
 --- VARIABLES
 */
 
-export let selection = cleanSelection();
-export let addPreviousStyleToDescription = false;
+export let selection = cleanSelection(); // doesn't have ssense here
+// those variables can be an object called defaultSettings
+export let addPreviousStyleToDescription = false; // addPrevToDescription
 export let updateUsingLocalStyles = false;
-export let framesPerContainer = 5;
+export let framesPerContainer = 5; // framesPerRow
 export let notificationTimeout = 6000;
 export const counter = {
   applied: 0,
@@ -27,6 +28,25 @@ export const counter = {
   updated: 0,
 };
 
+export const settings = {
+  addPrevToDescription: false,
+  framesPerContainer: 5,
+  notificationTimeout: 6000,
+  updateUsingLocalStyles: false,
+
+  // stylers
+  fillerPrefix: '',
+  fillerSuffix: '',
+  strokeerPrefix: '',
+  strokeerSuffix: '-stroke',
+  effecterPrefix: '',
+  effecterSuffix: '',
+  griderPrefix: '',
+  griderSuffix: '',
+  texterPrefix: '',
+  texterSuffix: '',
+};
+
 /* 
 --- STYLERS
  */
@@ -37,6 +57,8 @@ export const filler = new Styler({
   styleProps: ['paints'],
   layerProps: ['fills'],
   layerPropType: 'fill',
+  // prefix: settings.fillerPrefix,
+  // suffix: settings.fillerSuffix,
 });
 export const strokeer = new Styler({
   name: 'strokeer',
@@ -71,8 +93,8 @@ export const texter = new Styler({
   ],
 });
 
-export const allStylers = [filler, strokeer, effecter, grider, texter];
-export const stylersWithoutTexter = [filler, strokeer, effecter, grider];
+export const allStylers = [texter, grider, filler, strokeer, effecter];
+export const stylersWithoutTexter = [grider, filler, strokeer, effecter];
 
 /* 
 --- COLORS
