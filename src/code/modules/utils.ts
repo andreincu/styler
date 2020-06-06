@@ -1,6 +1,6 @@
-// Strings utils
+import { defaultSettings } from './default-settings.js';
 
-import { notificationTimeout } from './globals';
+// Strings utils
 
 // make the first string Uppercase
 export const ucFirst = (word: string): string => word[0].toLocaleUpperCase() + word.slice(1).toLocaleLowerCase();
@@ -62,7 +62,7 @@ export function clone(val) {
 }
 
 // I created this because I need a way to extend the timer
-export const figmaNotifyAndClose = (message = '', timeout = notificationTimeout) => {
+export const figmaNotifyAndClose = (message = '', timeout = defaultSettings.notificationTimeout) => {
   figma.notify(message, { timeout });
   figma.closePlugin();
 };

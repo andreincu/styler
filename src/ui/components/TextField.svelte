@@ -31,8 +31,12 @@
   div:focus::after {
     --translate: var(--negative-size-small), -50%;
   }
+
+  input {
+    user-select: all;
+  }
 </style>
 
 <div style="--unitMeasurement: {unitMeasurement.toString()}">
-  <input type="number" bind:value {placeholder} />
+  <input type="number" bind:value {placeholder} on:click={(event) => event.currentTarget.select()} />
 </div>

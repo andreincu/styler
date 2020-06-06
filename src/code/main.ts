@@ -1,28 +1,28 @@
-import { changeGlobals, clientStorageKey, CMD, allStylers } from './modules/globals';
+import { clientStorageKey, Config, updateStyleNames } from './modules/config';
 import { changeAllStyles, extractAllStyles } from './modules/styles';
 
-figma.showUI(__html__, { visible: false });
+export const CMD = figma.command;
+let currentConfig;
 
-// getting local stored settings and updating the globals
 figma.clientStorage.getAsync(clientStorageKey).then((codeSettings) => {
-  changeGlobals(codeSettings);
+  currentConfig = new Config(codeSettings);
 
   // creating layers based on styles
   if (CMD === 'extract-all-styles') {
-    extractAllStyles();
+    extractAllStyles(currentConfig);
   } else if (CMD === 'customize-plugin') {
     figma.showUI(__html__, { width: 360, height: 480 });
 
     figma.ui.postMessage({ codeSettings });
   } else {
-    changeAllStyles();
+    changeAllStyles(currentConfig);
   }
 });
 
 figma.ui.onmessage = (msg) => {
   if (msg.type === 'save-settings') {
     figma.clientStorage.setAsync(clientStorageKey, msg.uiSettings).then(() => {
-      allStylers.map((styler) => styler.updateAffixesFromUI(msg.uiSettings));
+      updateStyleNames(currentConfig, msg.uiSettings);
       figma.closePlugin();
     });
   }

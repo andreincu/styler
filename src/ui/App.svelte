@@ -1,33 +1,10 @@
 <script>
+  import { defaultSettings } from '../code/modules/default-settings';
   import Checkbox from './components/Checkbox';
   import Button from './components/Button';
   import TextField from './components/TextField';
 
-  let filler = {
-    prefix: '',
-    suffix: '',
-  };
-  let strokeer = {
-    prefix: '',
-    suffix: '-stroke',
-  };
-  let effecter = {
-    prefix: '',
-    suffix: '',
-  };
-  let grider = {
-    prefix: '',
-    suffix: '',
-  };
-  let texter = {
-    prefix: '',
-    suffix: '',
-  };
-
-  let notificationTimeout = 6000;
-  let framesPerContainer = 5;
-  let addPreviousStyleToDescription = false;
-  let updateUsingLocalStyles = false;
+  let uiSettings = defaultSettings;
 
   const previousExplainer = 'This option will change your styles description, by adding the previous style at update.';
   const updateusingLocalExplainer = 'When this option is enabled, update and rename behaviour are changed.';
@@ -35,37 +12,8 @@
   onmessage = (e) => {
     const codeSettings = e.data.pluginMessage.codeSettings;
 
-    if (!codeSettings) {
-      return;
-    }
-
-    if (codeSettings.filler) {
-      filler = codeSettings.filler;
-    }
-    if (codeSettings.strokeer) {
-      strokeer = codeSettings.strokeer;
-    }
-    if (codeSettings.effecter) {
-      effecter = codeSettings.effecter;
-    }
-    if (codeSettings.grider) {
-      grider = codeSettings.grider;
-    }
-    if (codeSettings.texter) {
-      texter = codeSettings.texter;
-    }
-
-    if (codeSettings.notificationTimeout) {
-      notificationTimeout = codeSettings.notificationTimeout;
-    }
-    if (codeSettings.framesPerContainer) {
-      framesPerContainer = codeSettings.framesPerContainer;
-    }
-    if (codeSettings.addPreviousStyleToDescription) {
-      addPreviousStyleToDescription = codeSettings.addPreviousStyleToDescription;
-    }
-    if (codeSettings.updateUsingLocalStyles) {
-      updateUsingLocalStyles = codeSettings.updateUsingLocalStyles;
+    if (codeSettings) {
+      uiSettings = codeSettings;
     }
   };
 
@@ -74,17 +22,7 @@
       {
         pluginMessage: {
           type: 'save-settings',
-          uiSettings: {
-            filler,
-            strokeer,
-            effecter,
-            grider,
-            texter,
-            notificationTimeout,
-            framesPerContainer,
-            addPreviousStyleToDescription,
-            updateUsingLocalStyles,
-          },
+          uiSettings,
         },
       },
       '*',
@@ -111,16 +49,16 @@
     <h1 class="h2">Customize plugin</h1>
 
     <h2 class="h3">Notification timeout</h2>
-    <TextField type="number" bind:value={notificationTimeout} unitMeasurement="'ms'" />
+    <TextField type="number" bind:value={uiSettings.notificationTimeout} unitMeasurement="'ms'" />
 
     <h2 class="h3">Number of frames per row</h2>
-    <TextField type="number" bind:value={framesPerContainer} unitMeasurement="'frames'" />
+    <TextField type="number" bind:value={uiSettings.framesPerRow} unitMeasurement="'frames'" />
 
-    <Checkbox bind:checked={addPreviousStyleToDescription} note={previousExplainer}>
+    <Checkbox bind:checked={uiSettings.addPrevToDescription} note={previousExplainer}>
       Show previous style in description
     </Checkbox>
 
-    <Checkbox bind:checked={updateUsingLocalStyles} note={updateusingLocalExplainer}>
+    <Checkbox bind:checked={uiSettings.updateUsingLocalStyles} note={updateusingLocalExplainer}>
       Update using local styles
     </Checkbox>
   </section>
@@ -136,46 +74,46 @@
       <tr>
         <td>Fills</td>
         <td>
-          <input type="text" bind:value={filler.prefix} placeholder="" />
+          <input type="text" bind:value={uiSettings.fillerPrefix} placeholder="" />
         </td>
         <td>
-          <input type="text" bind:value={filler.suffix} placeholder="" />
+          <input type="text" bind:value={uiSettings.fillerSuffix} placeholder="" />
         </td>
       </tr>
       <tr>
         <td>Strokes</td>
         <td>
-          <input type="text" bind:value={strokeer.prefix} placeholder="" />
+          <input type="text" bind:value={uiSettings.strokeerPrefix} placeholder="" />
         </td>
         <td>
-          <input type="text" bind:value={strokeer.suffix} placeholder="" />
+          <input type="text" bind:value={uiSettings.strokeerSuffix} placeholder="" />
         </td>
       </tr>
       <tr>
         <td>Effects</td>
         <td>
-          <input type="text" bind:value={effecter.prefix} placeholder="" />
+          <input type="text" bind:value={uiSettings.effecterPrefix} placeholder="" />
         </td>
         <td>
-          <input type="text" bind:value={effecter.suffix} placeholder="" />
+          <input type="text" bind:value={uiSettings.effecterSuffix} placeholder="" />
         </td>
       </tr>
       <tr>
         <td>Layout Grids</td>
         <td>
-          <input type="text" bind:value={grider.prefix} placeholder="" />
+          <input type="text" bind:value={uiSettings.griderPrefix} placeholder="" />
         </td>
         <td>
-          <input type="text" bind:value={grider.suffix} placeholder="" />
+          <input type="text" bind:value={uiSettings.griderSuffix} placeholder="" />
         </td>
       </tr>
       <tr>
         <td>Texts</td>
         <td>
-          <input type="text" bind:value={texter.prefix} placeholder="" />
+          <input type="text" bind:value={uiSettings.texterPrefix} placeholder="" />
         </td>
         <td>
-          <input type="text" bind:value={texter.suffix} placeholder="" />
+          <input type="text" bind:value={uiSettings.texterSuffix} placeholder="" />
         </td>
       </tr>
     </table>

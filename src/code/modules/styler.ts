@@ -1,7 +1,7 @@
-import { CMD, counter, addPreviousStyleToDescription, updateUsingLocalStyles } from './globals';
-
-import { addAffixTo, isArrayEmpty, ucFirst } from './utils';
+import { CMD, counter } from './globals';
 import { checkStyleType } from './styles';
+import { addAffixTo, isArrayEmpty, ucFirst } from './utils';
+import { defaultSettings } from './default-settings.js';
 
 interface StylerOptions {
   name?: string;
@@ -44,8 +44,8 @@ export class Styler {
     this.suffix = suffix;
   }
 
-  applyStyle = (layer: SceneNode, style: BaseStyle, { oldName = layer.name } = {}) => {
-    if (oldName !== layer.name && ![layer[this.layerProps[0]]].flat().length) {
+  applyStyle = (layer: SceneNode, style: BaseStyle, { oldLayerName = layer.name } = {}) => {
+    if (oldLayerName !== layer.name && ![layer[this.layerProps[0]]].flat().length) {
       return;
     }
 
@@ -114,51 +114,9 @@ export class Styler {
     style.name = addAffixTo(layer.name, this.prefix, this.suffix);
   };
 
-  updateAffixesFromUI = (settings) => {
-    const styles = this.getLocalStyles();
-    if (!styles) {
-      return;
-    }
+  updateStyle = (layer: SceneNode, style: BaseStyle, options = defaultSettings) => {
+    const { addPreviousStyleToDescription } = options;
 
-    const stylerName = this.name;
-    const oldPrefix = this.prefix;
-    const oldSuffix = this.suffix;
-    const newPrefix = settings[stylerName]?.prefix;
-    const newSuffix = settings[stylerName]?.suffix;
-
-    const emptySpacesFromSides = /^\s+|\s+$/g;
-
-    styles.map((style) => {
-      const styleType = checkStyleType(style);
-
-      if (style.name.indexOf(oldPrefix) !== 0) {
-        return;
-      }
-
-      // Sorry, future me, for this, but I was tired :(
-      if (style.type === 'PAINT') {
-        if (styleType === this.layerPropType) {
-          if (newPrefix !== oldPrefix) {
-            style.name = style.name.replace(oldPrefix, newPrefix).replace(emptySpacesFromSides, '');
-          }
-          if (newSuffix !== oldSuffix) {
-            const pos = style.name.lastIndexOf(oldSuffix);
-            style.name = style.name.slice(0, pos) + newSuffix;
-          }
-        }
-      } else {
-        if (newPrefix !== oldPrefix) {
-          style.name = style.name.replace(oldPrefix, newPrefix).replace(emptySpacesFromSides, '');
-        }
-        if (newSuffix !== oldSuffix) {
-          const pos = style.name.lastIndexOf(oldSuffix);
-          style.name = style.name.slice(0, pos) + newSuffix;
-        }
-      }
-    });
-  };
-
-  updateStyle = (layer: SceneNode, style: BaseStyle) => {
     if (addPreviousStyleToDescription) {
       this.changeStyleDescription(layer, style);
     }
@@ -187,7 +145,10 @@ export class Styler {
     }
   };
 
-  generateStyle = (layer: SceneNode, { nameMatch, idMatch }: any = {}) => {
+  generateStyle = (layer: SceneNode, matches: any = {}, options = defaultSettings) => {
+    const { nameMatch, idMatch } = matches;
+    const { updateUsingLocalStyles } = options;
+
     if (this.isPropMixed(layer) || this.isPropEmpty(layer)) {
       console.log(`Generate: We have some mixed or empty props.`);
       return;

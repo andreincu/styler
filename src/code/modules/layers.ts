@@ -1,6 +1,6 @@
-import { clone, groupBy } from './utils';
 import { webRGBToFigmaRGB } from './convert-color';
-import { colors, texter, filler, effecter, stylersWithoutTexter } from './globals';
+import { colors } from './globals';
+import { clone, groupBy } from './utils';
 
 interface AutoLayoutProps {
   layoutMode?: FrameNode['layoutMode'];

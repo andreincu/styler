@@ -1,23 +1,10 @@
-import {
-  allStylers,
-  colors,
-  effecter,
-  filler,
-  framesPerContainer,
-  grider,
-  notificationTimeout,
-  strokeer,
-  stylersWithoutTexter,
-  texter,
-  CMD,
-  selection,
-  counter,
-  black,
-} from './globals';
-import { changeColor, createFrameLayer, createTextLayer, ungroupToCanvas } from './layers';
+import { black, CMD, counter } from './globals';
+import { cleanSelection, createFrameLayer, createTextLayer, ungroupToCanvas } from './layers';
 import { chunk, figmaNotifyAndClose, groupBy, uniq } from './utils';
+import { defaultSettings } from './default-settings.js';
 
-export const showMessage = (counter, messages: any = {}) => {
+export const showMessage = (counter, messages: any = {}, options = defaultSettings) => {
+  const { notificationTimeout } = options;
   const { empty = '', single = '', multiple = '' } = messages;
 
   if (counter === 0) {
@@ -78,7 +65,8 @@ export const showNofication = () => {
   }
 };
 
-export const getUniqueStylesName = (styles: BaseStyle[]) => {
+export const getUniqueStylesName = (styles, options = defaultSettings) => {
+  const { allStylers } = options;
   const names = styles.map((style) => style.name);
   const affixes = allStylers
     .map((styler) => [styler.prefix, styler.suffix])
@@ -92,11 +80,8 @@ export const getUniqueStylesName = (styles: BaseStyle[]) => {
   return uniq(namesWithoutAffixes) as string[];
 };
 
-export const getStylersByLayerType = (layer: SceneNode) => {
-  return layer.type === 'TEXT' ? [texter] : [filler, strokeer, effecter, grider];
-};
-
-export const getStyleguides = (styles) => {
+export const getStyleguides = (styles, options = defaultSettings) => {
+  const { texter } = options;
   const uniqueStylesNames = getUniqueStylesName(styles);
 
   return uniqueStylesNames.map((name) => {
@@ -110,7 +95,10 @@ export const getStyleguides = (styles) => {
   });
 };
 
-export const changeAllStyles = async () => {
+export const changeAllStyles = async (options = defaultSettings) => {
+  const { notificationTimeout, allStylers, stylersWithoutTexter } = options;
+  const selection = cleanSelection();
+
   if (selection.length === 0) {
     figmaNotifyAndClose(`🥰 You must select at least 1 layer. Yea...`, notificationTimeout);
     return;
@@ -125,7 +113,7 @@ export const changeAllStyles = async () => {
         await figma.loadFontAsync(layer.fontName as FontName);
 
         if (layer.name[0] !== '+') {
-          stylers = [texter];
+          stylers = stylersWithoutTexter;
         }
       }
 
@@ -158,7 +146,8 @@ export const changeAllStyles = async () => {
   showNofication();
 };
 
-export const extractAllStyles = async () => {
+export const extractAllStyles = async (options = defaultSettings) => {
+  const { framesPerRow } = options;
   const styles = [
     ...figma.getLocalTextStyles(),
     ...figma.getLocalGridStyles(),
@@ -202,7 +191,7 @@ export const extractAllStyles = async () => {
         parent: mainContainer,
       });
 
-      chunk(styleguidesByType.FRAME, framesPerContainer).map((styleguides) => {
+      chunk(styleguidesByType.FRAME, framesPerRow).map((styleguides) => {
         const chunkContainer = createFrameLayer({
           layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 32 },
           parent: visualsContainer,
@@ -222,7 +211,8 @@ export const extractAllStyles = async () => {
   showNofication();
 };
 
-export const checkStyleType = (style) => {
+export const checkStyleType = (style, options = defaultSettings) => {
+  const { filler, strokeer } = options;
   let type = 'FILL';
   [filler, strokeer].map((styler) => {
     if (
