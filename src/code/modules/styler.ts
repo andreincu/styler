@@ -166,30 +166,31 @@ export class Styler {
     }
 
     // update only if external style is applied - kind of old behaviour
-    else if (updateUsingLocalStyles === false) {
-      if ((!idMatch || idMatch.remote) && nameMatch) {
-        this.updateStyle(layer, nameMatch, addPrevToDescription);
-        counter.updated++;
-      } else if (idMatch !== nameMatch) {
-        this.renameStyle(layer, idMatch);
-        counter.renamed++;
-      }
+    else if ((!idMatch || idMatch.remote) && nameMatch && updateUsingLocalStyles === false) {
+      this.updateStyle(layer, nameMatch, addPrevToDescription);
+      counter.updated++;
     }
+
+    //
+    else if (idMatch !== nameMatch && updateUsingLocalStyles === false) {
+      this.renameStyle(layer, idMatch);
+      counter.renamed++;
+    }
+
     // using localStyles - new behaviour
-    else if (updateUsingLocalStyles === true) {
-      if (idMatch && !idMatch.remote && !nameMatch) {
-        this.renameStyle(layer, idMatch);
-        counter.renamed++;
-      } else if (idMatch !== nameMatch) {
-        this.updateStyle(layer, nameMatch, addPrevToDescription);
-        counter.updated++;
-      }
+    else if (idMatch && !idMatch.remote && !nameMatch && updateUsingLocalStyles === true) {
+      this.renameStyle(layer, idMatch);
+      counter.renamed++;
+    }
+    //
+    else if (idMatch !== nameMatch && updateUsingLocalStyles === true) {
+      this.updateStyle(layer, nameMatch, addPrevToDescription);
+      counter.updated++;
     }
 
     // ignore
     else {
       counter.ignored++;
-      debugger;
     }
 
     counter.generated++;

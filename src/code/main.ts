@@ -1,6 +1,6 @@
 import { clientStorageKey, Config } from './modules/config';
 import { changeAllStyles, extractAllStyles, updateStyleNames } from './modules/styles';
-import { CMD } from './modules/globals';
+import { CMD, counter } from './modules/globals';
 
 let currentConfig;
 
@@ -28,3 +28,5 @@ figma.ui.onmessage = (msg) => {
     });
   }
 };
+
+console.log(counter);

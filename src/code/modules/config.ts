@@ -9,7 +9,7 @@ export class Config {
   framesPerRow: number;
   notificationTimeout: number;
   updateUsingLocalStyles: boolean;
-  partialMatch: boolean,
+  partialMatch: boolean;
 
   // stylers
   texter: Styler;

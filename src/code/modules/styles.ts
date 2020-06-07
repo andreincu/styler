@@ -107,12 +107,12 @@ export const updateStyleNames = (currentConfig: Config, newConfig: Config) => {
   });
 };
 
-export const changeAllStyles = (config) => {
+export const changeAllStyles = async (config) => {
   const {
     addPrevToDescription,
     allStylers,
     notificationTimeout,
-    stylersWithoutTexter,
+    texterOnly,
     partialMatch,
     updateUsingLocalStyles,
   } = config;
@@ -120,7 +120,7 @@ export const changeAllStyles = (config) => {
   const layersLength = layers.length;
 
   if (layersLength === 0) {
-    showNofication(layersLength, messages().layers, notificationTimeout);
+    showNofication(layersLength, messages(counter).layers, notificationTimeout);
     return;
   }
 
@@ -132,31 +132,44 @@ export const changeAllStyles = (config) => {
       await figma.loadFontAsync(layer.fontName as FontName);
 
       if (layer.name[0] !== '+') {
-        return (stylers = stylersWithoutTexter);
+        stylers = texterOnly;
+      } else {
+        layer.name = layer.name.slice(1);
       }
-      layer.name = layer.name.slice(1);
     }
+
+    console.log(stylers);
+    debugger;
 
     const stylersLength = stylers.length;
 
-    stylers.map(async (styler, stylerIndex) => {
-      const notificationOptions = { layerIndex, layersLength, stylerIndex, stylersLength };
+    stylers.map((styler, stylerIndex) => {
+      const notificationOptions = { layerIndex, layersLength, stylerIndex, stylersLength, notificationTimeout };
 
       const idMatch = styler.getStyleById(layer);
       const nameMatch = styler.getStyleByName(layer.name, partialMatch);
 
       if (CMD === 'generate-all-styles') {
-        await styler.generateStyle(layer, { nameMatch, idMatch, updateUsingLocalStyles, addPrevToDescription });
-        showNotificationAtArrayEnd('generated', notificationTimeout, notificationOptions);
-      } else if (CMD === 'apply-all-styles') {
+        styler.generateStyle(layer, { nameMatch, idMatch, updateUsingLocalStyles, addPrevToDescription });
+        showNotificationAtArrayEnd('generated', notificationOptions);
+      }
+
+      // apply
+      else if (CMD === 'apply-all-styles') {
         styler.applyStyle(layer, nameMatch, oldLayerName);
-        showNotificationAtArrayEnd('applied', notificationTimeout, notificationOptions);
-      } else if (CMD === 'detach-all-styles') {
+        showNotificationAtArrayEnd('applied', notificationOptions);
+      }
+
+      // detach
+      else if (CMD === 'detach-all-styles') {
         styler.detachStyle(layer);
-        showNotificationAtArrayEnd('detached', notificationTimeout, notificationOptions);
-      } else if (CMD.includes('remove')) {
+        showNotificationAtArrayEnd('detached', notificationOptions);
+      }
+
+      // remove
+      else if (CMD.includes('remove')) {
         styler.removeStyle(idMatch);
-        showNotificationAtArrayEnd('removed', notificationTimeout, notificationOptions);
+        showNotificationAtArrayEnd('removed', notificationOptions);
       }
     });
 
@@ -221,5 +234,5 @@ export const extractAllStyles = async (config) => {
   }
   ungroupToCanvas(selection);
 
-  showNofication(counter.extracted, messages(counter).extracted, notificationTimeout);
+  // showNofication(counter.extracted, messages.extracted, notificationTimeout);
 };
