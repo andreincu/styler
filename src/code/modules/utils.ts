@@ -1,5 +1,3 @@
-import { defaultSettings } from './default-settings.js';
-
 // Strings utils
 
 // make the first string Uppercase
@@ -60,9 +58,3 @@ export function clone(val) {
 
   throw 'unknown';
 }
-
-// I created this because I need a way to extend the timer
-export const figmaNotifyAndClose = (message = '', timeout = defaultSettings.notificationTimeout) => {
-  figma.notify(message, { timeout });
-  figma.closePlugin();
-};

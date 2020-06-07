@@ -21,6 +21,8 @@ export class Styler {
   layerStyleID: string;
   prefix: string;
   suffix: string;
+  createStyleCommand: string;
+  getLocalStylesCommand: string;
 
   constructor(options: StylerOptions = {}) {
     const {
@@ -41,9 +43,11 @@ export class Styler {
     this.layerStyleID = addAffixTo(layerPropType.toLocaleLowerCase(), '', 'StyleId');
     this.prefix = prefix;
     this.suffix = suffix;
+    this.createStyleCommand = addAffixTo(ucFirst(styleType), 'create', 'Style');
+    this.getLocalStylesCommand = addAffixTo(ucFirst(styleType), 'getLocal', 'Styles');
   }
 
-  applyStyle = (layer: SceneNode, style: BaseStyle, { oldLayerName = layer.name } = {}) => {
+  applyStyle = (layer, style, oldLayerName = layer.name) => {
     if (oldLayerName !== layer.name && ![layer[this.layerProps[0]]].flat().length) {
       return;
     }
@@ -57,13 +61,24 @@ export class Styler {
     counter.applied++;
   };
 
-  createStyle = (layer: SceneNode) => {
-    const newStyle = figma[addAffixTo(ucFirst(this.styleType), 'create', 'Style')]();
+  createStyle = (layer, addPrevToDescription) => {
+    let newStyle = figma[this.createStyleCommand]();
 
     this.renameStyle(layer, newStyle);
-    this.updateStyle(layer, newStyle);
+    this.updateStyle(layer, newStyle, addPrevToDescription);
 
     return newStyle;
+  };
+
+  changeStyleDescription = (layer, style) => {
+    const idMatch = this.getStyleById(layer);
+    const currentDescription = style.description;
+
+    const keyword = 'Previous style:';
+    const pos = currentDescription.lastIndexOf(keyword);
+    const newDescription = currentDescription.slice(0, pos) + '\n' + `${keyword}\n ${idMatch.name}`;
+
+    return !idMatch ? currentDescription : newDescription;
   };
 
   detachStyle = (layer) => {
@@ -76,35 +91,24 @@ export class Styler {
     counter.detached++;
   };
 
-  getLocalStyles = () => {
-    const getCommand = addAffixTo(ucFirst(this.styleType), 'getLocal', 'Styles');
-    return figma[getCommand]();
-  };
+  getLocalStyles = () => figma[this.getLocalStylesCommand]();
 
   getStyleById = (layer) => figma.getStyleById(layer[this.layerStyleID]);
 
-  getStyleByName = (name, { exactMatch = true } = {}) => {
+  getStyleByName = (name, partialMatch = defaultSettings.partialMatch) => {
     const stylesByType = this.getLocalStyles();
     const match = stylesByType.find((style) => style.name === addAffixTo(name, this.prefix, this.suffix));
 
-    if (exactMatch === true) {
+    if (match) {
       return match;
-    } else {
-      if (match) {
-        return match;
-      } else {
-        return stylesByType.find((style) => name.split(/\W+/g).find((word: string) => style.name.includes(word)));
-      }
+    }
+
+    if (partialMatch === true) {
+      return stylesByType.find((style) => name.split(/\W+/g).find((word) => style.name.includes(word)));
     }
   };
 
-  changeStyleDescription = (layer: SceneNode, style: BaseStyle) => {
-    const idMatch = this.getStyleById(layer);
-
-    return !idMatch ? style.description : (style.description = `Previous style:\n${idMatch.name}`);
-  };
-
-  renameStyle = (layer: SceneNode, style: BaseStyle) => {
+  renameStyle = (layer, style) => {
     if (!style) {
       console.log(`Rename: No style found for ${layer.name}`);
       return;
@@ -113,26 +117,24 @@ export class Styler {
     style.name = addAffixTo(layer.name, this.prefix, this.suffix);
   };
 
-  updateStyle = (layer: SceneNode, style: BaseStyle, options = defaultSettings) => {
-    const { addPreviousStyleToDescription } = options;
-
-    if (addPreviousStyleToDescription) {
+  updateStyle = (layer, style, addPrevToDescription) => {
+    if (addPrevToDescription) {
       this.changeStyleDescription(layer, style);
     }
 
     this.detachStyle(layer);
-    this.styleProps.map((prop, index) => {
-      if (!style || layer[this.layerProps[index]] === undefined) {
-        console.log(`Update: ${this.layerProps[index]} not found || No style found for ${layer.name}`);
+    this.styleProps.map((prop, propIndex) => {
+      if (!style || layer[this.layerProps[propIndex]] === undefined) {
+        console.log(`Update: ${this.layerProps[propIndex]} not found || No style found for ${layer.name}`);
         return;
       }
 
-      style[prop] = layer[this.layerProps[index]];
+      style[prop] = layer[this.layerProps[propIndex]];
     });
     this.applyStyle(layer, style);
   };
 
-  removeStyle = (style: BaseStyle) => {
+  removeStyle = (style) => {
     if (!style || style.remote === true) {
       return;
     }
@@ -144,42 +146,45 @@ export class Styler {
     }
   };
 
-  generateStyle = (layer: SceneNode, matches: any = {}, options = defaultSettings) => {
-    const { nameMatch, idMatch } = matches;
-    const { updateUsingLocalStyles } = options;
+  generateStyle = (layer, options) => {
+    const {
+      idMatch,
+      nameMatch,
+      updateUsingLocalStyles = defaultSettings.updateUsingLocalStyles,
+      addPrevToDescription = defaultSettings.addPrevToDescription,
+    } = options;
 
-    if (this.isPropMixed(layer) || this.isPropEmpty(layer)) {
+    if (this.isPropEmpty(layer) || this.isPropMixed(layer)) {
       console.log(`Generate: We have some mixed or empty props.`);
       return;
     }
 
     // create
     if ((!idMatch || idMatch.remote) && !nameMatch) {
-      this.createStyle(layer);
+      this.createStyle(layer, addPrevToDescription);
       counter.created++;
     }
-    // updateUsingLocalStyles - enabled
-    // rename
-    else if (idMatch && !idMatch.remote && !nameMatch && updateUsingLocalStyles === true) {
-      this.renameStyle(layer, idMatch);
-      counter.renamed++;
-    }
-    // update
-    else if (idMatch !== nameMatch && updateUsingLocalStyles === true) {
-      this.updateStyle(layer, nameMatch);
-      counter.updated++;
+
+    // update only if external style is applied - kind of old behaviour
+    else if (updateUsingLocalStyles === false) {
+      if ((!idMatch || idMatch.remote) && nameMatch) {
+        this.updateStyle(layer, nameMatch, addPrevToDescription);
+        counter.updated++;
+      } else if (idMatch !== nameMatch) {
+        this.renameStyle(layer, idMatch);
+        counter.renamed++;
+      }
     }
 
-    // updateUsingLocalStyles - disabled
-    // update
-    else if ((!idMatch || idMatch.remote) && nameMatch && updateUsingLocalStyles === false) {
-      this.updateStyle(layer, nameMatch);
-      counter.updated++;
-    }
-    // rename
-    else if (idMatch !== nameMatch && updateUsingLocalStyles === false) {
-      this.renameStyle(layer, idMatch);
-      counter.renamed++;
+    // using localStyles - new behaviour
+    else if (updateUsingLocalStyles === true) {
+      if (idMatch && !idMatch.remote && !nameMatch) {
+        this.renameStyle(layer, idMatch);
+        counter.renamed++;
+      } else if (idMatch !== nameMatch) {
+        this.updateStyle(layer, nameMatch, addPrevToDescription);
+        counter.updated++;
+      }
     }
 
     // ignore
@@ -190,6 +195,6 @@ export class Styler {
     counter.generated++;
   };
 
-  isPropEmpty = (layer: SceneNode) => isArrayEmpty(layer[this.layerProps[0]]);
-  isPropMixed = (layer: SceneNode) => this.layerProps.some((prop) => layer[prop] === figma.mixed);
+  isPropEmpty = (layer) => isArrayEmpty(layer[this.layerProps[0]]);
+  isPropMixed = (layer) => this.layerProps.some((prop) => layer[prop] === figma.mixed);
 }

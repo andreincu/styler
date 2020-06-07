@@ -3,6 +3,7 @@ export const defaultSettings = {
   framesPerRow: 5,
   notificationTimeout: 6000,
   updateUsingLocalStyles: false,
+  partialMatch: false,
 
   // stylers
   fillerPrefix: '',

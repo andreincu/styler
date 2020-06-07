@@ -77,6 +77,8 @@
     <Checkbox bind:checked={uiSettings.updateUsingLocalStyles} note={updateusingLocalExplainer}>
       Update using local styles
     </Checkbox>
+
+    <Checkbox bind:checked={uiSettings.partialMatch} note={'nimic'}>Expand style name match</Checkbox>
   </section>
 
   <section>

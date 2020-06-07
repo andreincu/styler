@@ -1,37 +1,8 @@
 import { Config } from './config';
 import { defaultSettings } from './default-settings.js';
-import { CMD, colors, counter, allMessages } from './globals';
+import { CMD, colors, counter, messages, shotNofiticationAtArrayEnd, showNofication } from './globals';
 import { cleanSelection, createFrameLayer, createTextLayer, ungroupToCanvas } from './layers';
-import { chunk, figmaNotifyAndClose, groupBy, uniq } from './utils';
-
-export const getMessage = (counter, messages: any = {}, options = defaultSettings) => {
-  const { notificationTimeout } = options;
-  const { empty = '', multiple = '', single = multiple } = messages;
-
-  if (counter === 0) {
-    figmaNotifyAndClose(empty, notificationTimeout);
-  } else if (counter === 1) {
-    figmaNotifyAndClose(single, notificationTimeout);
-  } else {
-    figmaNotifyAndClose(multiple, notificationTimeout);
-  }
-};
-
-export const showNofication = () => {
-  const messages = allMessages(counter).stylers;
-
-  if (CMD === 'extract-all-styles') {
-    getMessage(counter.extracted, messages.extracted);
-  } else if (CMD === 'generate-all-styles') {
-    getMessage(counter.generated, messages.generated);
-  } else if (CMD === 'apply-all-styles') {
-    getMessage(counter.applied, messages.applied);
-  } else if (CMD === 'detach-all-styles') {
-    getMessage(counter.detached, messages.detached);
-  } else if (CMD.includes('remove')) {
-    getMessage(counter.removed, messages.removed);
-  }
-};
+import { chunk, groupBy, uniq } from './utils';
 
 export const getUniqueStylesName = (styles, options = defaultSettings) => {
   const { allStylers } = options;
@@ -61,117 +32,6 @@ export const getStyleguides = (styles, options = defaultSettings) => {
       type,
     };
   });
-};
-
-export const changeAllStyles = async (options = defaultSettings) => {
-  const { notificationTimeout, allStylers, stylersWithoutTexter } = options;
-  const selection = cleanSelection();
-
-  if (selection.length === 0) {
-    figmaNotifyAndClose(allMessages().layers.empty, notificationTimeout);
-    return;
-  }
-
-  await Promise.all(
-    selection.map(async (layer) => {
-      let stylers = allStylers;
-      const oldLayerName = layer.name;
-
-      if (layer.type === 'TEXT') {
-        await figma.loadFontAsync(layer.fontName as FontName);
-
-        if (layer.name[0] !== '+') {
-          stylers = stylersWithoutTexter;
-        }
-      }
-
-      if (layer.name[0] === '+') {
-        layer.name = layer.name.slice(1);
-      }
-
-      stylers.map((styler) => {
-        const idMatch = styler.getStyleById(layer);
-        const nameMatch =
-          oldLayerName[0] === '+'
-            ? styler.getStyleByName(layer.name, { exactMatch: false })
-            : styler.getStyleByName(layer.name);
-
-        if (CMD === 'generate-all-styles') {
-          styler.generateStyle(layer, { nameMatch, idMatch });
-        } else if (CMD === 'apply-all-styles') {
-          styler.applyStyle(layer, nameMatch, { oldName: oldLayerName });
-        } else if (CMD === 'detach-all-styles') {
-          styler.detachStyle(layer);
-        } else if (CMD.includes('remove')) {
-          styler.removeStyle(idMatch);
-        }
-      });
-
-      layer.name = oldLayerName;
-    }),
-  );
-
-  showNofication();
-};
-
-export const extractAllStyles = async (options = defaultSettings) => {
-  const { framesPerRow } = options;
-  const styles = getAllLocalStyles();
-
-  const selection = [];
-  const styleguides = getStyleguides(styles);
-
-  if (styleguides.length > 0) {
-    const styleguidesByType = groupBy(styleguides, 'type');
-
-    const mainContainer = createFrameLayer({
-      layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 128 },
-    });
-
-    if (styleguidesByType.TEXT) {
-      const textsContainer = createFrameLayer({
-        layoutProps: { layoutMode: 'VERTICAL', itemSpacing: 32 },
-        parent: mainContainer,
-      });
-
-      await Promise.all(
-        styleguidesByType.TEXT.map(async (styleguide) => {
-          const newLayer = await createTextLayer({
-            characters: styleguide.name,
-            color: colors.black,
-            parent: textsContainer,
-          });
-
-          selection.push(newLayer);
-          counter.extracted++;
-        }),
-      );
-    }
-
-    if (styleguidesByType.FRAME) {
-      const visualsContainer = createFrameLayer({
-        layoutProps: { layoutMode: 'VERTICAL', itemSpacing: 32 },
-        parent: mainContainer,
-      });
-
-      chunk(styleguidesByType.FRAME, framesPerRow).map((styleguides) => {
-        const chunkContainer = createFrameLayer({
-          layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 32 },
-          parent: visualsContainer,
-        });
-
-        styleguides.map((styleguide) => {
-          const newLayer = createFrameLayer({ name: styleguide.name, size: 80, parent: chunkContainer });
-
-          selection.push(newLayer);
-          counter.extracted++;
-        });
-      });
-    }
-  }
-  ungroupToCanvas(selection);
-
-  showNofication();
 };
 
 export const checkStyleType = (style, options = defaultSettings) => {
@@ -245,4 +105,122 @@ export const updateStyleNames = (currentConfig: Config, newConfig: Config) => {
       }
     });
   });
+};
+
+export const changeAllStyles = (config = defaultSettings) => {
+  const {
+    addPrevToDescription,
+    allStylers,
+    notificationTimeout,
+    stylersWithoutTexter,
+    partialMatch,
+    updateUsingLocalStyles,
+  } = config;
+  const layers = cleanSelection();
+  const layersLength = layers.length;
+
+  if (layersLength === 0) {
+    showNofication(layersLength, messages().layers, notificationTimeout);
+    return;
+  }
+
+  layers.map(async (layer, layerIndex) => {
+    let stylers = allStylers;
+    const oldLayerName = layer.name;
+
+    if (layer.type === 'TEXT') {
+      await figma.loadFontAsync(layer.fontName as FontName);
+
+      if (layer.name[0] !== '+') {
+        return (stylers = stylersWithoutTexter);
+      }
+      layer.name = layer.name.slice(1);
+    }
+
+    debugger;
+    const stylersLength = stylers.length;
+
+    stylers.map((styler, stylerIndex) => {
+      const notificationOptions = { layerIndex, layersLength, stylerIndex, stylersLength };
+
+      const idMatch = styler.getStyleById(layer);
+      const nameMatch = styler.getStyleByName(layer.name, partialMatch);
+
+      if (CMD === 'generate-all-styles') {
+        styler.generateStyle(layer, { nameMatch, idMatch, updateUsingLocalStyles, addPrevToDescription });
+        shotNofiticationAtArrayEnd('generated', notificationTimeout, notificationOptions);
+      } else if (CMD === 'apply-all-styles') {
+        styler.applyStyle(layer, nameMatch, oldLayerName);
+        shotNofiticationAtArrayEnd('applied', notificationTimeout, notificationOptions);
+      } else if (CMD === 'detach-all-styles') {
+        styler.detachStyle(layer);
+        shotNofiticationAtArrayEnd('detached', notificationTimeout, notificationOptions);
+      } else if (CMD.includes('remove')) {
+        styler.removeStyle(idMatch);
+        shotNofiticationAtArrayEnd('removed', notificationTimeout, notificationOptions);
+      }
+    });
+
+    layer.name = oldLayerName;
+  });
+};
+
+export const extractAllStyles = async (config = defaultSettings) => {
+  const { framesPerRow, notificationTimeout } = config;
+  const styles = getAllLocalStyles();
+
+  const selection = [];
+  const styleguides = getStyleguides(styles);
+
+  if (styleguides.length > 0) {
+    const styleguidesByType = groupBy(styleguides, 'type');
+
+    const mainContainer = createFrameLayer({
+      layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 128 },
+    });
+
+    if (styleguidesByType.TEXT) {
+      const textsContainer = createFrameLayer({
+        layoutProps: { layoutMode: 'VERTICAL', itemSpacing: 32 },
+        parent: mainContainer,
+      });
+
+      await Promise.all(
+        styleguidesByType.TEXT.map(async (styleguide) => {
+          const newLayer = await createTextLayer({
+            characters: styleguide.name,
+            color: colors.black,
+            parent: textsContainer,
+          });
+
+          selection.push(newLayer);
+          counter.extracted++;
+        }),
+      );
+    }
+
+    if (styleguidesByType.FRAME) {
+      const visualsContainer = createFrameLayer({
+        layoutProps: { layoutMode: 'VERTICAL', itemSpacing: 32 },
+        parent: mainContainer,
+      });
+
+      chunk(styleguidesByType.FRAME, framesPerRow).map((styleguides) => {
+        const chunkContainer = createFrameLayer({
+          layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 32 },
+          parent: visualsContainer,
+        });
+
+        styleguides.map((styleguide) => {
+          const newLayer = createFrameLayer({ name: styleguide.name, size: 80, parent: chunkContainer });
+
+          selection.push(newLayer);
+          counter.extracted++;
+        });
+      });
+    }
+  }
+  ungroupToCanvas(selection);
+
+  showNofication(counter.extracted, messages(counter).extracted, notificationTimeout);
 };

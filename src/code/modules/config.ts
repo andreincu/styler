@@ -9,6 +9,7 @@ export class Config {
   framesPerRow: number;
   notificationTimeout: number;
   updateUsingLocalStyles: boolean;
+  partialMatch: boolean,
 
   // stylers
   texter: Styler;
@@ -27,6 +28,7 @@ export class Config {
       framesPerRow = defaultSettings.framesPerRow,
       notificationTimeout = defaultSettings.notificationTimeout,
       updateUsingLocalStyles = defaultSettings.updateUsingLocalStyles,
+      partialMatch = defaultSettings.partialMatch,
 
       // stylers
       texterPrefix = defaultSettings.texterPrefix,
@@ -45,6 +47,7 @@ export class Config {
     this.framesPerRow = framesPerRow;
     this.notificationTimeout = notificationTimeout;
     this.updateUsingLocalStyles = updateUsingLocalStyles;
+    this.partialMatch = partialMatch;
 
     this.texter = new Styler({
       name: 'texter',
