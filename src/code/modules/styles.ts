@@ -1,6 +1,6 @@
 import { Config } from './config';
 import { defaultSettings } from './default-settings.js';
-import { CMD, colors, counter, messages, shotNofiticationAtArrayEnd, showNofication } from './globals';
+import { CMD, colors, counter, messages, showNofication, showNotificationAtArrayEnd } from './globals';
 import { cleanSelection, createFrameLayer, createTextLayer, ungroupToCanvas } from './layers';
 import { chunk, groupBy, uniq } from './utils';
 
@@ -107,7 +107,7 @@ export const updateStyleNames = (currentConfig: Config, newConfig: Config) => {
   });
 };
 
-export const changeAllStyles = (config = defaultSettings) => {
+export const changeAllStyles = (config) => {
   const {
     addPrevToDescription,
     allStylers,
@@ -137,27 +137,26 @@ export const changeAllStyles = (config = defaultSettings) => {
       layer.name = layer.name.slice(1);
     }
 
-    debugger;
     const stylersLength = stylers.length;
 
-    stylers.map((styler, stylerIndex) => {
+    stylers.map(async (styler, stylerIndex) => {
       const notificationOptions = { layerIndex, layersLength, stylerIndex, stylersLength };
 
       const idMatch = styler.getStyleById(layer);
       const nameMatch = styler.getStyleByName(layer.name, partialMatch);
 
       if (CMD === 'generate-all-styles') {
-        styler.generateStyle(layer, { nameMatch, idMatch, updateUsingLocalStyles, addPrevToDescription });
-        shotNofiticationAtArrayEnd('generated', notificationTimeout, notificationOptions);
+        await styler.generateStyle(layer, { nameMatch, idMatch, updateUsingLocalStyles, addPrevToDescription });
+        showNotificationAtArrayEnd('generated', notificationTimeout, notificationOptions);
       } else if (CMD === 'apply-all-styles') {
         styler.applyStyle(layer, nameMatch, oldLayerName);
-        shotNofiticationAtArrayEnd('applied', notificationTimeout, notificationOptions);
+        showNotificationAtArrayEnd('applied', notificationTimeout, notificationOptions);
       } else if (CMD === 'detach-all-styles') {
         styler.detachStyle(layer);
-        shotNofiticationAtArrayEnd('detached', notificationTimeout, notificationOptions);
+        showNotificationAtArrayEnd('detached', notificationTimeout, notificationOptions);
       } else if (CMD.includes('remove')) {
         styler.removeStyle(idMatch);
-        shotNofiticationAtArrayEnd('removed', notificationTimeout, notificationOptions);
+        showNotificationAtArrayEnd('removed', notificationTimeout, notificationOptions);
       }
     });
 
@@ -165,7 +164,7 @@ export const changeAllStyles = (config = defaultSettings) => {
   });
 };
 
-export const extractAllStyles = async (config = defaultSettings) => {
+export const extractAllStyles = async (config) => {
   const { framesPerRow, notificationTimeout } = config;
   const styles = getAllLocalStyles();
 

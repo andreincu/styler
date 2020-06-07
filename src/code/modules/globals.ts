@@ -68,10 +68,10 @@ export const showNofication = (
   }
 };
 
-export const showNotificationAtArrayEnd = (actionType, notificationTimeout, options: any = {}) => {
+export const showNotificationAtArrayEnd = (type, notificationTimeout, options: any = {}) => {
   const { layerIndex = 0, layersLength = 1, stylerIndex = 0, stylersLength = 1 } = options;
   if (layerIndex === layersLength - 1 && stylerIndex === stylersLength - 1) {
-    showNofication(counter[actionType], messages()[actionType], notificationTimeout);
+    showNofication(counter, messages()[type], notificationTimeout);
   }
 };
 /* 

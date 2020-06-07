@@ -175,7 +175,6 @@ export class Styler {
         counter.renamed++;
       }
     }
-
     // using localStyles - new behaviour
     else if (updateUsingLocalStyles === true) {
       if (idMatch && !idMatch.remote && !nameMatch) {
@@ -190,6 +189,7 @@ export class Styler {
     // ignore
     else {
       counter.ignored++;
+      debugger;
     }
 
     counter.generated++;
