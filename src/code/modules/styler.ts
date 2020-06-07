@@ -1,7 +1,6 @@
-import { CMD, counter } from './globals';
-import { checkStyleType } from './styles';
-import { addAffixTo, isArrayEmpty, ucFirst } from './utils';
 import { defaultSettings } from './default-settings.js';
+import { CMD, counter } from './globals';
+import { addAffixTo, isArrayEmpty, ucFirst } from './utils';
 
 interface StylerOptions {
   name?: string;

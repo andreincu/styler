@@ -5,6 +5,7 @@
   import TextField from './components/TextField';
 
   let uiSettings = defaultSettings;
+  let showAlert = false;
 
   const previousExplainer = 'This option will change your styles description, by adding the previous style at update.';
   const updateusingLocalExplainer = 'When this option is enabled, update and rename behaviour are changed.';
@@ -17,16 +18,27 @@
     }
   };
 
-  const handleClick = () => {
-    parent.postMessage(
-      {
-        pluginMessage: {
-          type: 'save-settings',
-          uiSettings,
+  const resetToDefault = () => {
+    Object.keys(uiSettings).map((key) => {
+      uiSettings[key] = defaultSettings[key];
+    });
+  };
+
+  const saveSettings = () => {
+    const { fillerPrefix, fillerSuffix, strokeerPrefix, strokeerSuffix } = uiSettings;
+    if (fillerPrefix === strokeerPrefix && fillerSuffix === strokeerSuffix) {
+      showAlert = true;
+    } else {
+      parent.postMessage(
+        {
+          pluginMessage: {
+            type: 'save-settings',
+            uiSettings,
+          },
         },
-      },
-      '*',
-    );
+        '*',
+      );
+    }
   };
 </script>
 
@@ -40,6 +52,10 @@
 
   section {
     padding: var(--size-xx-small) var(--size-x-small);
+  }
+
+  input[showAlert='true'] {
+    border: 1px solid red;
   }
 </style>
 
@@ -74,19 +90,19 @@
       <tr>
         <td>Fills</td>
         <td>
-          <input type="text" bind:value={uiSettings.fillerPrefix} placeholder="" />
+          <input type="text" bind:value={uiSettings.fillerPrefix} placeholder="" {showAlert} />
         </td>
         <td>
-          <input type="text" bind:value={uiSettings.fillerSuffix} placeholder="" />
+          <input type="text" bind:value={uiSettings.fillerSuffix} placeholder="" {showAlert} />
         </td>
       </tr>
       <tr>
         <td>Strokes</td>
         <td>
-          <input type="text" bind:value={uiSettings.strokeerPrefix} placeholder="" />
+          <input type="text" bind:value={uiSettings.strokeerPrefix} placeholder="" {showAlert} />
         </td>
         <td>
-          <input type="text" bind:value={uiSettings.strokeerSuffix} placeholder="" />
+          <input type="text" bind:value={uiSettings.strokeerSuffix} placeholder="" {showAlert} />
         </td>
       </tr>
       <tr>
@@ -120,6 +136,8 @@
   </section>
 
   <section>
-    <Button on:click={handleClick}>Save settings</Button>
+    <Button on:click={saveSettings}>Save settings</Button>
+    <Button on:click={resetToDefault}>Reset to default</Button>
   </section>
+
 </main>

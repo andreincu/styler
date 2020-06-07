@@ -1,7 +1,7 @@
-import { clientStorageKey, Config, updateStyleNames } from './modules/config';
-import { changeAllStyles, extractAllStyles } from './modules/styles';
+import { clientStorageKey, Config } from './modules/config';
+import { changeAllStyles, extractAllStyles, updateStyleNames } from './modules/styles';
+import { CMD } from './modules/globals';
 
-export const CMD = figma.command;
 let currentConfig;
 
 figma.clientStorage.getAsync(clientStorageKey).then((codeSettings) => {
@@ -22,7 +22,8 @@ figma.clientStorage.getAsync(clientStorageKey).then((codeSettings) => {
 figma.ui.onmessage = (msg) => {
   if (msg.type === 'save-settings') {
     figma.clientStorage.setAsync(clientStorageKey, msg.uiSettings).then(() => {
-      updateStyleNames(currentConfig, msg.uiSettings);
+      const newConfig = new Config(msg.uiSettings);
+      updateStyleNames(currentConfig, newConfig);
       figma.closePlugin();
     });
   }

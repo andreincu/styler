@@ -1,11 +1,12 @@
-import { black, CMD, counter } from './globals';
+import { Config } from './config';
+import { defaultSettings } from './default-settings.js';
+import { CMD, colors, counter, allMessages } from './globals';
 import { cleanSelection, createFrameLayer, createTextLayer, ungroupToCanvas } from './layers';
 import { chunk, figmaNotifyAndClose, groupBy, uniq } from './utils';
-import { defaultSettings } from './default-settings.js';
 
-export const showMessage = (counter, messages: any = {}, options = defaultSettings) => {
+export const getMessage = (counter, messages: any = {}, options = defaultSettings) => {
   const { notificationTimeout } = options;
-  const { empty = '', single = '', multiple = '' } = messages;
+  const { empty = '', multiple = '', single = multiple } = messages;
 
   if (counter === 0) {
     figmaNotifyAndClose(empty, notificationTimeout);
@@ -17,51 +18,18 @@ export const showMessage = (counter, messages: any = {}, options = defaultSettin
 };
 
 export const showNofication = () => {
-  const generateMessage = `
-    🔨 Created: ${counter.created} -
-    ✨ Updated: ${counter.updated} -
-    🌈 Renamed: ${counter.renamed} -
-    😶 No changes: ${counter.ignored}
-  `;
-
-  const messages = {
-    applied: {
-      empty: `🤔 No local style found to apply. Maybe? Renam...`,
-      single: `✌️ Applied only ${counter.applied} style. He he...`,
-      multiple: `✌️ Applied ${counter.applied} styles. He he...`,
-    },
-    detached: {
-      empty: `🤔 No style was applied on any of the selected layers. Idk...`,
-      single: `💔 Detached only ${counter.detached} style. Layers will miss you...`,
-      multiple: `💔 Detached ${counter.detached} styles. Layers will miss you...`,
-    },
-    extracted: {
-      empty: `😵 No local style found to extract. Ouch...`,
-      single: `😺 Created only ${counter.extracted} layer. Uhuu...`,
-      multiple: `😺 Created ${counter.extracted} layers. Uhuu...`,
-    },
-    generated: {
-      empty: `😭 We do not support empty or mixed properties. Oh, Noo...`,
-      single: generateMessage,
-      multiple: generateMessage,
-    },
-    removed: {
-      empty: `🤔 No local style was applied on any of the selected layers. Yep, it's not weird...`,
-      single: `🔥 Removed only ${counter.removed} style. Rrr...`,
-      multiple: `🔥 Removed ${counter.removed} styles. Rrr...`,
-    },
-  };
+  const messages = allMessages(counter).stylers;
 
   if (CMD === 'extract-all-styles') {
-    showMessage(counter.extracted, messages.extracted);
+    getMessage(counter.extracted, messages.extracted);
   } else if (CMD === 'generate-all-styles') {
-    showMessage(counter.generated, messages.generated);
+    getMessage(counter.generated, messages.generated);
   } else if (CMD === 'apply-all-styles') {
-    showMessage(counter.applied, messages.applied);
+    getMessage(counter.applied, messages.applied);
   } else if (CMD === 'detach-all-styles') {
-    showMessage(counter.detached, messages.detached);
+    getMessage(counter.detached, messages.detached);
   } else if (CMD.includes('remove')) {
-    showMessage(counter.removed, messages.removed);
+    getMessage(counter.removed, messages.removed);
   }
 };
 
@@ -100,7 +68,7 @@ export const changeAllStyles = async (options = defaultSettings) => {
   const selection = cleanSelection();
 
   if (selection.length === 0) {
-    figmaNotifyAndClose(`🥰 You must select at least 1 layer. Yea...`, notificationTimeout);
+    figmaNotifyAndClose(allMessages().layers.empty, notificationTimeout);
     return;
   }
 
@@ -148,12 +116,7 @@ export const changeAllStyles = async (options = defaultSettings) => {
 
 export const extractAllStyles = async (options = defaultSettings) => {
   const { framesPerRow } = options;
-  const styles = [
-    ...figma.getLocalTextStyles(),
-    ...figma.getLocalGridStyles(),
-    ...figma.getLocalPaintStyles(),
-    ...figma.getLocalEffectStyles(),
-  ];
+  const styles = getAllLocalStyles();
 
   const selection = [];
   const styleguides = getStyleguides(styles);
@@ -175,7 +138,7 @@ export const extractAllStyles = async (options = defaultSettings) => {
         styleguidesByType.TEXT.map(async (styleguide) => {
           const newLayer = await createTextLayer({
             characters: styleguide.name,
-            color: black,
+            color: colors.black,
             parent: textsContainer,
           });
 
@@ -224,4 +187,62 @@ export const checkStyleType = (style, options = defaultSettings) => {
     }
   });
   return type;
+};
+
+export const getAllLocalStyles = (): BaseStyle[] => {
+  return [
+    ...figma.getLocalTextStyles(),
+    ...figma.getLocalGridStyles(),
+    ...figma.getLocalPaintStyles(),
+    ...figma.getLocalEffectStyles(),
+  ];
+};
+
+export const updateStyleNames = (currentConfig: Config, newConfig: Config) => {
+  const { allStylers } = currentConfig;
+  const styles = getAllLocalStyles();
+
+  styles.map((style) => {
+    if (!styles) {
+      return;
+    }
+
+    allStylers.map((styler) => {
+      if (style.type !== styler.styleType) {
+        return;
+      }
+
+      const { name, prefix: oldPrefix, suffix: oldSuffix, layerPropType } = styler;
+      const newPrefix = newConfig[name]?.prefix;
+      const newSuffix = newConfig[name]?.suffix;
+
+      let styleType = 'FILL';
+      if (
+        (oldPrefix !== '' || oldSuffix !== '') &&
+        style.name.indexOf(oldPrefix) === 0 &&
+        style.name.lastIndexOf(oldSuffix) !== -1
+      ) {
+        styleType = layerPropType;
+      }
+
+      // Sorry, future me, for styler, but I was tired :(
+      if (style.type === 'PAINT') {
+        if (styleType === layerPropType && newPrefix !== oldPrefix) {
+          style.name = style.name.replace(oldPrefix, newPrefix);
+        }
+        if (styleType === layerPropType && newSuffix !== oldSuffix) {
+          const pos = style.name.lastIndexOf(oldSuffix);
+          style.name = style.name.slice(0, pos) + newSuffix;
+        }
+      } else {
+        if (newPrefix !== oldPrefix) {
+          style.name = style.name.replace(oldPrefix, newPrefix);
+        }
+        if (newSuffix !== oldSuffix) {
+          const pos = style.name.lastIndexOf(oldSuffix);
+          style.name = style.name.slice(0, pos) + newSuffix;
+        }
+      }
+    });
+  });
 };

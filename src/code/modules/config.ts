@@ -1,5 +1,5 @@
-import { defaultSettings } from './default-settings.js';
 import { Styler } from './styler';
+import { defaultSettings } from './default-settings.js';
 
 export const clientStorageKey = 'codeSettings';
 
@@ -100,52 +100,3 @@ export class Config {
     this.texterOnly = [this.texter];
   }
 }
-
-export const updateStyleNames = (currentConfig, newConfigMessage) => {
-  const newConfig = new Config(newConfigMessage);
-
-  const { allStylers } = currentConfig;
-  allStylers.map((styler) => {
-    const styles = styler.getLocalStyles();
-    if (!styles) {
-      return;
-    }
-
-    const stylerName = styler.name;
-    const oldPrefix = styler.prefix;
-    const oldSuffix = styler.suffix;
-    const newPrefix = newConfig[stylerName]?.prefix;
-    const newSuffix = newConfig[stylerName]?.suffix;
-
-    const emptySpacesFromSides = /^\s+|\s+$/g;
-
-    styles.map((style) => {
-      const styleType = checkStyleType(style, options);
-
-      if (style.name.indexOf(oldPrefix) !== 0) {
-        return;
-      }
-
-      // Sorry, future me, for styler, but I was tired :(
-      if (style.type === 'PAINT') {
-        if (styleType === styler.layerPropType) {
-          if (newPrefix !== oldPrefix) {
-            style.name = style.name.replace(oldPrefix, newPrefix).replace(emptySpacesFromSides, '');
-          }
-          if (newSuffix !== oldSuffix) {
-            const pos = style.name.lastIndexOf(oldSuffix);
-            style.name = style.name.slice(0, pos) + newSuffix;
-          }
-        }
-      } else {
-        if (newPrefix !== oldPrefix) {
-          style.name = style.name.replace(oldPrefix, newPrefix).replace(emptySpacesFromSides, '');
-        }
-        if (newSuffix !== oldSuffix) {
-          const pos = style.name.lastIndexOf(oldSuffix);
-          style.name = style.name.slice(0, pos) + newSuffix;
-        }
-      }
-    });
-  });
-};
