@@ -48,11 +48,11 @@ export class Styler {
   }
 
   applyStyle = (layer, style, oldLayerName = layer.name) => {
-    if (oldLayerName !== layer.name && ![layer[this.layerProps[0]]].flat().length) {
+    if (oldLayerName !== layer.name && this.isPropEmpty(layer)) {
       return;
     }
 
-    if (!style || layer[this.layerStyleID] === undefined || layer[this.layerStyleID] === style.id) {
+    if (!style || this.isPropEmpty(layer)) {
       console.log(`Apply: ${this.layerStyleID} not found || No style found for ${layer.name}`);
       return;
     }
@@ -70,15 +70,16 @@ export class Styler {
     return newStyle;
   };
 
-  changeStyleDescription = (layer, style) => {
-    const idMatch = this.getStyleById(layer);
-    const currentDescription = style.description;
+  changeStyleDescription = (styleNameMatch, styleIdMatch) => {
+    const currentDescription = styleNameMatch.description || '';
 
     const keyword = 'Previous style:';
     const pos = currentDescription.lastIndexOf(keyword);
-    const newDescription = currentDescription.slice(0, pos) + '\n' + `${keyword}\n ${idMatch.name}`;
+    const newDescription = currentDescription.slice(0, pos) + `${keyword}\n${styleIdMatch?.name || ''}`;
 
-    return !idMatch ? currentDescription : newDescription;
+    return !styleIdMatch
+      ? (styleNameMatch.description = currentDescription)
+      : (styleNameMatch.description = newDescription);
   };
 
   detachStyle = (layer) => {
@@ -117,21 +118,21 @@ export class Styler {
     style.name = addAffixTo(layer.name, this.prefix, this.suffix);
   };
 
-  updateStyle = (layer, style, addPrevToDescription) => {
+  updateStyle = (layer, styleNameMatch, addPrevToDescription, styleIdMatch = null) => {
     if (addPrevToDescription) {
-      this.changeStyleDescription(layer, style);
+      this.changeStyleDescription(styleNameMatch, styleIdMatch);
     }
 
     this.detachStyle(layer);
     this.styleProps.map((prop, propIndex) => {
-      if (!style || layer[this.layerProps[propIndex]] === undefined) {
+      if (!styleNameMatch || this.isPropEmpty(layer)) {
         console.log(`Update: ${this.layerProps[propIndex]} not found || No style found for ${layer.name}`);
         return;
       }
 
-      style[prop] = layer[this.layerProps[propIndex]];
+      styleNameMatch[prop] = layer[this.layerProps[propIndex]];
     });
-    this.applyStyle(layer, style);
+    this.applyStyle(layer, styleNameMatch);
   };
 
   removeStyle = (style) => {
@@ -148,8 +149,8 @@ export class Styler {
 
   generateStyle = (layer, options) => {
     const {
-      idMatch,
-      nameMatch,
+      styleIdMatch,
+      styleNameMatch,
       updateUsingLocalStyles = defaultSettings.updateUsingLocalStyles,
       addPrevToDescription = defaultSettings.addPrevToDescription,
     } = options;
@@ -160,31 +161,31 @@ export class Styler {
     }
 
     // create
-    if ((!idMatch || idMatch.remote) && !nameMatch) {
+    if ((!styleIdMatch || styleIdMatch?.remote) && !styleNameMatch) {
       this.createStyle(layer, addPrevToDescription);
       counter.created++;
     }
 
     // update only if external style is applied - kind of old behaviour
-    else if ((!idMatch || idMatch.remote) && nameMatch && updateUsingLocalStyles === false) {
-      this.updateStyle(layer, nameMatch, addPrevToDescription);
+    else if ((!styleIdMatch || styleIdMatch?.remote) && styleNameMatch && updateUsingLocalStyles === false) {
+      this.updateStyle(layer, styleNameMatch, addPrevToDescription, styleIdMatch);
       counter.updated++;
     }
 
     //
-    else if (idMatch !== nameMatch && updateUsingLocalStyles === false) {
-      this.renameStyle(layer, idMatch);
+    else if (styleIdMatch !== styleNameMatch && updateUsingLocalStyles === false) {
+      this.renameStyle(layer, styleIdMatch);
       counter.renamed++;
     }
 
     // using localStyles - new behaviour
-    else if (idMatch && !idMatch.remote && !nameMatch && updateUsingLocalStyles === true) {
-      this.renameStyle(layer, idMatch);
+    else if (styleIdMatch && !styleIdMatch?.remote && !styleNameMatch && updateUsingLocalStyles === true) {
+      this.renameStyle(layer, styleIdMatch);
       counter.renamed++;
     }
     //
-    else if (idMatch !== nameMatch && updateUsingLocalStyles === true) {
-      this.updateStyle(layer, nameMatch, addPrevToDescription);
+    else if (styleIdMatch !== styleNameMatch && updateUsingLocalStyles === true) {
+      this.updateStyle(layer, styleNameMatch, addPrevToDescription, styleIdMatch);
       counter.updated++;
     }
 

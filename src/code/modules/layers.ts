@@ -92,9 +92,9 @@ export const createTextLayer = async (options: TextLayer = {}) => {
   }
 
   [texter, filler, effecter].map(async (styler) => {
-    const nameMatch = styler.getStyleByName(newLayer.name);
+    const styleNameMatch = styler.getStyleByName(newLayer.name);
 
-    await styler.applyStyle(newLayer, nameMatch);
+    await styler.applyStyle(newLayer, styleNameMatch);
   });
 
   newLayer.x = xPos;
@@ -124,9 +124,9 @@ export const createFrameLayer = (options: FrameLayer = {}) => {
     changeColor(newLayer, 'fills', color);
   }
   stylersWithoutTexter.map((styler) => {
-    const nameMatch = styler.getStyleByName(newLayer.name);
+    const styleNameMatch = styler.getStyleByName(newLayer.name);
 
-    styler.applyStyle(newLayer, nameMatch);
+    styler.applyStyle(newLayer, styleNameMatch);
   });
 
   newLayer.x = xPos;

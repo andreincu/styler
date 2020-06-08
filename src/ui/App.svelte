@@ -18,12 +18,6 @@
     }
   };
 
-  const resetToDefault = () => {
-    Object.keys(uiSettings).map((key) => {
-      uiSettings[key] = defaultSettings[key];
-    });
-  };
-
   const saveSettings = () => {
     const { fillerPrefix, fillerSuffix, strokeerPrefix, strokeerSuffix } = uiSettings;
     if (fillerPrefix === strokeerPrefix && fillerSuffix === strokeerSuffix) {
@@ -39,6 +33,12 @@
         '*',
       );
     }
+  };
+
+  const resetToDefault = () => {
+    Object.keys(uiSettings).map((key) => {
+      uiSettings[key] = defaultSettings[key];
+    });
   };
 </script>
 
