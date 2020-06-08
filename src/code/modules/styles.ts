@@ -180,25 +180,23 @@ export const extractAllStyles = async (config) => {
 
   let createdLayers = [];
 
-  for (let styler of allStylers) {
-    const styles = styler.getLocalStyles();
+  const styles = getAllLocalStyles();
+  if (isArrayEmpty(styles)) {
+    return;
+  }
 
-    if (isArrayEmpty(styles)) {
-      continue;
-    }
-
-    for (let style of styles) {
-      if (!styler.checkAffix(style)) {
-        continue;
+  for (let style of styles) {
+    const promise = allStylers.map(async (styler) => {
+      if (style.type !== styler.styleType || !styler.checkAffix(style)) {
+        return;
       }
+      const styleNameWithoutAffix = styler.replaceAffix(style.name, '');
 
-      let layerMatch = createdLayers.find(
-        (layer) => addAffixTo(layer?.name, styler.prefix, styler.suffix) === style.name,
-      );
+      let layerMatch = createdLayers.find((layer) => layer.name === styleNameWithoutAffix);
 
       if (!layerMatch) {
         const containerType = style.type === 'TEXT' ? textContainer : miscContainer;
-        layerMatch = await createLayer(style.name, containerType, styler.styleType, { color: colors.black });
+        layerMatch = await createLayer(styleNameWithoutAffix, containerType, styler.styleType, { color: colors.black });
 
         createdLayers.push(layerMatch);
       }
@@ -206,7 +204,9 @@ export const extractAllStyles = async (config) => {
       console.log(textContainer.children.length);
       console.log(miscContainer.children.length);
       styler.applyStyle(layerMatch, style);
-    }
+    });
+
+    await Promise.all(promise);
   }
 
   figma.closePlugin();
