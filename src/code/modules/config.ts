@@ -1,7 +1,7 @@
 import { Styler } from './styler';
 import { defaultSettings } from './default-settings.js';
 
-export const clientStorageKey = 'codeSettings';
+export const clientStorageKey = 'cachedSettings';
 
 export class Config {
   // general

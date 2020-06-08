@@ -73,8 +73,8 @@ export const updateStyleNames = (currentConfig: Config, newConfig: Config) => {
       }
 
       const { name, prefix: currentPrefix, suffix: currentSuffix, layerPropType } = styler;
-      const newPrefix = newConfig[name]?.prefix;
-      const newSuffix = newConfig[name]?.suffix;
+      const newPrefix = newConfig[name].prefix;
+      const newSuffix = newConfig[name].suffix;
 
       let styleType = 'FILL';
       if (

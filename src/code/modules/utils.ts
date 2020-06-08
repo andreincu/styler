@@ -64,7 +64,7 @@ export const replacePrefix = (name, currentPrefix, newPrefix) => {
     return newPrefix + name;
   }
 
-  const currentPrefixLength = currentPrefix.length();
+  const currentPrefixLength = currentPrefix.length;
   return newPrefix + name.slice(currentPrefixLength);
 };
 

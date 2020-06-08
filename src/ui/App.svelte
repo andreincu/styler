@@ -1,21 +1,34 @@
 <script>
+  import { onMount } from 'svelte';
   import { defaultSettings } from '../code/modules/default-settings';
   import Checkbox from './components/Checkbox';
   import Button from './components/Button';
   import TextField from './components/TextField';
 
-  let uiSettings = defaultSettings;
+  let uiSettings = { ...defaultSettings };
   let showAlert = false;
 
   const previousExplainer = 'This option will change your styles description, by adding the previous style at update.';
   const updateusingLocalExplainer = 'When this option is enabled, update and rename behaviour are changed.';
 
-  onmessage = (e) => {
-    const codeSettings = e.data.pluginMessage.codeSettings;
+  onMount(() => {
+    window.focus();
+  });
 
-    if (codeSettings) {
-      uiSettings = codeSettings;
-    }
+  const updateSettings = (currentSettings, newSettings = defaultSettings) => {
+    Object.keys(newSettings).map((key) => {
+      currentSettings[key] = newSettings[key];
+    });
+
+    return currentSettings;
+  };
+
+  onmessage = async (e) => {
+    const codeSettings = e.data.pluginMessage;
+    // console.log('in ui msg:');
+    // console.log(e.data.pluginMessage);
+
+    uiSettings = updateSettings(uiSettings, codeSettings);
   };
 
   const saveSettings = () => {
@@ -36,9 +49,22 @@
   };
 
   const resetToDefault = () => {
-    Object.keys(uiSettings).map((key) => {
-      uiSettings[key] = defaultSettings[key];
-    });
+    uiSettings = updateSettings(uiSettings, defaultSettings);
+
+    return uiSettings;
+  };
+
+  const cancelModalUsingEscape = (event) => {
+    if (event.key === 'Escape') {
+      parent.postMessage(
+        {
+          pluginMessage: {
+            type: 'cancel-modal',
+          },
+        },
+        '*',
+      );
+    }
   };
 </script>
 
@@ -143,3 +169,5 @@
   </section>
 
 </main>
+
+<svelte:window on:keydown={cancelModalUsingEscape} />

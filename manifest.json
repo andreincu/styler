@@ -61,8 +61,8 @@
       "command": "customize-plugin"
     },
     {
-      "name": "zzTest",
-      "command": "test"
+      "name": "Clear styler cache",
+      "command": "clear-cache"
     }
   ]
 }
