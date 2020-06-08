@@ -1,36 +1,38 @@
 import { clientStorageKey, Config } from './modules/config';
+import { CMD } from './modules/globals';
 import { changeAllStyles, extractAllStyles, updateStyleNames } from './modules/styles';
-import { CMD, counter } from './modules/globals';
 
 let currentConfig;
 
 if (CMD === 'clear-cache') {
   figma.clientStorage.setAsync(clientStorageKey, undefined).then(() => {
-    figma.closePlugin('🧹 Restored to default');
+    figma.closePlugin('🧹 Cleaned saved settings from cache.');
     return;
   });
-} else {
+}
+//
+else {
   figma.clientStorage.getAsync(clientStorageKey).then((cachedSettings) => {
-    // console.log('cached one:');
-    // console.log(cachedSettings);
     currentConfig = new Config(cachedSettings);
 
     // creating layers based on styles
     if (CMD === 'extract-all-styles') {
-      // extractAllStyles(currentConfig);
-    } else if (CMD === 'customize-plugin') {
-      figma.showUI(__html__, { width: 360, height: 480 });
+      extractAllStyles(currentConfig);
+    }
 
+    //
+    else if (CMD === 'customize-plugin') {
+      figma.showUI(__html__, { width: 360, height: 480 });
       figma.ui.postMessage(cachedSettings);
-    } else {
+    }
+
+    //
+    else {
       changeAllStyles(currentConfig);
     }
   });
 
   figma.ui.onmessage = (msg) => {
-    // console.log('in code msg');
-    // console.log(msg);
-
     if (msg.type === 'cancel-modal') {
       figma.closePlugin('🥺 Everything is as before.');
       return;

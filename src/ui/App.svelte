@@ -93,8 +93,11 @@
     <h2 class="h3">Notification timeout</h2>
     <TextField type="number" bind:value={uiSettings.notificationTimeout} unitMeasurement="'ms'" />
 
-    <h2 class="h3">Number of frames per row</h2>
-    <TextField type="number" bind:value={uiSettings.framesPerRow} unitMeasurement="'frames'" />
+    <h2 class="h3">Number of texts per section</h2>
+    <TextField type="number" bind:value={uiSettings.textsPerSection} unitMeasurement="'frames'" />
+
+    <h2 class="h3">Number of frames per section</h2>
+    <TextField type="number" bind:value={uiSettings.framesPerSection} unitMeasurement="'frames'" />
 
     <Checkbox bind:checked={uiSettings.addPrevToDescription} note={previousExplainer}>
       Show previous style in description

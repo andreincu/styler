@@ -6,7 +6,8 @@ export const clientStorageKey = 'cachedSettings';
 export class Config {
   // general
   addPrevToDescription: boolean;
-  framesPerRow: number;
+  framesPerSection: number;
+  textsPerSection: number;
   notificationTimeout: number;
   updateUsingLocalStyles: boolean;
   partialMatch: boolean;
@@ -25,7 +26,8 @@ export class Config {
     const {
       // general
       addPrevToDescription = defaultSettings.addPrevToDescription,
-      framesPerRow = defaultSettings.framesPerRow,
+      framesPerSection = defaultSettings.framesPerSection,
+      textsPerSection = defaultSettings.textsPerSection,
       notificationTimeout = defaultSettings.notificationTimeout,
       updateUsingLocalStyles = defaultSettings.updateUsingLocalStyles,
       partialMatch = defaultSettings.partialMatch,
@@ -44,7 +46,8 @@ export class Config {
     } = options;
 
     this.addPrevToDescription = addPrevToDescription;
-    this.framesPerRow = framesPerRow;
+    this.framesPerSection = framesPerSection;
+    this.textsPerSection = textsPerSection;
     this.notificationTimeout = notificationTimeout;
     this.updateUsingLocalStyles = updateUsingLocalStyles;
     this.partialMatch = partialMatch;

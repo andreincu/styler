@@ -1,6 +1,7 @@
 export const defaultSettings = {
   addPrevToDescription: false,
-  framesPerRow: 5,
+  framesPerSection: 5,
+  textsPerSection: 5,
   notificationTimeout: 6000,
   updateUsingLocalStyles: false,
   partialMatch: false,

@@ -49,7 +49,7 @@ export const changeColor = (layer, prop, rgba = [0, 0, 0, 1]) => {
   return (layer[prop] = cloned);
 };
 
-export const changeLayoutProps = (frame: FrameNode, options: AutoLayoutProps = {}) => {
+export const changeLayoutProps = (targetedFrame: FrameNode, options: AutoLayoutProps = {}) => {
   const {
     layoutMode = 'NONE',
     layoutAlign = 'MIN',
@@ -59,43 +59,31 @@ export const changeLayoutProps = (frame: FrameNode, options: AutoLayoutProps = {
     itemSpacing = 0,
   } = options;
 
-  if (!frame) {
+  if (!targetedFrame) {
     return;
   }
 
-  frame.layoutMode = layoutMode;
-  frame.layoutAlign = layoutAlign;
-  frame.counterAxisSizingMode = counterAxisSizingMode;
-  frame.horizontalPadding = horizontalPadding;
-  frame.verticalPadding = verticalPadding;
-  frame.itemSpacing = itemSpacing;
+  targetedFrame.layoutMode = layoutMode;
+  targetedFrame.layoutAlign = layoutAlign;
+  targetedFrame.counterAxisSizingMode = counterAxisSizingMode;
+  targetedFrame.horizontalPadding = horizontalPadding;
+  targetedFrame.verticalPadding = verticalPadding;
+  targetedFrame.itemSpacing = itemSpacing;
 
-  return frame;
+  return targetedFrame;
 };
 
-export const createTextLayer = async (options: TextLayer = {}) => {
-  const {
-    characters = 'Text',
-    color = colors.transparent,
-    parent = figma.currentPage,
-    xPos = 0,
-    yPos = xPos,
-  } = options;
+export const createTextLayer = async (name = 'TextLayer', parent = figma.currentPage, options: TextLayer = {}) => {
+  const { color = colors.transparent, xPos = 0, yPos = xPos } = options;
 
   const newLayer = figma.createText();
   await figma.loadFontAsync(newLayer.fontName as FontName);
 
-  newLayer.characters = characters;
-  newLayer.name = characters;
+  newLayer.name = name;
+  newLayer.characters = name;
   if (color) {
     changeColor(newLayer, 'fills', color);
   }
-
-  [texter, filler, effecter].map(async (styler) => {
-    const styleNameMatch = styler.getStyleByName(newLayer.name);
-
-    await styler.applyStyle(newLayer, styleNameMatch);
-  });
 
   newLayer.x = xPos;
   newLayer.y = yPos;
@@ -105,12 +93,14 @@ export const createTextLayer = async (options: TextLayer = {}) => {
   return newLayer;
 };
 
-export const createFrameLayer = (options: FrameLayer = {}) => {
+export const createFrameLayer = (
+  name = 'FrameLayer',
+  parent: FrameNode | PageNode = figma.currentPage,
+  options: FrameLayer = {},
+) => {
   const {
     color = colors.transparent,
     layoutProps = {},
-    name = 'Container',
-    parent = figma.currentPage,
     size = 80,
     width = size,
     height = width,
@@ -123,11 +113,6 @@ export const createFrameLayer = (options: FrameLayer = {}) => {
   if (color) {
     changeColor(newLayer, 'fills', color);
   }
-  stylersWithoutTexter.map((styler) => {
-    const styleNameMatch = styler.getStyleByName(newLayer.name);
-
-    styler.applyStyle(newLayer, styleNameMatch);
-  });
 
   newLayer.x = xPos;
   newLayer.y = yPos;
@@ -138,6 +123,22 @@ export const createFrameLayer = (options: FrameLayer = {}) => {
   changeLayoutProps(newLayer, layoutProps);
 
   return newLayer;
+};
+
+export const createLayer = (
+  name = 'Layer',
+  parent: FrameNode | PageNode = figma.currentPage,
+  layerType = 'PAINT',
+  options = {},
+) => {
+  const createCommand = {
+    TEXT: createTextLayer,
+    GRID: createFrameLayer,
+    PAINT: createFrameLayer,
+    EFFECT: createFrameLayer,
+  };
+
+  return createCommand[layerType](name, parent, options);
 };
 
 // ungroup layer

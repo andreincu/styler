@@ -1,8 +1,8 @@
 import { Config } from './config';
 import { defaultSettings } from './default-settings.js';
-import { CMD, colors, counter, messages, showNofication, showNotificationAtArrayEnd } from './globals';
-import { cleanSelection, createFrameLayer, createTextLayer, ungroupToCanvas } from './layers';
-import { chunk, groupBy, uniq, replacePrefix, replaceSuffix, addAffixTo } from './utils';
+import { CMD, counter, messages, showNofication, showNotificationAtArrayEnd, colors } from './globals';
+import { cleanSelection, createFrameLayer, createLayer } from './layers';
+import { addAffixTo, isArrayEmpty, replacePrefix, replaceSuffix, uniq } from './utils';
 
 export const getUniqueStylesName = (styles, options = defaultSettings) => {
   const { allStylers } = options;
@@ -75,15 +75,7 @@ export const updateStyleNames = (currentConfig: Config, newConfig: Config) => {
       const { name, prefix: currentPrefix, suffix: currentSuffix, layerPropType } = styler;
       const newPrefix = newConfig[name].prefix;
       const newSuffix = newConfig[name].suffix;
-
-      let styleType = 'FILL';
-      if (
-        (currentPrefix !== '' || currentSuffix !== '') &&
-        style.name.indexOf(currentPrefix) === 0 &&
-        style.name.lastIndexOf(currentSuffix) !== -1
-      ) {
-        styleType = layerPropType;
-      }
+      const styleType = styler.checkStyleType(style);
 
       // Sorry, future me, for styler, but I was tired :(
       if (style.type === 'PAINT') {
@@ -173,25 +165,52 @@ export const changeAllStyles = (config) => {
 };
 
 export const extractAllStyles = async (config) => {
-  const { allStylers, framesPerRow, notificationTimeout } = config;
-  const createdLayers = [];
+  const { allStylers, framesPerSection, textsPerSection, notificationTimeout } = config;
+  const mainContainer = createFrameLayer('main', undefined, {
+    layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 128 },
+  });
 
-  allStylers.map((styler) => {
+  const textContainer = createFrameLayer('text', mainContainer, {
+    layoutProps: { layoutMode: 'VERTICAL', itemSpacing: 32 },
+  });
+
+  const miscContainer = createFrameLayer('misc', mainContainer, {
+    layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 32 },
+  });
+
+  let createdLayers = [];
+
+  for (let styler of allStylers) {
     const styles = styler.getLocalStyles();
 
-    if (!styles || styles.length === 0) {
-      return;
+    if (isArrayEmpty(styles)) {
+      continue;
     }
 
-    styles.map((style) => {
-      const layerMatch = createdLayers.find(
-        (layer) => addAffixTo(layer.name, styler.prefix, styler.suffix) === style.name,
+    for (let style of styles) {
+      if (!styler.checkAffix(style)) {
+        continue;
+      }
+
+      let layerMatch = createdLayers.find(
+        (layer) => addAffixTo(layer?.name, styler.prefix, styler.suffix) === style.name,
       );
 
       if (!layerMatch) {
+        const containerType = style.type === 'TEXT' ? textContainer : miscContainer;
+        layerMatch = await createLayer(style.name, containerType, styler.styleType, { color: colors.black });
+
+        createdLayers.push(layerMatch);
       }
-    });
-  });
+
+      console.log(textContainer.children.length);
+      console.log(miscContainer.children.length);
+      styler.applyStyle(layerMatch, style);
+    }
+  }
+
+  figma.closePlugin();
+  return;
 };
 
 // export const extractAllStyles = async (config) => {

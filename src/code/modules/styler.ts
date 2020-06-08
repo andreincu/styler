@@ -47,10 +47,10 @@ export class Styler {
     this.getLocalStylesCommand = addAffixTo(ucFirst(styleType), 'getLocal', 'Styles');
   }
 
-  applyStyle = (layer, style, oldLayerName = layer.name) => {
-    if (oldLayerName !== layer.name && this.isPropEmpty(layer)) {
-      return;
-    }
+  applyStyle = (layer: SceneNode, style: BaseStyle, oldLayerName: string = layer.name) => {
+    // if (oldLayerName !== layer.name && this.isPropEmpty(layer)) {
+    //   return;
+    // }
 
     if (!style || this.isPropEmpty(layer)) {
       console.log(`Apply: ${this.layerStyleID} not found || No style found for ${layer.name}`);
@@ -199,4 +199,17 @@ export class Styler {
 
   isPropEmpty = (layer) => isArrayEmpty(layer[this.layerProps[0]]);
   isPropMixed = (layer) => this.layerProps.some((prop) => layer[prop] === figma.mixed);
+
+  checkAffix = (style: BaseStyle) => {
+    return style.name.indexOf(this.prefix) === 0 && style.name.lastIndexOf(this.suffix) !== -1;
+  };
+
+  checkStyleType = (style: BaseStyle) => {
+    let styleType = 'FILL';
+
+    if ((this.prefix !== '' || this.suffix !== '') && this.checkAffix(style)) {
+      styleType = this.layerPropType;
+    }
+    return styleType;
+  };
 }
