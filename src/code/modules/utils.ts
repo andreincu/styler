@@ -59,24 +59,6 @@ export function clone(val) {
   throw 'unknown';
 }
 
-export const replacePrefix = (name, currentPrefix, newPrefix) => {
-  if (currentPrefix === '') {
-    return newPrefix + name;
-  }
-
-  const currentPrefixLength = currentPrefix.length;
-  return newPrefix + name.slice(currentPrefixLength);
-};
-
-export const replaceSuffix = (name, currentSuffix, newSuffix) => {
-  if (currentSuffix === '') {
-    return name + newSuffix;
-  }
-
-  const pos = name.lastIndexOf(currentSuffix);
-  return name.slice(0, pos) + newSuffix;
-};
-
 export const checkStyleType = (style: BaseStyle, config: Config) => {
   let styleType: any = style.type;
 

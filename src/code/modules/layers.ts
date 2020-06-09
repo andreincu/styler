@@ -73,7 +73,11 @@ export const changeLayoutProps = (targetedFrame: FrameNode, options: AutoLayoutP
   return targetedFrame;
 };
 
-export const createTextLayer = async (name = 'TextLayer', parent = figma.currentPage, options: TextLayer = {}) => {
+export const createTextLayer = async (
+  name = 'TextLayer',
+  parent: FrameNode | PageNode = figma.currentPage,
+  options: TextLayer = {},
+) => {
   const { color = colors.transparent, xPos = 0, yPos = xPos } = options;
 
   const newLayer = figma.createText();

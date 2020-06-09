@@ -1,6 +1,6 @@
 import { defaultSettings } from './default-settings.js';
 import { CMD, counter } from './globals';
-import { addAffixTo, isArrayEmpty, ucFirst, replacePrefix, replaceSuffix } from './utils';
+import { addAffixTo, isArrayEmpty, ucFirst } from './utils';
 
 interface StylerOptions {
   name?: string;
@@ -202,19 +202,6 @@ export class Styler {
 
   checkAffix = (style: BaseStyle) => {
     return style.name.startsWith(this.prefix) && style.name.endsWith(this.suffix);
-  };
-
-  checkStyleType = (style: BaseStyle) => {
-    let styleType = this.layerPropType;
-
-    if (style.type === 'PAINT') {
-      styleType = 'FILL';
-
-      if ((this.prefix !== '' || this.suffix !== '') && this.checkAffix(style)) {
-        styleType = this.layerPropType;
-      }
-    }
-    return styleType;
   };
 
   replacePrefix = (name: string, newPrefix = '') => {

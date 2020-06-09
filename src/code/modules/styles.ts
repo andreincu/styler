@@ -1,7 +1,7 @@
 import { Config } from './config';
 import { CMD, colors, counter, messages, showNofication, showNotificationAtArrayEnd } from './globals';
-import { cleanSelection, createFrameLayer, createLayer } from './layers';
-import { isArrayEmpty, replacePrefix, replaceSuffix, checkStyleType } from './utils';
+import { cleanSelection, createFrameLayer, createTextLayer, ungroupToCanvas } from './layers';
+import { checkStyleType, isArrayEmpty } from './utils';
 
 export const getAllLocalStyles = (): BaseStyle[] => {
   return [
@@ -14,38 +14,29 @@ export const getAllLocalStyles = (): BaseStyle[] => {
 
 export const updateStyleNames = (currentConfig: Config, newConfig: Config) => {
   const { allStylers } = currentConfig;
-  const styles = getAllLocalStyles();
 
-  styles.map((style) => {
+  allStylers.map((styler) => {
+    const styles = styler.getLocalStyles();
     if (!styles) {
       return;
     }
 
-    allStylers.map((styler) => {
-      if (style.type !== styler.styleType) {
+    styles.map((style) => {
+      if (style.type !== styler.styleType || checkStyleType(style, currentConfig) !== styler.layerPropType) {
         return;
       }
 
       const { name, prefix: currentPrefix, suffix: currentSuffix, layerPropType } = styler;
       const newPrefix = newConfig[name].prefix;
       const newSuffix = newConfig[name].suffix;
-      const styleType = styler.checkStyleType(style);
+      const styleType = checkStyleType(style, currentConfig);
 
       // Sorry, future me, for styler, but I was tired :(
-      if (style.type === 'PAINT') {
-        if (styleType === layerPropType && newPrefix !== currentPrefix) {
-          style.name = replacePrefix(style.name, currentPrefix, newPrefix);
-        }
-        if (styleType === layerPropType && newSuffix !== currentSuffix) {
-          style.name = replaceSuffix(style.name, currentSuffix, newSuffix);
-        }
-      } else {
-        if (newPrefix !== currentPrefix) {
-          style.name = replacePrefix(style.name, currentPrefix, newPrefix);
-        }
-        if (newSuffix !== currentSuffix) {
-          style.name = replaceSuffix(style.name, currentSuffix, newSuffix);
-        }
+      if (newPrefix !== currentPrefix) {
+        style.name = styler.replacePrefix(style.name, newPrefix);
+      }
+      if (newSuffix !== currentSuffix) {
+        style.name = styler.replaceSuffix(style.name, newSuffix);
       }
     });
   });
@@ -120,17 +111,20 @@ export const changeAllStyles = (config) => {
 
 export const extractAllStyles = async (config) => {
   const { allStylers, framesPerSection, textsPerSection, notificationTimeout } = config;
+  const horizFlow: any = {
+    layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 32 },
+  };
+
+  const vertFlow: any = {
+    layoutProps: { layoutMode: 'VERTICAL', itemSpacing: 32 },
+  };
   const mainContainer = createFrameLayer('main', undefined, {
     layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 128 },
   });
 
-  const textContainer = createFrameLayer('text', mainContainer, {
-    layoutProps: { layoutMode: 'VERTICAL', itemSpacing: 32 },
-  });
+  const textContainer = createFrameLayer('text', mainContainer, horizFlow);
 
-  const miscContainer = createFrameLayer('misc', mainContainer, {
-    layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 32 },
-  });
+  const miscContainer = createFrameLayer('misc', mainContainer, vertFlow);
 
   let createdLayers = [];
 
@@ -140,29 +134,41 @@ export const extractAllStyles = async (config) => {
     if (isArrayEmpty(styles)) {
       return;
     }
-    const promise = styles.map(async (style) => {
+
+    let newSection;
+    const promise = styles.map(async (style, index) => {
       if (style.type !== styler.styleType || checkStyleType(style, config) !== styler.layerPropType) {
         return;
       }
 
-      const styleNameWithoutAffix = styler.replaceAffix(style.name, '');
+      const styleWithoutAffix = styler.replaceAffix(style.name, '');
+      let layerMatch = createdLayers.find((layer) => layer.name === styleWithoutAffix);
 
-      let layerMatch = createdLayers.find((layer) => layer.name === styleNameWithoutAffix);
+      if (!layerMatch && style.type === 'TEXT') {
+        index % textsPerSection === 0
+          ? (newSection = createFrameLayer('section', textContainer, vertFlow))
+          : newSection;
 
-      if (!layerMatch) {
-        const containerType = style.type === 'TEXT' ? textContainer : miscContainer;
-        layerMatch = await createLayer(styleNameWithoutAffix, containerType, styler.styleType, { color: colors.black });
+        layerMatch = await createTextLayer(styleWithoutAffix, newSection, { color: colors.black });
+        createdLayers.push(layerMatch);
+      }
+      //
+      else if (!layerMatch) {
+        if (index % framesPerSection === 0) {
+          newSection = createFrameLayer('section', miscContainer, horizFlow);
+        }
 
+        layerMatch = createFrameLayer(styleWithoutAffix, newSection, { size: 80, color: colors.white });
         createdLayers.push(layerMatch);
       }
 
-      console.log(textContainer.children.length);
-      console.log(miscContainer.children.length);
       styler.applyStyle(layerMatch, style);
     });
 
     await Promise.all(promise);
   }
+
+  ungroupToCanvas(createdLayers);
 
   figma.closePlugin();
   return;
