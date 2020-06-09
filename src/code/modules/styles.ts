@@ -31,7 +31,6 @@ export const updateStyleNames = (currentConfig: Config, newConfig: Config) => {
       const newSuffix = newConfig[name].suffix;
       const styleType = checkStyleType(style, currentConfig);
 
-      // Sorry, future me, for styler, but I was tired :(
       if (newPrefix !== currentPrefix) {
         style.name = styler.replacePrefix(style.name, newPrefix);
       }

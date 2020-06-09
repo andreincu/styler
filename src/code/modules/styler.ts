@@ -52,7 +52,7 @@ export class Styler {
     //   return;
     // }
 
-    if (!style || layer[this.layerStyleID] === undefined) {
+    if (!style || layer[this.layerStyleID] === undefined || layer[this.layerStyleID] === style.id) {
       console.log(`Apply: ${this.layerStyleID} not found || No style found for ${layer.name}`);
       return;
     }
