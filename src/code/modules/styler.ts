@@ -52,7 +52,7 @@ export class Styler {
     //   return;
     // }
 
-    if (!style || this.isPropEmpty(layer)) {
+    if (!style || layer[this.layerStyleID] === undefined) {
       console.log(`Apply: ${this.layerStyleID} not found || No style found for ${layer.name}`);
       return;
     }
@@ -201,21 +201,33 @@ export class Styler {
   isPropMixed = (layer) => this.layerProps.some((prop) => layer[prop] === figma.mixed);
 
   checkAffix = (style: BaseStyle) => {
-    return style.name.indexOf(this.prefix) === 0 && style.name.lastIndexOf(this.suffix) !== -1;
+    return style.name.startsWith(this.prefix) && style.name.endsWith(this.suffix);
   };
 
   checkStyleType = (style: BaseStyle) => {
-    let styleType = 'FILL';
+    let styleType = this.layerPropType;
 
-    if ((this.prefix !== '' || this.suffix !== '') && this.checkAffix(style)) {
-      styleType = this.layerPropType;
+    if (style.type === 'PAINT') {
+      styleType = 'FILL';
+
+      if ((this.prefix !== '' || this.suffix !== '') && this.checkAffix(style)) {
+        styleType = this.layerPropType;
+      }
     }
     return styleType;
   };
 
+  replacePrefix = (name: string, newPrefix = '') => {
+    return name.startsWith(this.prefix) ? newPrefix + name.slice(this.prefix.length) : name;
+  };
+
+  replaceSuffix = (name: string, newSuffix = '') => {
+    return name.endsWith(this.suffix) ? name.slice(0, name.lastIndexOf(this.suffix)) + newSuffix : name;
+  };
+
   replaceAffix = (name, newPrefix = '', newSuffix = newPrefix) => {
-    name = replacePrefix(name, this.prefix, newPrefix);
-    name = replaceSuffix(name, this.suffix, newSuffix);
+    name = this.replacePrefix(name, newPrefix);
+    name = this.replaceSuffix(name, newSuffix);
 
     return name;
   };

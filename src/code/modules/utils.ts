@@ -1,4 +1,4 @@
-// Strings utils
+import { Config } from './config';
 
 // make the first string Uppercase
 export const ucFirst = (word: string): string => word[0].toLocaleUpperCase() + word.slice(1).toLocaleLowerCase();
@@ -75,4 +75,20 @@ export const replaceSuffix = (name, currentSuffix, newSuffix) => {
 
   const pos = name.lastIndexOf(currentSuffix);
   return name.slice(0, pos) + newSuffix;
+};
+
+export const checkStyleType = (style: BaseStyle, config: Config) => {
+  let styleType: any = style.type;
+
+  if (style.type === 'PAINT') {
+    styleType = 'FILL';
+
+    const { filler, strokeer } = config;
+    [filler, strokeer].map((styler) => {
+      if ((styler.prefix !== '' || styler.suffix !== '') && styler.checkAffix(style)) {
+        styleType = styler.layerPropType;
+      }
+    });
+  }
+  return styleType;
 };

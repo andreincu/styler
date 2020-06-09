@@ -1,53 +1,7 @@
 import { Config } from './config';
-import { defaultSettings } from './default-settings.js';
-import { CMD, counter, messages, showNofication, showNotificationAtArrayEnd, colors } from './globals';
+import { CMD, colors, counter, messages, showNofication, showNotificationAtArrayEnd } from './globals';
 import { cleanSelection, createFrameLayer, createLayer } from './layers';
-import { addAffixTo, isArrayEmpty, replacePrefix, replaceSuffix, uniq } from './utils';
-
-export const getUniqueStylesName = (styles, options = defaultSettings) => {
-  const { allStylers } = options;
-  const names = styles.map((style) => style.name);
-  const affixes = allStylers
-    .map((styler) => [styler.prefix, styler.suffix])
-    .flat()
-    .filter(Boolean)
-    .join('|');
-
-  const regexAffixes = new RegExp('\\b(?:' + affixes + ')\\b', 'g');
-  const namesWithoutAffixes = names.map((style) => style.replace(regexAffixes, ''));
-
-  return uniq(namesWithoutAffixes) as string[];
-};
-
-export const getStyleguides = (styles, options = defaultSettings) => {
-  const { texter } = options;
-  const uniqueStylesNames = getUniqueStylesName(styles);
-
-  return uniqueStylesNames.map((name) => {
-    const styleNameMatch = texter.getStyleByName(name);
-    const type = !styleNameMatch ? 'FRAME' : 'TEXT';
-
-    return {
-      name,
-      type,
-    };
-  });
-};
-
-export const checkStyleType = (style, options = defaultSettings) => {
-  const { filler, strokeer } = options;
-  let type = 'FILL';
-  [filler, strokeer].map((styler) => {
-    if (
-      (styler.prefix !== '' || styler.suffix !== '') &&
-      style.name.indexOf(styler.prefix) === 0 &&
-      style.name.lastIndexOf(styler.suffix) !== -1
-    ) {
-      type = styler.layerPropType;
-    }
-  });
-  return type;
-};
+import { isArrayEmpty, replacePrefix, replaceSuffix, checkStyleType } from './utils';
 
 export const getAllLocalStyles = (): BaseStyle[] => {
   return [
@@ -180,16 +134,17 @@ export const extractAllStyles = async (config) => {
 
   let createdLayers = [];
 
-  const styles = getAllLocalStyles();
-  if (isArrayEmpty(styles)) {
-    return;
-  }
+  for (let styler of allStylers) {
+    const styles = styler.getLocalStyles();
 
-  for (let style of styles) {
-    const promise = allStylers.map(async (styler) => {
-      if (style.type !== styler.styleType || !styler.checkAffix(style)) {
+    if (isArrayEmpty(styles)) {
+      return;
+    }
+    const promise = styles.map(async (style) => {
+      if (style.type !== styler.styleType || checkStyleType(style, config) !== styler.layerPropType) {
         return;
       }
+
       const styleNameWithoutAffix = styler.replaceAffix(style.name, '');
 
       let layerMatch = createdLayers.find((layer) => layer.name === styleNameWithoutAffix);
