@@ -1,10 +1,12 @@
 import { defaultSettings } from './default-settings.js';
+import { settings } from 'cluster';
 
 export const CMD = figma.command;
 
 export const counter = {
   applied: 0,
   created: 0,
+  customize: 0,
   detached: 0,
   extracted: 0,
   generated: 0,
@@ -45,14 +47,25 @@ export const messages = (counter) => {
       single: `🔥 Removed only ${counter.removed} style. Rrr...`,
       multiple: `🔥 Removed ${counter.removed} styles. Rrr...`,
     },
+    customize: {
+      empty: '🌟 Settings were saved, but there was nothing to update.',
+      single: '✅ Settings were saved and only 1 style was updated.',
+      multiple: `✅ Settings were saved and ${counter.customize} style was updated.`,
+    },
     layers: {
       empty: '🥰 You must select at least 1 layer. Yea...',
+    },
+    cancelSettings: {
+      empty: '🥺 Nothing was changed, everything is as before.',
+    },
+    clearCache: {
+      empty: '🧹 Cleaned saved settings from cache.',
     },
   };
 };
 
 export const showNofication = (
-  counter,
+  counter = 0,
   messages: any = { empty: '', single: undefined, multiple: '' },
   notificationTimeout: number,
 ) => {

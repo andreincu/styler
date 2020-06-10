@@ -1,52 +1,47 @@
 import { clientStorageKey, Config } from './modules/config';
-import { CMD } from './modules/globals';
+import { CMD, counter, messages, showNofication } from './modules/globals';
 import { changeAllStyles, extractAllStyles, updateStyleNames } from './modules/styles';
 
 let currentConfig;
 
-if (CMD === 'clear-cache') {
-  figma.clientStorage.setAsync(clientStorageKey, undefined).then(() => {
-    figma.closePlugin('🧹 Cleaned saved settings from cache.');
-    return;
-  });
-}
-//
-else {
-  figma.clientStorage.getAsync(clientStorageKey).then((cachedSettings) => {
-    currentConfig = new Config(cachedSettings);
+figma.clientStorage.getAsync(clientStorageKey).then((cachedSettings) => {
+  currentConfig = new Config(cachedSettings);
 
-    // creating layers based on styles
-    if (CMD === 'extract-all-styles') {
-      extractAllStyles(currentConfig);
-    }
+  if (CMD === 'clear-cache') {
+    figma.clientStorage.setAsync(clientStorageKey, undefined).then(() => {
+      showNofication(0, messages(counter).clearCache, currentConfig.notificationTimeout);
+    });
+  }
+  // creating layers based on styles
+  else if (CMD === 'extract-all-styles') {
+    extractAllStyles(currentConfig);
+  }
 
-    //
-    else if (CMD === 'customize-plugin') {
-      figma.showUI(__html__, { width: 360, height: 480 });
-      figma.ui.postMessage(cachedSettings);
-    }
+  //
+  else if (CMD === 'customize-plugin') {
+    figma.showUI(__html__, { width: 360, height: 480 });
+    figma.ui.postMessage(cachedSettings);
+  }
 
-    //
-    else {
-      changeAllStyles(currentConfig);
-    }
-  });
+  //
+  else {
+    changeAllStyles(currentConfig);
+  }
+});
 
-  figma.ui.onmessage = (msg) => {
-    if (msg.type === 'cancel-modal') {
-      figma.closePlugin('🥺 Everything is as before.');
-      return;
-    }
+figma.ui.onmessage = (msg) => {
+  if (msg.type === 'cancel-modal') {
+    showNofication(0, messages(counter).cancelSettings, currentConfig.notificationTimeout);
+  }
 
-    // save
-    else if (msg.type === 'save-settings') {
-      figma.clientStorage.setAsync(clientStorageKey, msg.uiSettings).then(() => {
-        let newConfig = new Config(msg.uiSettings);
+  // save
+  else if (msg.type === 'save-settings') {
+    figma.clientStorage.setAsync(clientStorageKey, msg.uiSettings).then(() => {
+      const newConfig = new Config(msg.uiSettings);
 
-        updateStyleNames(currentConfig, newConfig);
-        figma.closePlugin();
-        return;
-      });
-    }
-  };
-}
+      updateStyleNames(currentConfig, newConfig);
+    });
+  } else {
+    figma.closePlugin('🤷‍♂️ This should not happen. Nothing was changed...');
+  }
+};

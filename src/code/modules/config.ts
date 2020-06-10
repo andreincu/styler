@@ -101,8 +101,8 @@ export class Config {
       suffix: effecterSuffix,
     });
 
-    this.allStylers = [this.texter, this.grider, this.filler, this.strokeer, this.effecter];
-    this.stylersWithoutTexter = [this.grider, this.filler, this.strokeer, this.effecter];
+    this.allStylers = [this.texter, this.filler, this.strokeer, this.effecter, this.grider];
+    this.stylersWithoutTexter = [this.filler, this.strokeer, this.effecter, this.grider];
     this.texterOnly = [this.texter];
   }
 }

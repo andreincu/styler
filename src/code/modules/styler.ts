@@ -47,11 +47,7 @@ export class Styler {
     this.getLocalStylesCommand = addAffixTo(ucFirst(styleType), 'getLocal', 'Styles');
   }
 
-  applyStyle = (layer: SceneNode, style: BaseStyle, oldLayerName: string = layer.name) => {
-    // if (oldLayerName !== layer.name && this.isPropEmpty(layer)) {
-    //   return;
-    // }
-
+  applyStyle = (layer: SceneNode, style: BaseStyle) => {
     if (!style || layer[this.layerStyleID] === undefined || layer[this.layerStyleID] === style.id) {
       console.log(`Apply: ${this.layerStyleID} not found || No style found for ${layer.name}`);
       return;

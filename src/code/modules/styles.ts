@@ -14,10 +14,12 @@ export const getAllLocalStyles = (): BaseStyle[] => {
 
 export const updateStyleNames = (currentConfig: Config, newConfig: Config) => {
   const { allStylers } = currentConfig;
+  const { notificationTimeout } = newConfig;
 
   allStylers.map((styler) => {
     const styles = styler.getLocalStyles();
-    if (!styles) {
+    if (isArrayEmpty(styles)) {
+      showNofication(0, messages(counter).customize, notificationTimeout);
       return;
     }
 
@@ -26,19 +28,16 @@ export const updateStyleNames = (currentConfig: Config, newConfig: Config) => {
         return;
       }
 
-      const { name, prefix: currentPrefix, suffix: currentSuffix, layerPropType } = styler;
+      const { name } = styler;
       const newPrefix = newConfig[name].prefix;
       const newSuffix = newConfig[name].suffix;
-      const styleType = checkStyleType(style, currentConfig);
 
-      if (newPrefix !== currentPrefix) {
-        style.name = styler.replacePrefix(style.name, newPrefix);
-      }
-      if (newSuffix !== currentSuffix) {
-        style.name = styler.replaceSuffix(style.name, newSuffix);
-      }
+      style.name = styler.replaceAffix(style.name, newPrefix, newSuffix);
+      counter.customize++;
     });
   });
+
+  showNofication(counter.customize, messages(counter).customize, notificationTimeout);
 };
 
 export const changeAllStyles = (config) => {
@@ -51,13 +50,13 @@ export const changeAllStyles = (config) => {
     updateUsingLocalStyles,
   } = config;
   const layers = cleanSelection();
-  const layersLength = layers.length;
 
-  if (layersLength === 0) {
-    showNofication(layersLength, messages(counter).layers, notificationTimeout);
+  if (isArrayEmpty(layers)) {
+    showNofication(0, messages(counter).layers, notificationTimeout);
     return;
   }
 
+  const layersLength = layers.length;
   layers.map(async (layer, layerIndex) => {
     let stylers = allStylers;
     const oldLayerName = layer.name;
@@ -65,9 +64,8 @@ export const changeAllStyles = (config) => {
     if (layer.type === 'TEXT') {
       await figma.loadFontAsync(layer.fontName as FontName);
 
-      if (layer.name[0] !== '+') {
+      if (layer.name[0] === '-') {
         stylers = texterOnly;
-      } else {
         layer.name = layer.name.slice(1);
       }
     }
@@ -87,7 +85,7 @@ export const changeAllStyles = (config) => {
 
       // apply
       else if (CMD === 'apply-all-styles') {
-        styler.applyStyle(layer, styleNameMatch, oldLayerName);
+        styler.applyStyle(layer, styleNameMatch);
         showNotificationAtArrayEnd('applied', notificationOptions);
       }
 
@@ -101,6 +99,8 @@ export const changeAllStyles = (config) => {
       else if (CMD.includes('remove')) {
         styler.removeStyle(layer, styleIdMatch);
         showNotificationAtArrayEnd('removed', notificationOptions);
+      } else {
+        figma.closePlugin('🤷‍♂️ This should not happen. Nothing was changed...');
       }
     });
 
@@ -110,6 +110,13 @@ export const changeAllStyles = (config) => {
 
 export const extractAllStyles = async (config) => {
   const { allStylers, framesPerSection, textsPerSection, notificationTimeout } = config;
+
+  if (isArrayEmpty(getAllLocalStyles())) {
+    showNofication(0, messages(counter).extracted, notificationTimeout);
+    return;
+  }
+
+  // preparing the template
   const horizFlow: any = {
     layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 32 },
   };
@@ -126,6 +133,9 @@ export const extractAllStyles = async (config) => {
   const miscContainer = createFrameLayer('misc', mainContainer, vertFlow);
 
   let createdLayers = [];
+  let newSection: FrameNode;
+  let textCount = 0;
+  let miscCount = 0;
 
   for (let styler of allStylers) {
     const styles = styler.getLocalStyles();
@@ -134,8 +144,7 @@ export const extractAllStyles = async (config) => {
       return;
     }
 
-    let newSection;
-    const promise = styles.map(async (style, index) => {
+    const promise = styles.map(async (style) => {
       if (style.type !== styler.styleType || checkStyleType(style, config) !== styler.layerPropType) {
         return;
       }
@@ -144,24 +153,27 @@ export const extractAllStyles = async (config) => {
       let layerMatch = createdLayers.find((layer) => layer.name === styleWithoutAffix);
 
       if (!layerMatch && style.type === 'TEXT') {
-        index % textsPerSection === 0
-          ? (newSection = createFrameLayer('section', textContainer, vertFlow))
-          : newSection;
+        if (textCount % textsPerSection === 0) {
+          newSection = createFrameLayer('section', textContainer, vertFlow);
+        }
 
+        textCount++;
         layerMatch = await createTextLayer(styleWithoutAffix, newSection, { color: colors.black });
         createdLayers.push(layerMatch);
       }
       //
       else if (!layerMatch) {
-        if (index % framesPerSection === 0) {
+        if (miscCount % framesPerSection === 0) {
           newSection = createFrameLayer('section', miscContainer, horizFlow);
         }
 
+        miscCount++;
         layerMatch = createFrameLayer(styleWithoutAffix, newSection, { size: 80, color: colors.white });
         createdLayers.push(layerMatch);
       }
 
       styler.applyStyle(layerMatch, style);
+      counter.extracted++;
     });
 
     await Promise.all(promise);
@@ -169,66 +181,6 @@ export const extractAllStyles = async (config) => {
 
   ungroupToCanvas(createdLayers);
 
-  figma.closePlugin();
-  return;
+  figma.viewport.scrollAndZoomIntoView(createdLayers);
+  showNofication(counter.extracted, messages(counter).extracted, notificationTimeout);
 };
-
-// export const extractAllStyles = async (config) => {
-//   const { framesPerRow, notificationTimeout } = config;
-//   const styles = getAllLocalStyles();
-
-//   const selection = [];
-//   const styleguides = getStyleguides(styles);
-
-//   if (styleguides.length > 0) {
-//     const styleguidesByType = groupBy(styleguides, 'type');
-
-//     const mainContainer = createFrameLayer({
-//       layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 128 },
-//     });
-
-//     if (styleguidesByType.TEXT) {
-//       const textsContainer = createFrameLayer({
-//         layoutProps: { layoutMode: 'VERTICAL', itemSpacing: 32 },
-//         parent: mainContainer,
-//       });
-
-//       await Promise.all(
-//         styleguidesByType.TEXT.map(async (styleguide) => {
-//           const newLayer = await createTextLayer({
-//             characters: styleguide.name,
-//             color: colors.black,
-//             parent: textsContainer,
-//           });
-
-//           selection.push(newLayer);
-//           counter.extracted++;
-//         }),
-//       );
-//     }
-
-//     if (styleguidesByType.FRAME) {
-//       const visualsContainer = createFrameLayer({
-//         layoutProps: { layoutMode: 'VERTICAL', itemSpacing: 32 },
-//         parent: mainContainer,
-//       });
-
-//       chunk(styleguidesByType.FRAME, framesPerRow).map((styleguides) => {
-//         const chunkContainer = createFrameLayer({
-//           layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 32 },
-//           parent: visualsContainer,
-//         });
-
-//         styleguides.map((styleguide) => {
-//           const newLayer = createFrameLayer({ name: styleguide.name, size: 80, parent: chunkContainer });
-
-//           selection.push(newLayer);
-//           counter.extracted++;
-//         });
-//       });
-//     }
-//   }
-//   ungroupToCanvas(selection);
-
-//   // showNofication(counter.extracted, messages.extracted, notificationTimeout);
-// };
