@@ -135,13 +135,14 @@ export class Styler {
     this.applyStyle(layer, styleNameMatch);
   };
 
-  removeStyle = (style) => {
+  removeStyle = (layer, style) => {
     if (!style || style.remote === true) {
       return;
     }
 
     const cmdType = CMD.split('-')[1];
     if (cmdType === this.layerPropType.toLocaleLowerCase() || cmdType === 'all') {
+      this.detachStyle(layer);
       style.remove();
       counter.removed++;
     }

@@ -99,7 +99,7 @@ export const changeAllStyles = (config) => {
 
       // remove
       else if (CMD.includes('remove')) {
-        styler.removeStyle(styleIdMatch);
+        styler.removeStyle(layer, styleIdMatch);
         showNotificationAtArrayEnd('removed', notificationOptions);
       }
     });
