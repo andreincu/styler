@@ -1,8 +1,7 @@
 import { Config } from './config';
 import { CMD, colors, counter, messages, showNofication, showNotificationAtArrayEnd } from './globals';
-import { cleanSelection, createFrameLayer, createTextLayer, ungroup } from './layers';
+import { cleanSelection, createFrameLayer, createTextLayer, ungroup, createLayer } from './layers';
 import { checkStyleType, isArrayEmpty } from './utils';
-import { resolve } from 'dns';
 
 export const getAllLocalStyles = (): BaseStyle[] => {
   return [
@@ -130,68 +129,52 @@ export const extractAllStyles = async (config) => {
   const mainContainer = createFrameLayer('main', undefined, {
     layoutProps: { layoutMode: 'HORIZONTAL', itemSpacing: 128 },
   });
+  const textContainer = createFrameLayer('text', mainContainer, horizFlow);
+  const miscContainer = createFrameLayer('misc', mainContainer, vertFlow);
 
   let createdLayers = [];
   let newSection: FrameNode;
-  let textContainer;
-  let miscContainer;
 
-  let count = 0;
-
-  for (let styler of allStylers) {
+  for (const styler of allStylers) {
     const styles = styler.getLocalStyles();
 
     if (isArrayEmpty(styles)) {
-      continue;
+      return;
     }
 
+    const parentByType = styler.styleType === 'TEXT' ? textContainer : miscContainer;
+    const flowByType = styler.styleType === 'TEXT' ? vertFlow : horizFlow;
+    const itemsPerSection = styler.styleType === 'TEXT' ? textsPerSection : framesPerSection;
+    const optionByType = styler.styleType === 'TEXT' ? { color: colors.black } : { size: 80, color: colors.white };
+
     await Promise.all(
-      styles.map(async (style) => {
+      styles.map(async (style, styleIndex) => {
         if (style.type !== styler.styleType || checkStyleType(style, config) !== styler.layerPropType) {
           return;
         }
 
-        const styleName = styler.replaceAffix(style.name, '');
-        let layerMatch = createdLayers.find((layer) => layer.name === styleName);
+        const curatedStyleName = styler.replaceAffix(style.name, '');
 
-        if (!layerMatch && style.type === 'TEXT') {
-          if (counter.textContainer % textsPerSection === 0) {
-            if (counter.textContainer === 0) {
-              textContainer = createFrameLayer('text', mainContainer, horizFlow);
-            }
+        let layerMatch = createdLayers.find((layer) => layer.name === curatedStyleName);
 
-            newSection = createFrameLayer('section', textContainer, vertFlow);
+        if (!layerMatch) {
+          if (styleIndex % itemsPerSection === 0) {
+            newSection = createFrameLayer('section', parentByType, flowByType);
           }
 
-          counter.textContainer++;
-          layerMatch = await createTextLayer(styleName, newSection, { color: colors.black });
+          layerMatch = await createLayer(curatedStyleName, newSection, style.type, optionByType);
           createdLayers.push(layerMatch);
-        }
-        //
-        else if (!layerMatch) {
-          if (counter.miscContainer % framesPerSection === 0) {
-            if (counter.miscContainer === 0) {
-              miscContainer = createFrameLayer('misc', mainContainer, vertFlow);
-            }
-
-            newSection = createFrameLayer('section', miscContainer, horizFlow);
-          }
-
-          counter.miscContainer++;
-          layerMatch = createFrameLayer(styleName, newSection, { size: 80, color: colors.white });
-          createdLayers.push(layerMatch);
+          counter.extracted++;
         }
 
         styler.applyStyle(layerMatch, style);
-        counter.extracted++;
-        console.log(count);
       }),
     );
   }
 
   figma.group(createdLayers, figma.currentPage);
-  createdLayers.map((layer) => ungroup(layer));
   mainContainer.remove();
+  createdLayers.map((layer) => ungroup(layer));
 
   figma.viewport.scrollAndZoomIntoView(createdLayers);
 };

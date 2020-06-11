@@ -128,7 +128,7 @@ export const createFrameLayer = (
   return newLayer;
 };
 
-export const createLayer = (
+export const createLayer = async (
   name = 'Layer',
   parent: FrameNode | PageNode = figma.currentPage,
   layerType = 'PAINT',
@@ -141,17 +141,10 @@ export const createLayer = (
     EFFECT: createFrameLayer,
   };
 
-  return createCommand[layerType](name, parent, options);
+  return await createCommand[layerType](name, parent, options);
 };
 
-export const ungroup = (layer) => {
-  const layerGrandParent = layer.parent.parent;
-
-  layer.x = layer.parent.x + layer.relativeTransform[0][2];
-  layer.y = layer.parent.y + layer.relativeTransform[1][2];
-
-  layerGrandParent.appendChild(layer);
-};
+export const ungroup = (layer) => layer.parent.parent.appendChild(layer);
 
 /* 
 --- clean Selection

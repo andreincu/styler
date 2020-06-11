@@ -15,9 +15,9 @@ figma.clientStorage.getAsync(clientStorageKey).then((cachedSettings) => {
   }
   // creating layers based on styles
   else if (CMD === 'extract-all-styles') {
-    extractAllStyles(currentConfig);
-    showNofication(counter.extracted, messages(counter).extracted, notificationTimeout);
-    return;
+    extractAllStyles(currentConfig).then(() =>
+      showNofication(counter.extracted, messages(counter).extracted, notificationTimeout),
+    );
   }
 
   //
