@@ -34,7 +34,6 @@ export interface TextLayer {
 const isContainer = (layer) => ['FRAME', 'COMPONENT', 'INSTANCE'].includes(layer.type);
 const isShape = (layer) => ['RECTANGLE', 'ELLIPSE', 'POLYGON', 'STAR', 'VECTOR'].includes(layer.type);
 const isText = (layer) => layer.type === 'TEXT';
-
 const excludeGroups = (layers) => layers.filter((layer) => isContainer(layer) || isShape(layer) || isText(layer));
 
 export const changeColor = (layer, prop, rgba = [0, 0, 0, 1]) => {
@@ -145,39 +144,13 @@ export const createLayer = (
   return createCommand[layerType](name, parent, options);
 };
 
-// ungroup layer
 export const ungroup = (layer) => {
-  const layerParent = layer.parent;
-  const layerGrandParent = layerParent.parent;
+  const layerGrandParent = layer.parent.parent;
 
-  if (layerParent.type !== 'PAGE') {
-    changeLayoutProps(layerParent, { layoutMode: 'NONE' });
-  }
-  if (layerGrandParent.type !== 'PAGE') {
-    changeLayoutProps(layerGrandParent, { layoutMode: 'NONE' });
-  }
+  layer.x = layer.parent.x + layer.relativeTransform[0][2];
+  layer.y = layer.parent.y + layer.relativeTransform[1][2];
 
   layerGrandParent.appendChild(layer);
-
-  layer.x = layerParent.x + layer.relativeTransform[0][2];
-  layer.y = layerParent.y + layer.relativeTransform[1][2];
-
-  if (layerParent.children.length === 0) layerParent.remove();
-};
-
-// ungroup all layers
-export const ungroupToCanvas = (layers: SceneNode[]) => {
-  let numberOfLayers = layers.length;
-
-  while (numberOfLayers > 0) {
-    layers.map((layer) => {
-      if (layer.parent.type === 'PAGE') {
-        numberOfLayers -= 1;
-        return;
-      }
-      ungroup(layer);
-    });
-  }
 };
 
 /* 

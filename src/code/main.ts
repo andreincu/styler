@@ -6,6 +6,7 @@ let currentConfig;
 
 figma.clientStorage.getAsync(clientStorageKey).then((cachedSettings) => {
   currentConfig = new Config(cachedSettings);
+  const { notificationTimeout } = currentConfig;
 
   if (CMD === 'clear-cache') {
     figma.clientStorage.setAsync(clientStorageKey, undefined).then(() => {
@@ -15,12 +16,33 @@ figma.clientStorage.getAsync(clientStorageKey).then((cachedSettings) => {
   // creating layers based on styles
   else if (CMD === 'extract-all-styles') {
     extractAllStyles(currentConfig);
+    showNofication(counter.extracted, messages(counter).extracted, notificationTimeout);
+    return;
   }
 
   //
   else if (CMD === 'customize-plugin') {
     figma.showUI(__html__, { width: 360, height: 480 });
+
     figma.ui.postMessage(cachedSettings);
+
+    figma.ui.onmessage = (msg) => {
+      if (msg.type === 'cancel-modal') {
+        showNofication(0, messages(counter).cancelSettings, notificationTimeout);
+      }
+
+      // save
+      else if (msg.type === 'save-settings') {
+        figma.clientStorage.setAsync(clientStorageKey, msg.uiSettings).then(() => {
+          const newConfig = new Config(msg.uiSettings);
+
+          updateStyleNames(currentConfig, newConfig);
+
+          showNofication(counter.customize, messages(counter).customize, newConfig.notificationTimeout);
+          return;
+        });
+      }
+    };
   }
 
   //
@@ -28,20 +50,3 @@ figma.clientStorage.getAsync(clientStorageKey).then((cachedSettings) => {
     changeAllStyles(currentConfig);
   }
 });
-
-figma.ui.onmessage = (msg) => {
-  if (msg.type === 'cancel-modal') {
-    showNofication(0, messages(counter).cancelSettings, currentConfig.notificationTimeout);
-  }
-
-  // save
-  else if (msg.type === 'save-settings') {
-    figma.clientStorage.setAsync(clientStorageKey, msg.uiSettings).then(() => {
-      const newConfig = new Config(msg.uiSettings);
-
-      updateStyleNames(currentConfig, newConfig);
-    });
-  } else {
-    figma.closePlugin('🤷‍♂️ This should not happen. Nothing was changed...');
-  }
-};

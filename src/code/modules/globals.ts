@@ -1,5 +1,4 @@
 import { defaultSettings } from './default-settings.js';
-import { settings } from 'cluster';
 
 export const CMD = figma.command;
 
@@ -10,6 +9,8 @@ export const counter = {
   detached: 0,
   extracted: 0,
   generated: 0,
+  textContainer: 0,
+  miscContainer: 0,
   ignored: 0,
   renamed: 0,
   removed: 0,
