@@ -139,7 +139,7 @@ export const extractAllStyles = async (config) => {
     const styles = styler.getLocalStyles();
 
     if (isArrayEmpty(styles)) {
-      return;
+      continue;
     }
 
     const parentByType = styler.styleType === 'TEXT' ? textContainer : miscContainer;

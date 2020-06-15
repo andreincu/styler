@@ -21,6 +21,7 @@ export interface FrameLayer {
   yPos?: number;
   width?: number;
   height?: number;
+  cornerRadius?: number;
 }
 
 export interface TextLayer {
@@ -109,6 +110,7 @@ export const createFrameLayer = (
     height = width,
     xPos = 0,
     yPos = xPos,
+    cornerRadius = 12,
   } = options;
 
   const newLayer = figma.createFrame();
@@ -120,6 +122,7 @@ export const createFrameLayer = (
   newLayer.x = xPos;
   newLayer.y = yPos;
   newLayer.resize(width, height);
+  newLayer.cornerRadius = cornerRadius;
 
   parent.appendChild(newLayer);
 
