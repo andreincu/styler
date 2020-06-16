@@ -172,6 +172,8 @@ export const extractAllStyles = async (config) => {
     );
   }
 
+  await new Promise((res) => setTimeout(res, 100));
+
   figma.group(createdLayers, figma.currentPage);
   createdLayers.map((layer) => ungroup(layer));
   figma.viewport.scrollAndZoomIntoView(createdLayers);
