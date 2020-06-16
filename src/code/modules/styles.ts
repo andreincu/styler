@@ -173,8 +173,7 @@ export const extractAllStyles = async (config) => {
   }
 
   figma.group(createdLayers, figma.currentPage);
-  mainContainer.remove();
   createdLayers.map((layer) => ungroup(layer));
-
   figma.viewport.scrollAndZoomIntoView(createdLayers);
+  mainContainer.remove();
 };

@@ -69,20 +69,20 @@
 </script>
 
 <style lang="scss">
-  table {
+  /* table {
     width: 100%;
     text-align: left;
     border-collapse: collapse;
     table-layout: fixed;
-  }
+  } */
 
   section {
     padding: var(--size-xx-small) var(--size-x-small);
   }
 
-  input[showAlert='true'] {
+  /* input[showAlert='true'] {
     border: 1px solid red;
-  }
+  } */
 </style>
 
 <main>
@@ -110,7 +110,7 @@
     <Checkbox bind:checked={uiSettings.partialMatch} note={'nimic'}>Expand style name match</Checkbox>
   </section>
 
-  <section>
+  <!-- <section>
     <h2 class="h3">Style settings</h2>
     <table>
       <tr>
@@ -164,7 +164,7 @@
         </td>
       </tr>
     </table>
-  </section>
+  </section> -->
 
   <section>
     <Button on:click={saveSettings}>Save settings</Button>
