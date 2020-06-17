@@ -166,5 +166,5 @@ export const cleanSelection = (): SceneNode[] => {
     layers.push(orderedGroup);
   });
 
-  return layers.flat();
+  return layers.flat().reverse();
 };
