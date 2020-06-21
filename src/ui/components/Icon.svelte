@@ -6,13 +6,18 @@
 </script>
 
 <style>
-  i {
+  .svg-icon {
+    color: inherit;
     display: block;
     width: 100%;
     height: 100%;
   }
+
+  :global(.svg-icon *) {
+    fill: currentColor;
+  }
 </style>
 
-<i class={className}>
+<i class="svg-icon {className}">
   {@html iconName}
 </i>

@@ -2,10 +2,10 @@
 @font-face {
   font-family: 'Inter';
   font-style: normal;
-  font-weight: 500;
+  font-weight: 400;
   font-display: swap;
-  src: url('https://rsms.me/inter/font-files/Inter-Medium.woff2?v=3.13') format('woff2'),
-    url('https://rsms.me/inter/font-files/Inter-Medium.woff?v=3.13') format('woff');
+  src: url('https://rsms.me/inter/font-files/Inter-Regular.woff2?3.13') format('woff2'),
+    url('https://rsms.me/inter/font-files/Inter-Regular.woff?3.13') format('woff');
 }
 
 @font-face {
@@ -13,16 +13,8 @@
   font-style: normal;
   font-weight: 600;
   font-display: swap;
-  src: url('https://rsms.me/inter/font-files/SemiBold.woff2?v=3.13') format('woff2'),
-    url('https://rsms.me/inter/font-files/SemiBold.woff?v=3.13') format('woff');
-}
-
-@font-face {
-  font-family: 'Inter';
-  font-weight: 700;
-  font-style: normal;
-  src: url('https://rsms.me/inter/font-files/Inter-Bold.woff2?v=3.13') format('woff2'),
-    url('https://rsms.me/inter/font-files/Inter-Bold.woff?v=3.13') format('woff');
+  src: url('https://rsms.me/inter/font-files/Inter-SemiBold.woff2?3.13') format('woff2'),
+    url('https://rsms.me/inter/font-files/Inter-SemiBold.woff?3.13') format('woff');
 }
 
 /* Text utilities */
@@ -33,23 +25,33 @@ h1,
   font-weight: var(--text-weight-bold);
   line-height: var(--line-height-large);
   margin: var(--size-xxx-small) 0;
-  color: var(--text-color-important);
+  color: hsl(var(--color-invert-1));
 }
 
 h3,
 .h3 {
   font-size: var(--text-size-large);
-  font-weight: var(--text-weight-semibold);
+  font-weight: var(--text-weight-bold);
   margin: var(--size-xx-small) 0;
   line-height: var(--line-height-large);
-  color: var(--text-color-important);
+  color: hsl(var(--color-invert-1));
 }
 
 h3,
 .h3 {
   font-size: var(--text-size-medium);
-  font-weight: var(--text-weight-semibold);
+  font-weight: var(--text-weight-bold);
   margin: var(--size-xx-small) 0;
   line-height: var(--line-height-large);
-  color: var(--text-color-important);
+  color: hsl(var(--color-invert-1));
+}
+
+.caption {
+  font-size: var(--text-size-x-small);
+  font-weight: var(--text-weight-normal);
+  margin: var(--size-xx-small) 0;
+  line-height: var(--line-height-large);
+  color: hsl(var(--color-invert-3));
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }

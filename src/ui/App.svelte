@@ -1,15 +1,14 @@
 <script>
   import { onMount } from 'svelte';
   import { defaultSettings } from '../code/modules/default-settings';
+  import IconFrame from './assets/icons/frame-layers.svg';
+  import IconText from './assets/icons/text-layers.svg';
   import Checkbox from './components/Checkbox';
   import Button from './components/Button';
-  import TextField from './components/TextField';
+  import NumberField from './components/NumberField';
 
   let uiSettings = { ...defaultSettings };
   let showAlert = false;
-
-  const previousExplainer = 'This option will change your styles description, by adding the previous style at update.';
-  const updateusingLocalExplainer = 'When this option is enabled, update and rename behaviour are changed.';
 
   onMount(() => {
     window.focus();
@@ -69,108 +68,71 @@
 </script>
 
 <style lang="scss">
-  /* table {
-    width: 100%;
-    text-align: left;
-    border-collapse: collapse;
-    table-layout: fixed;
-  } */
-
-  section {
-    padding: var(--size-xx-small) var(--size-x-small);
+  main {
+    padding-bottom: 6.4rem;
+  }
+  main div {
+    padding: 0 var(--size-x-small);
   }
 
-  /* input[showAlert='true'] {
-    border: 1px solid red;
-  } */
+  footer {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: hsl(var(--color-neutral-0));
+    box-shadow: 0px 0px 1.6rem hsla(var(--color-invert-0), 0.05);
+    padding: 0.4rem 1.2rem;
+  }
+
+  footer :global(.col) {
+    flex: 1 1 auto;
+    margin: 0.4rem;
+  }
 </style>
 
 <main>
+  <div>
+    <h2 class="caption">General</h2>
+    <NumberField bind:value={uiSettings.notificationTimeout} step="1000">
+      <span slot="textfield-label">Notification duration</span>
+      <span slot="unit-measure">ms</span>
+    </NumberField>
+  </div>
 
-  <section>
-    <h1 class="h2">Customize plugin</h1>
-
-    <h2 class="h3">Notification timeout</h2>
-    <TextField type="number" bind:value={uiSettings.notificationTimeout} unitMeasurement="'ms'" />
-
-    <h2 class="h3">Number of texts per section</h2>
-    <TextField type="number" bind:value={uiSettings.textsPerSection} unitMeasurement="'frames'" />
-
-    <h2 class="h3">Number of frames per section</h2>
-    <TextField type="number" bind:value={uiSettings.framesPerSection} unitMeasurement="'frames'" />
-
-    <Checkbox bind:checked={uiSettings.addPrevToDescription} note={previousExplainer}>
-      Show previous style in description
+  <div>
+    <h2 class="caption">Generate styles</h2>
+    <Checkbox bind:checked={uiSettings.addPrevToDescription}>
+      <span slot="label">Show last style in description</span>
     </Checkbox>
 
-    <Checkbox bind:checked={uiSettings.updateUsingLocalStyles} note={updateusingLocalExplainer}>
-      Update using local styles
+    <Checkbox bind:checked={uiSettings.updateUsingLocalStyles}>
+      <span slot="label">Update using local styles</span>
     </Checkbox>
 
-    <Checkbox bind:checked={uiSettings.partialMatch} note={'nimic'}>Expand style name match</Checkbox>
-  </section>
+    <Checkbox bind:checked={uiSettings.partialMatch}>
+      <span slot="label">Extend name match</span>
+    </Checkbox>
+  </div>
 
-  <!-- <section>
-    <h2 class="h3">Style settings</h2>
-    <table>
-      <tr>
-        <th>Style type</th>
-        <th>Prefix</th>
-        <th>Suffix</th>
-      </tr>
-      <tr>
-        <td>Fills</td>
-        <td>
-          <input type="text" bind:value={uiSettings.fillerPrefix} placeholder="" {showAlert} />
-        </td>
-        <td>
-          <input type="text" bind:value={uiSettings.fillerSuffix} placeholder="" {showAlert} />
-        </td>
-      </tr>
-      <tr>
-        <td>Strokes</td>
-        <td>
-          <input type="text" bind:value={uiSettings.strokeerPrefix} placeholder="" {showAlert} />
-        </td>
-        <td>
-          <input type="text" bind:value={uiSettings.strokeerSuffix} placeholder="" {showAlert} />
-        </td>
-      </tr>
-      <tr>
-        <td>Effects</td>
-        <td>
-          <input type="text" bind:value={uiSettings.effecterPrefix} placeholder="" />
-        </td>
-        <td>
-          <input type="text" bind:value={uiSettings.effecterSuffix} placeholder="" />
-        </td>
-      </tr>
-      <tr>
-        <td>Layout Grids</td>
-        <td>
-          <input type="text" bind:value={uiSettings.griderPrefix} placeholder="" />
-        </td>
-        <td>
-          <input type="text" bind:value={uiSettings.griderSuffix} placeholder="" />
-        </td>
-      </tr>
-      <tr>
-        <td>Texts</td>
-        <td>
-          <input type="text" bind:value={uiSettings.texterPrefix} placeholder="" />
-        </td>
-        <td>
-          <input type="text" bind:value={uiSettings.texterSuffix} placeholder="" />
-        </td>
-      </tr>
-    </table>
-  </section> -->
+  <div>
+    <h2 class="caption">Extract Styles</h2>
+    <NumberField bind:value={uiSettings.textsPerSection} iconName={IconText}>
+      <span slot="textfield-label">Texts per column</span>
+      <span slot="unit-measure">layers</span>
+    </NumberField>
 
-  <section>
-    <Button on:click={saveSettings}>Save settings</Button>
-    <Button on:click={resetToDefault}>Reset to default</Button>
-  </section>
+    <NumberField bind:value={uiSettings.framesPerSection} iconName={IconFrame}>
+      <span slot="textfield-label">Frames per row</span>
+      <span slot="unit-measure">layers</span>
+    </NumberField>
+  </div>
 
 </main>
+<footer>
+  <Button on:click={resetToDefault} variant="secondary" class="col">Reset to default</Button>
+  <Button on:click={saveSettings} class="col">Save settings</Button>
+</footer>
 
 <svelte:window on:keydown={cancelModalUsingEscape} />

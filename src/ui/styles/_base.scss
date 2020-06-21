@@ -8,55 +8,31 @@
   font-family: inherit;
   font-weight: inherit;
   font-size: inherit;
+  text-rendering: inherit;
 }
 
 html {
   box-sizing: border-box;
-  font-family: 'Inter';
+  font-family: 'Inter', sans-serif;
   font-size: 62.5%;
-  text-rendering: optimizeLegibility;
-  font-feature-settings: 'tnum' on, 'lnum' on, 'ss01' on, 'ss03' on, 'cv05' on, 'case' on;
 
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+  font-feature-settings: 'tnum' on, 'lnum' on, 'cv02' on, 'cv03' on, 'cv04' on, 'cv05' on, 'cv07' on, 'cv08' on,
+    'cv09' on, 'cv10' on, 'cv06' on;
 }
 
 body {
   font-size: var(--text-size-medium);
   font-weight: var(--text-weight-normal);
-  line-height: var(--line-height-large);
-  color: var(--text-color-default);
-  background: var(--color-neutral-base);
-}
-
-/* Hyperlink styling */
-a {
-  color: var(--color-primary-base);
-  text-decoration: none;
-  cursor: pointer;
-}
-a:hover {
-  color: var(--color-primary-base);
-}
-a:active {
-  color: var(--color-primary-base);
-}
-a:focus {
-  text-decoration: underline;
+  line-height: var(--line-height-medium);
+  color: hsl(var(--color-invert-0));
+  background: hsl(var(--color-neutral-1));
 }
 
 /* Svg */
 svg {
   width: inherit;
   height: inherit;
-  // fill: currentColor;
-  stroke: currentColor;
-}
-
-input {
-  width: inherit;
-  border: 1px solid var(--color-neutral-strong);
-  background: var(--color-neutral-weak);
-  padding: var(--size-xxx-small) var(--size-xx-small);
-  max-width: 100%;
+  fill: inherit;
+  // stroke: currentColor;
 }

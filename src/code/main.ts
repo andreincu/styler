@@ -22,7 +22,7 @@ figma.clientStorage.getAsync(clientStorageKey).then((cachedSettings) => {
 
   //
   else if (CMD === 'customize-plugin') {
-    figma.showUI(__html__, { width: 360, height: 480 });
+    figma.showUI(__html__, { width: 320, height: 420 });
 
     figma.ui.postMessage(cachedSettings);
 

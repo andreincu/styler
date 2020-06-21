@@ -1,44 +1,28 @@
 :root {
-  $color-text: rgba(#021420, 95%);
-  $color-primary: #2989fb;
-  $color-secondary: #a1bbda;
-  $color-neutral: #f5f8fa;
-
-  /* color tokens */
-  --color-primary-strong: #{darken($color-primary, 10%)};
-  --color-primary-base: #{$color-primary};
-  --color-primary-weak: #{lighten($color-primary, 10%)};
-
-  --color-secondary-strong: #{darken($color-secondary, 20%)};
-  --color-secondary-base: #{$color-secondary};
-  --color-secondary-weak: #{lighten($color-secondary, 20%)};
-
-  --color-neutral-x-strong: #{darken($color-neutral, 10%)};
-  --color-neutral-strong: #{darken($color-neutral, 5%)};
-  --color-neutral-base: #{$color-neutral};
-  --color-neutral-weak: #{lighten($color-neutral, 5%)};
-  --color-neutral-x-weak: #{lighten($color-neutral, 10%)};
-
-  /* TYPOGRAPHY */
-  /* Text colors */
-  --text-color-important: #{$color-text};
-  --text-color-default: #{rgba($color-text, 70%)};
-  --text-color-faded: #{rgba($color-text, 40%)};
-  --text-color-contrast: #{invert($color-text)};
+  --color-primary: 216, 83%, 45%;
+  --color-secondary: 215, 49%, 87%;
+  --color-neutral-0: 0, 0%, 100%;
+  --color-neutral-1: 204, 33%, 97%;
+  --color-neutral-2: 213, 30%, 85%;
+  --color-invert-0: 0, 0%, 0%;
+  --color-invert-1: 205, 84%, 10%;
+  --color-invert-2: 206, 20%, 46%;
+  --color-invert-3: 205, 20%, 70%;
 
   /* Font sizes */
-  --text-size-small: 1.3rem;
+  --text-size-x-small: 1.1rem;
+  --text-size-small: 1.2rem;
   --text-size-medium: 1.4rem;
   --text-size-large: 1.6rem;
   --text-size-x-large: 1.8rem;
 
   /* Font weights */
-  --text-weight-normal: 500;
-  --text-weight-semibold: 600;
-  --text-weight-bold: 700;
+  --text-weight-normal: 400;
+  --text-weight-bold: 600;
 
   /* Line height */
   --line-height-small: 1.6rem;
+  --line-height-medium: 2rem;
   --line-height-large: 2.4rem;
 
   /* SPACING + SIZING */
@@ -46,12 +30,9 @@
   --size-xxx-small: 0.4rem;
   --size-xx-small: 0.8rem;
   --size-x-small: 1.6rem;
-  --size-small: 2.4rem;
-  --size-medium: 3.2rem;
-  --size-large: 4rem;
+  --size-small: 2rem;
+  --size-medium: 2.4rem;
   --size-x-large: 4.8rem;
-  --size-xx-large: 6.4rem;
-  --size-xxx-large: 8rem;
 
   /* Negative spacing */
   --negative-size-xxx-small: calc(var(--size-xxx-small) * -1);
@@ -59,23 +40,19 @@
   --negative-size-x-small: calc(var(--size-x-small) * -1);
   --negative-size-small: calc(var(--size-small) * -1);
   --negative-size-medium: calc(var(--size-medium) * -1);
-  --negative-size-large: calc(var(--size-large) * -1);
   --negative-size-x-large: calc(var(--size-x-large) * -1);
-  --negative-size-xx-large: calc(var(--size-xx-large) * -1);
-  --negative-size-xxx-large: calc(var(--size-xxx-large) * -1);
 
   /* BORDER RADIUS */
   --border-radius-small: 0.2rem;
   --border-radius-medium: 0.5rem;
   --border-radius-large: 0.6rem;
 
-  /* INDEPENDENT TRANSFORM */
-  --translate-x: -50%;
-  --translate-y: -50%;
+  /* TRANSFORMS */
+  --translate: -50%, -50%;
   --rotate: 0deg;
   --scale: 1;
 
-  /* TRANSITION */
+  /* TRANSITIONS */
   --transition-x-fast: 0.1s;
   --transition-fast: 0.2s;
   --transition-medium: 0.3s;
