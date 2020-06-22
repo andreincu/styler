@@ -3,9 +3,11 @@
   import { defaultSettings } from '../code/modules/default-settings';
   import IconFrame from './assets/icons/frame-layers.svg';
   import IconText from './assets/icons/text-layers.svg';
+  import Icon from './components/Icon';
   import Checkbox from './components/Checkbox';
   import Button from './components/Button';
   import NumberField from './components/NumberField';
+  import Warning from './assets/icons/warning.svg';
 
   let uiSettings = { ...defaultSettings };
   let showAlert = false;
@@ -69,10 +71,11 @@
 
 <style lang="scss">
   main {
-    padding-bottom: 6.4rem;
+    margin-bottom: 4.8rem;
   }
-  main div {
+  main > div {
     padding: 0 var(--size-x-small);
+    margin: 1.6rem 0;
   }
 
   footer {
@@ -89,6 +92,20 @@
   footer :global(.col) {
     flex: 1 1 auto;
     margin: 0.4rem;
+  }
+
+  .helper {
+    display: flex;
+    color: hsl(var(--color-invert-3));
+  }
+  .helper :global(.icon-container) {
+    flex: 0 0 2.4rem;
+    height: auto;
+    padding: 0.2rem;
+  }
+
+  .helper span {
+    margin: 0.2rem 0.8rem;
   }
 </style>
 
@@ -107,13 +124,25 @@
       <span slot="label">Show last style in description</span>
     </Checkbox>
 
-    <Checkbox bind:checked={uiSettings.updateUsingLocalStyles}>
+    <Checkbox bind:checked={uiSettings.updateUsingLocalStyles} show>
       <span slot="label">Update using local styles</span>
     </Checkbox>
 
-    <Checkbox bind:checked={uiSettings.partialMatch}>
+    <Checkbox bind:checked={uiSettings.partialMatch} show>
       <span slot="label">Extend name match</span>
     </Checkbox>
+
+    <div class="helper">
+
+      <Icon iconName={Warning} class="icon-container" />
+
+      <span class="small">
+        Experimental features!
+        <br />
+        Sometimes, produces unexpected results...
+      </span>
+
+    </div>
   </div>
 
   <div>

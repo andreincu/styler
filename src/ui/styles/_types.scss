@@ -21,9 +21,9 @@
 
 h1,
 .h1 {
+  line-height: var(--line-height-large);
   font-size: var(--text-size-x-large);
   font-weight: var(--text-weight-bold);
-  line-height: var(--line-height-large);
   margin: var(--size-xxx-small) 0;
   color: hsl(var(--color-invert-1));
 }
@@ -31,26 +31,33 @@ h1,
 h3,
 .h3 {
   font-size: var(--text-size-large);
+  line-height: var(--line-height-large);
   font-weight: var(--text-weight-bold);
   margin: var(--size-xx-small) 0;
-  line-height: var(--line-height-large);
   color: hsl(var(--color-invert-1));
 }
 
 h3,
 .h3 {
+  line-height: var(--line-height-large);
   font-size: var(--text-size-medium);
   font-weight: var(--text-weight-bold);
   margin: var(--size-xx-small) 0;
-  line-height: var(--line-height-large);
   color: hsl(var(--color-invert-1));
 }
 
+.small {
+  line-height: var(--line-height-small);
+  font-size: var(--text-size-small);
+  font-weight: var(--text-weight-normal);
+  color: hsl(var(--color-invert-3));
+}
+
 .caption {
+  line-height: var(--line-height-small);
   font-size: var(--text-size-x-small);
   font-weight: var(--text-weight-normal);
-  margin: var(--size-xx-small) 0;
-  line-height: var(--line-height-large);
+  margin: 0;
   color: hsl(var(--color-invert-3));
   letter-spacing: 0.08em;
   text-transform: uppercase;

@@ -115,8 +115,12 @@
   }
 
   .icon-helper {
+    flex-shrink: 0;
+    display: none;
     width: 2rem;
     height: 2rem;
+    margin: 0 -0.8rem;
+    color: hsl(var(--color-invert-3));
   }
 
   .icon-helper.show {
@@ -145,7 +149,7 @@
         {:else}{checkbox.value}{/if}
       </span>
 
-      <div class="icon-helper" {show} class:show>
+      <div class="icon-helper" class:show>
         <Icon iconName={Warning} />
       </div>
     </div>
