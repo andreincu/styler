@@ -1,5 +1,5 @@
 export const defaultSettings = {
-  addPrevToDescription: false,
+  addPrevToDescription: true,
   framesPerSection: 6,
   textsPerSection: 8,
   notificationTimeout: 6000,

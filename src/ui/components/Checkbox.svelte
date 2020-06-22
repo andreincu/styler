@@ -134,7 +134,7 @@
 
 {#each checkboxes as checkbox}
   <label>
-    <input type="checkbox" bind:checked bind:group value={checkbox.value} />
+    <input type="checkbox" bind:group value={checkbox.value} bind:checked />
 
     <div class="checkbox-toggle">
       <div class="checkbox-icon">

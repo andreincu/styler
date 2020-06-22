@@ -133,9 +133,7 @@
     </Checkbox>
 
     <div class="helper">
-
       <Icon iconName={Warning} class="icon-container" />
-
       <span class="small">
         Experimental features!
         <br />
