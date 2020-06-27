@@ -34,14 +34,14 @@ Works on selected layers.
 - Effect
 - Grid
 
-### Extract Styles <img src="tag-new.svg" style="height: 1.25rem;" alt="New">
+### Extract Styles <img src="tag-new.svg" style="height: 1rem;" alt="New">
 
 Creates layers based on local styles.  
 This can be useful to transfer style from a project to another, or bulk edit styles.
 
 > Extract Styles will generate layers in the current page starting at position 0. (you'll be zoomed at the created layers)
 
-### Customize plugin <img src="tag-new.svg" style="height: 1.25rem;" alt="New">
+### Customize plugin <img src="tag-new.svg" style="height: 1rem;" alt="New">
 
 - **Notification timeout:** changes the duration of all notification alerts that appears while interacting with Styler.
 - **Show last style in description:** appends the name of the latest style that was applied to the layer to the current style description.
@@ -65,8 +65,7 @@ This can be useful to transfer style from a project to another, or bulk edit sty
 1. Try to avoid same name for multiple layers. It will create a single style, but it will update its properties.
 1. Only **Local Styles** are supported. Still... You can use external styles to update local ones.
 1. There is no support for **Groups** and I don't plan to support it.
-1. ~~The plugin, extract only text properties from text layers.~~  
-   For text layers, styler gets only the text properties by default, but now is possible to get other properties by adding `+` as prefix to the layer name.
+1. For text layers, styler gets only the text properties by default, but now is possible to get other properties by adding `+` as prefix to the layer name.
 1. ~~For layer that contains both fill and stroke properties, the plugin will add automatically a suffix to the style name `-fill` and `-stroke`, otherwise the style name will be exactly as the layer name. I plan to expand this.~~  
    Now, styles only adds a suffix to stroke properties `layer-name` + `-stroke`. If you need to change this behaviour, you can take Styler locally and change it in code, the entire logic for this is prepared. ✌️
 
