@@ -6,15 +6,15 @@
   "ui": "dist/ui.html",
   "menu": [
     {
-      "name": "Extract Styles",
-      "command": "extract-all-styles"
+      "name": "Generate Styles",
+      "command": "generate-all-styles"
     },
     {
       "separator": true
     },
     {
-      "name": "Generate Styles",
-      "command": "generate-all-styles"
+      "name": "Extract Styles",
+      "command": "extract-all-styles"
     },
     {
       "separator": true
@@ -27,42 +27,45 @@
       "name": "Detach Styles",
       "command": "detach-all-styles"
     },
+
     {
       "name": "Remove Styles",
-      "command": "remove-all-styles"
-    },
-    {
-      "name": "Remove by type",
       "menu": [
         {
-          "name": "Fill Styles",
+          "name": "All Types",
+          "command": "remove-all-styles"
+        },
+        {
+          "separator": true
+        },
+        {
+          "name": "By Fill Type",
           "command": "remove-fill-styles"
         },
         {
-          "name": "Stroke Styles",
+          "name": "By Stroke Type",
           "command": "remove-stroke-styles"
         },
         {
-          "name": "Text Styles",
+          "name": "By Text Type",
           "command": "remove-text-styles"
         },
         {
-          "name": "Effect Styles",
+          "name": "By Effect Type",
           "command": "remove-effect-styles"
         },
         {
-          "name": "Grid Styles",
+          "name": "By Grid Type",
           "command": "remove-grid-styles"
         }
       ]
     },
     {
-      "name": "Customize plugin",
-      "command": "customize-plugin"
+      "separator": true
     },
     {
-      "name": "Clear styler cache",
-      "command": "clear-cache"
+      "name": "Customize plugin",
+      "command": "customize-plugin"
     }
   ]
 }
