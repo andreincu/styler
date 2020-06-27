@@ -34,14 +34,14 @@ Works on selected layers.
 - Effect
 - Grid
 
-### Extract Styles <img src="tag-new.svg" style="height: 1rem;" alt="New">
+### Extract Styles ![new](tag-new.svg)
 
 Creates layers based on local styles.  
 This can be useful to transfer style from a project to another, or bulk edit styles.
 
 > Extract Styles will generate layers in the current page starting at position 0. (you'll be zoomed at the created layers)
 
-### Customize plugin <img src="tag-new.svg" style="height: 1rem;" alt="New">
+### Customize plugin ![new](tag-new.svg)
 
 - **Notification timeout:** changes the duration of all notification alerts that appears while interacting with Styler.
 - **Show last style in description:** appends the name of the latest style that was applied to the layer to the current style description.
