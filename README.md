@@ -7,6 +7,13 @@ Basically, you can control your styles by changing layer properties and updating
 
 ## Features
 
+### Extract Styles ![new](tag-new.svg)
+
+Creates layers based on local styles.  
+This can be useful to transfer style from a project to another, or for libraries that already have styles created, but needs to make bulk changes.
+
+> Extract Styles will generate layers in the current page starting at position 0. (you'll be zoomed at the created layers)
+
 ### Generate Styles
 
 Is a multi-purpose action for creating, renaming or updating styles based on layer properties.
@@ -16,13 +23,6 @@ Is a multi-purpose action for creating, renaming or updating styles based on lay
   > It is much faster to use bulk rename feature of figma to rename layers `Cmd` `R` (Mac) or `Ctrl` `R` (Windows).
   > [More info](https://help.figma.com/hc/en-us/articles/360039958934-Rename-Layers)
 - **Update,** when there is a name match.
-
-### Extract Styles ![new](tag-new.svg)
-
-Creates layers based on local styles.  
-This can be useful to transfer style from a project to another, or for libraries that already have styles created, but needs to make bulk changes.
-
-> Extract Styles will generate layers in the current page starting at position 0. (you'll be zoomed at the created layers)
 
 ### Apply Styles
 

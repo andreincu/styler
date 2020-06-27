@@ -5,16 +5,17 @@
   "main": "dist/code.js",
   "ui": "dist/ui.html",
   "menu": [
+    
     {
-      "name": "Generate Styles",
-      "command": "generate-all-styles"
+      "name": "Extract Styles",
+      "command": "extract-all-styles"
     },
     {
       "separator": true
     },
     {
-      "name": "Extract Styles",
-      "command": "extract-all-styles"
+      "name": "Generate Styles",
+      "command": "generate-all-styles"
     },
     {
       "separator": true
