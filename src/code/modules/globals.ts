@@ -39,7 +39,7 @@ export const messages = (counter) => {
       multiple: `
       🔨 Created: ${counter.created} -
       ✨ Updated: ${counter.updated} -
-      🌈 Renamed: ${counter.renamed} -
+      👻 Renamed: ${counter.renamed} -
       😶 No changes: ${counter.ignored}
     `,
     },
@@ -54,7 +54,7 @@ export const messages = (counter) => {
       multiple: `✅ Settings were saved and ${counter.customize} style was updated.`,
     },
     layers: {
-      empty: '🥰 You must select at least 1 layer. Yea...',
+      empty: '😎 You must select at least 1 layer. Yea...',
     },
     cancelSettings: {
       empty: '🥺 Nothing was changed, everything is as before.',
