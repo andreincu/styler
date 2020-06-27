@@ -17,6 +17,13 @@ Is a multi-purpose action for creating, renaming or updating styles based on lay
   > [More info](https://help.figma.com/hc/en-us/articles/360039958934-Rename-Layers)
 - **Update,** when there is a name match.
 
+### Extract Styles ![new](tag-new.svg)
+
+Creates layers based on local styles.  
+This can be useful to transfer style from a project to another, or for libraries that already have styles created, but needs to make bulk changes.
+
+> Extract Styles will generate layers in the current page starting at position 0. (you'll be zoomed at the created layers)
+
 ### Apply Styles
 
 Currently, this action apply the styles based only on layer name and local styles found.
@@ -28,18 +35,11 @@ Works on selected layers.
 ### Remove Styles
 
 - All Types
-- Fill
-- Stroke
-- Text
-- Effect
-- Grid
-
-### Extract Styles ![new](tag-new.svg)
-
-Creates layers based on local styles.  
-This can be useful to transfer style from a project to another, or bulk edit styles.
-
-> Extract Styles will generate layers in the current page starting at position 0. (you'll be zoomed at the created layers)
+- By Fill Type
+- By Stroke Type
+- By Text Type
+- By Effect Type
+- By Grid Type
 
 ### Customize plugin ![new](tag-new.svg)
 
