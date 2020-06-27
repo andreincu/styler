@@ -10,6 +10,7 @@
 - now is possible to use local styles in order to rename a style. For this, you need to change settings in the _Customize plugin_ section
 - now is possible to change the duration of notifications and cancel it
 - now, only _stroke type_ styles will have suffix
+- now, styles will be created in the same order as layers order (as you see at layers panel from top to bottom)
 - grouped all _remove_ action into a single menu item
 - added logic for changing prefixes and suffixes, but didn't expose to the user (decided at the end that will only create issues between users, as settings are saved on localStorage)
 - refactored the entire code: now there is a class to resolve the inconsistency between layer props and style props
