@@ -1,4 +1,4 @@
-![cover](thumbnail.png)
+![cover](cover.png)
 
 # Styler
 
