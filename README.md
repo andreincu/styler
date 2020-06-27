@@ -57,7 +57,7 @@ This can be useful to transfer style from a project to another, or bulk edit sty
 
 1. While trying to rename the styles using underscore `_` or point `.` prefixes, the style will not change the publish status (it will not become unpublish). This is a limitation of the API. ☹️
 1. After you create styles, you cannot reorder them using Figma API. 😔
-1. Advanced properties of the text styles are not saved into the style. This is also a limitation of the API... 😭
+1. Some of the **Type details** of the text layers are not saved into the style. This is also a limitation of the API... 😭
 
 ## Notes
 
