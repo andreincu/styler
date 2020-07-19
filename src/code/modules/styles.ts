@@ -1,4 +1,4 @@
-import { Config } from './config';
+import { Config } from '../config';
 import { CMD, colors, counter, messages, showNofication, showNotificationAtArrayEnd } from './globals';
 import { cleanSelection, createFrameLayer, createTextLayer, ungroup, createLayer } from './layers';
 import { checkStyleType, isArrayEmpty } from './utils';

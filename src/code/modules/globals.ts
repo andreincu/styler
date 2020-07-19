@@ -1,4 +1,4 @@
-import { defaultSettings } from './default-settings.js';
+import { defaultSettings } from '../default-settings.js';
 
 export const CMD = figma.command;
 

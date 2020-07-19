@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { defaultSettings } from '../code/modules/default-settings';
+  import { defaultSettings } from '../code/default-settings';
   import IconFrame from './assets/icons/frame-layers.svg';
   import IconText from './assets/icons/text-layers.svg';
   import Icon from './components/Icon';

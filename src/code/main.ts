@@ -1,4 +1,4 @@
-import { clientStorageKey, Config } from './modules/config';
+import { clientStorageKey, Config } from './config';
 import { CMD, counter, messages, showNofication } from './modules/globals';
 import { changeAllStyles, extractAllStyles, updateStyleNames } from './modules/styles';
 

@@ -1,4 +1,4 @@
-import { Styler } from './styler';
+import { Styler } from './modules/styler';
 import { defaultSettings } from './default-settings.js';
 
 export const clientStorageKey = 'cachedSettings';
