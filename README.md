@@ -1,4 +1,4 @@
-![cover](cover.png)
+![cover](assets/cover.png)
 
 # Styler
 
@@ -7,7 +7,7 @@ Basically, you can control your styles by changing layer properties and updating
 
 ## Features
 
-### Extract Styles ![new](tag-new.svg)
+### Extract Styles ![new](assets/tag-new.svg)
 
 Creates layers based on local styles.  
 This can be useful to transfer style from a project to another, or for libraries that already have styles created, but needs to make bulk changes.
@@ -41,7 +41,7 @@ Works on selected layers.
 - By Effect Type
 - By Grid Type
 
-### Customize plugin ![new](tag-new.svg)
+### Customize plugin ![new](assets/tag-new.svg)
 
 - **Notification timeout:** changes the duration of all notification alerts that appears while interacting with Styler.
 - **Show last style in description:** appends the name of the latest style that was applied to the layer to the current style description.
@@ -55,9 +55,9 @@ Works on selected layers.
 
 ## Known issues
 
-1. While trying to rename the styles using underscore `_` or point `.` prefixes, the style will not change the publish status (it will not become unpublish). This is a limitation of the API. ☹️
-1. After you create styles, you cannot reorder them using Figma API. 😔
-1. Some of the **Type details** of the text layers are not saved into the style. This is also a limitation of the API... 😭
+1. Some of the **Type details** of the text layers are not saved into the style. This is also a limitation of the API... 😭  
+**[Fixed]** ~~1. While trying to rename the styles using underscore `_` or point `.` prefixes, the style will not change the publish status (it will not become unpublish). This is a limitation of the API. ☹️~~  
+**[WIP]** ~~After you create styles, you cannot reorder them using Figma API. 😔~~
 
 ## Notes
 
@@ -66,8 +66,6 @@ Works on selected layers.
 1. Only **Local Styles** are supported. Still... You can use external styles to update local ones.
 1. There is no support for **Groups** and I don't plan to support it.
 1. For text layers, styler gets only the text properties by default, but now is possible to get other properties by adding `+` as prefix to the layer name.
-1. ~~For layer that contains both fill and stroke properties, the plugin will add automatically a suffix to the style name `-fill` and `-stroke`, otherwise the style name will be exactly as the layer name. I plan to expand this.~~  
-   Now, styles only adds a suffix to stroke properties `layer-name` + `-stroke`. If you need to change this behaviour, you can take Styler locally and change it in code, the entire logic for this is prepared. ✌️
 
 ## Pairing well with
 
