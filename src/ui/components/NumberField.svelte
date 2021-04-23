@@ -95,7 +95,7 @@
   }
 </style>
 
-<label>
+<label for="unit-measure">
   <div class="left-side">
     <div class="icon-container">
       <Icon {iconName} />
@@ -105,7 +105,7 @@
     </div>
   </div>
   <div class="right-side">
-    <input type="number" bind:value {placeholder} {step} on:click={(event) => event.currentTarget.select()} />
+    <input id="unit-measure" type="number" bind:value {placeholder} {step} on:click={(event) => event.currentTarget.select()} />
 
     <div class="unit-measure">
       <slot name="unit-measure" />
