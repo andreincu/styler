@@ -1,7 +1,7 @@
 <script>
   import Checkmark from '@assets/icons/checkmark.svg';
   import Warning from '@assets/icons/warning.svg';
-  import Icon from '@svelte-comps/Icon.svelte';
+  import Icon from '@components/Icon.svelte';
 
   export let iconName = Checkmark;
   export let checked = false;

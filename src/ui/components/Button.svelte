@@ -1,6 +1,4 @@
 <script>
-  import { onMount } from 'svelte';
-
   export let variant = 'primary';
   export let disabled = false;
   export let destructive = false;

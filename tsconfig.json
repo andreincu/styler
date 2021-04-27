@@ -6,7 +6,8 @@
     "typeRoots": ["./node_modules/@types", "./node_modules/@figma"],
     "baseUrl": "./src/",
     "paths": {
-      "@svelte-comps/*": ["ui/components/*"],
+      "@defaultSettings": ["code/modules/default-settings.js"],
+      "@components/*": ["ui/components/*"],
       "@styles/*": ["ui/styles/*"],
       "@assets/*": ["assets/*"]
     }

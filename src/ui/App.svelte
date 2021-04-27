@@ -1,13 +1,13 @@
 <script>
   import { onMount } from 'svelte';
-  import { defaultSettings } from '../code/modules/default-settings.js';
-  import IconFrame from './assets/icons/frame-layers.svg';
-  import IconText from './assets/icons/text-layers.svg';
-  import Warning from './assets/icons/warning.svg';
-  import Icon from './components/Icon.svelte';
-  import Checkbox from './components/Checkbox.svelte';
-  import Button from './components/Button.svelte';
-  import NumberField from './components/NumberField.svelte';
+  import { defaultSettings } from '@defaultSettings';
+  import IconFrame from '@assets/icons/frame-layers.svg';
+  import IconText from '@assets/icons/text-layers.svg';
+  import Warning from '@assets/icons/warning.svg';
+  import Icon from '@components/Icon.svelte';
+  import Checkbox from '@components/Checkbox.svelte';
+  import Button from '@components/Button.svelte';
+  import NumberField from '@components/NumberField.svelte';
 
   let uiSettings = { ...defaultSettings };
   let showAlert = false;
