@@ -1,13 +1,13 @@
 <script>
   import { onMount } from 'svelte';
-  import { defaultSettings } from '../code/modules/default-settings';
+  import { defaultSettings } from '../code/modules/default-settings.js';
   import IconFrame from './assets/icons/frame-layers.svg';
   import IconText from './assets/icons/text-layers.svg';
-  import Icon from './components/Icon';
-  import Checkbox from './components/Checkbox';
-  import Button from './components/Button';
-  import NumberField from './components/NumberField';
   import Warning from './assets/icons/warning.svg';
+  import Icon from './components/Icon.svelte';
+  import Checkbox from './components/Checkbox.svelte';
+  import Button from './components/Button.svelte';
+  import NumberField from './components/NumberField.svelte';
 
   let uiSettings = { ...defaultSettings };
   let showAlert = false;
@@ -69,7 +69,7 @@
   };
 </script>
 
-<style lang="scss">
+<style>
   main {
     margin-bottom: 4.8rem;
   }

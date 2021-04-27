@@ -1,36 +1,47 @@
 {
-  "name": "zzz-plugin",
+  "name": "styler",
   "version": "1.0.0",
-  "description": "",
-  "scripts": {
-    "build": "webpack",
-    "watch": "webpack -w"
-  },
-  "keywords": [],
-  "author": "andrei-iancu <andrei-i@outlook.com>",
-  "license": "MIT",
+  "description": "Figma plugin that generates styles based on selected layers.",
+  "main": "code.js",
   "devDependencies": {
-    "@figma/plugin-typings": "^1.15.0",
-    "@types/node": "^13.13.7",
-    "clean-webpack-plugin": "^3.0.0",
-    "css-loader": "^3.5.3",
-    "file-loader": "^6.0.0",
-    "html-webpack-inline-source-plugin": "^1.0.0-beta.2",
-    "html-webpack-plugin": "^4.0.3",
+    "@figma/plugin-typings": "^1.17.1",
+    "@rollup/plugin-commonjs": "^18.0.0",
+    "@rollup/plugin-node-resolve": "^11.2.1",
+    "@rollup/plugin-typescript": "^6.0.0",
     "normalize.css": "^8.0.1",
-    "prettier": "^1.19.1",
-    "sass": "^1.26.5",
-    "sass-loader": "^8.0.2",
-    "style-loader": "^1.1.3",
-    "svelte": "^3.22.3",
-    "svelte-loader": "^2.13.6",
-    "svg-inline-loader": "^0.8.2",
-    "ts-loader": "^6.2.2",
-    "typescript": "^3.9.2",
-    "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.11"
+    "prettier": "1.19.1",
+    "rollup": "^2.32.0",
+    "rollup-plugin-html-bundle": "^0.0.3",
+    "rollup-plugin-scss": "^3.0.0-rc1",
+    "rollup-plugin-svelte": "^7.1.0",
+    "rollup-plugin-svg": "^2.0.0",
+    "svelte": "^3.37.0",
+    "svelte-preprocess": "^4.7.2",
+    "tslib": "^2.0.3",
+    "typescript": "^4.0.3"
   },
-  "dependencies": {
-    "node": "^13.14.0"
-  }
+  "scripts": {
+    "build": "rollup -c",
+    "watch": "rollup -c -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andrei-inc/Styler.git"
+  },
+  "keywords": [
+    "figma-plugin",
+    "styler",
+    "generate styles",
+    "create styles",
+    "update styles",
+    "rename styles",
+    "detach styles",
+    "remove styles"
+  ],
+  "author": "Andrei Iancu <andrei.i@outlook.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/andrei-inc/Styler/issues"
+  },
+  "homepage": "https://github.com/andrei-inc/Styler#readme"
 }

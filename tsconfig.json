@@ -1,13 +1,15 @@
 {
   "compilerOptions": {
-    "target": "ES2019",
-    "module": "ES6",
-    "lib": ["ES2019", "ES2020", "dom"],
+    "target": "ES6",
+    "module": "es6",
     "moduleResolution": "node",
-    "removeComments": true,
-    "esModuleInterop": true,
-    "typeRoots": ["./node_modules/@types", "./node_modules/@figma"]
+    "typeRoots": ["./node_modules/@types", "./node_modules/@figma"],
+    "baseUrl": "./src/",
+    "paths": {
+      "@svelte-comps/*": ["ui/components/*"],
+      "@styles/*": ["ui/styles/*"],
+      "@assets/*": ["assets/*"]
+    }
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.spec.ts"]
+  "exclude": ["node_modules"]
 }

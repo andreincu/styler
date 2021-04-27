@@ -1,7 +1,7 @@
 <script>
-  import Checkmark from './../assets/icons/checkmark.svg';
-  import Warning from './../assets/icons/warning.svg';
-  import Icon from './Icon.svelte';
+  import Checkmark from '@assets/icons/checkmark.svg';
+  import Warning from '@assets/icons/warning.svg';
+  import Icon from '@svelte-comps/Icon.svelte';
 
   export let iconName = Checkmark;
   export let checked = false;
@@ -10,7 +10,7 @@
   export let show = false;
 </script>
 
-<style lang="scss">
+<style>
   label {
     display: flex;
     margin: var(--size-xx-small) 0;

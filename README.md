@@ -1,4 +1,4 @@
-![cover](assets/cover.png)
+![cover](@assets/cover.png)
 
 # Styler
 
@@ -7,7 +7,7 @@ Basically, you can control your styles by changing layer properties and updating
 
 ## Features
 
-### Extract Styles ![new](assets/tag-new.svg)
+### Extract Styles ![new](@assets/tag-new.svg)
 
 Creates layers based on local styles.  
 This can be useful to transfer style from a project to another, or for libraries that already have styles created, but needs to make bulk changes.
@@ -56,8 +56,8 @@ Works on selected layers.
 ## Known issues
 
 1. Some of the **Type details** of the text layers are not saved into the style. This is also a limitation of the API... 😭  
-**[Fixed]** ~~1. While trying to rename the styles using underscore `_` or point `.` prefixes, the style will not change the publish status (it will not become unpublish). This is a limitation of the API. ☹️~~  
-**[WIP]** ~~After you create styles, you cannot reorder them using Figma API. 😔~~
+   **[Fixed]** ~~1. While trying to rename the styles using underscore `_` or point `.` prefixes, the style will not change the publish status (it will not become unpublish). This is a limitation of the API. ☹️~~  
+   **[WIP]** ~~After you create styles, you cannot reorder them using Figma API. 😔~~
 
 ## Notes
 
