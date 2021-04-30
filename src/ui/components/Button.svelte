@@ -44,6 +44,13 @@
   } */
 </style>
 
-<button on:click on:submit onclick="this.blur();" {variant} {disabled} class:destructive class="{variant} {className}">
+<button
+  on:click
+  on:submit
+  onclick="this.blur();"
+  variant="{variant}"
+  disabled="{disabled}"
+  class:destructive
+  class="{variant} {className}">
   <slot />
 </button>

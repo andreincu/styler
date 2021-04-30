@@ -6,7 +6,7 @@
     "typeRoots": ["./node_modules/@types", "./node_modules/@figma"],
     "baseUrl": "./src/",
     "paths": {
-      "@defaultSettings": ["code/modules/default-settings.js"],
+      "@defaultSettings/*": ["code/modules/*"],
       "@components/*": ["ui/components/*"],
       "@styles/*": ["ui/styles/*"],
       "@assets/*": ["assets/*"]

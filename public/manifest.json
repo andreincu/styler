@@ -2,8 +2,8 @@
   "name": "Styler",
   "id": "820660579767995949",
   "api": "1.0.0",
-  "main": "code.js",
-  "ui": "ui.html",
+  "main": "bundle/code.js",
+  "ui": "bundle/ui.html",
   "menu": [
     {
       "name": "Extract Styles",

@@ -1,8 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head> </head>
-  <body><script>
-var ui = (function () {
+<html><head> <style>
+:root{--color-primary:216,83%,45%;--color-secondary:215,49%,87%;--color-neutral-0:0,0%,100%;--color-neutral-1:204,33%,97%;--color-neutral-2:213,30%,85%;--color-invert-0:0,0%,0%;--color-invert-1:205,84%,10%;--color-invert-2:206,20%,46%;--color-invert-3:205,20%,70%;--text-size-x-small:1.1rem;--text-size-small:1.2rem;--text-size-medium:1.4rem;--text-size-large:1.6rem;--text-size-x-large:1.8rem;--text-weight-normal:400;--text-weight-bold:600;--line-height-small:1.6rem;--line-height-medium:2rem;--line-height-large:2.4rem;--size-xxx-small:0.4rem;--size-xx-small:0.8rem;--size-x-small:1.6rem;--size-small:2rem;--size-medium:2.4rem;--size-x-large:4.8rem;--negative-size-xxx-small:calc(var(--size-xxx-small) * -1);--negative-size-xx-small:calc(var(--size-xx-small) * -1);--negative-size-x-small:calc(var(--size-x-small) * -1);--negative-size-small:calc(var(--size-small) * -1);--negative-size-medium:calc(var(--size-medium) * -1);--negative-size-x-large:calc(var(--size-x-large) * -1);--border-radius-small:0.2rem;--border-radius-medium:0.5rem;--border-radius-large:0.6rem;--translate:-50%,-50%;--rotate:0deg;--scale:1;--transition-x-fast:0.1s;--transition-fast:0.2s;--transition-medium:0.3s;--transition-slow:0.4s;--transition-x-slow:0.5s}*,:after,:before{margin:0;padding:0;box-sizing:inherit;font-family:inherit;font-weight:inherit;font-size:inherit;text-rendering:inherit}html{box-sizing:border-box;font-family:Inter,sans-serif;font-size:62.5%;text-rendering:geometricPrecision;font-feature-settings:"tnum" on,"lnum" on,"cv02" on,"cv03" on,"cv04" on,"cv05" on,"cv07" on,"cv08" on,"cv09" on,"cv10" on,"cv06" on}body{font-size:var(--text-size-medium);font-weight:var(--text-weight-normal);line-height:var(--line-height-medium);color:hsl(var(--color-invert-0));background:hsl(var(--color-neutral-1))}.h1,.h3,h1,h3{line-height:var(--line-height-large);font-weight:var(--text-weight-bold);color:hsl(var(--color-invert-1))}svg{width:inherit;height:inherit;fill:inherit}@font-face{font-family:Inter;font-style:normal;font-weight:400;font-display:swap;src:url(https://rsms.me/inter/font-files/Inter-Regular.woff2?3.13) format("woff2"),url(https://rsms.me/inter/font-files/Inter-Regular.woff?3.13) format("woff")}@font-face{font-family:Inter;font-style:normal;font-weight:600;font-display:swap;src:url(https://rsms.me/inter/font-files/Inter-SemiBold.woff2?3.13) format("woff2"),url(https://rsms.me/inter/font-files/Inter-SemiBold.woff?3.13) format("woff")}.h1,h1{font-size:var(--text-size-x-large);margin:var(--size-xxx-small) 0}.h3,h3{font-size:var(--text-size-medium);margin:var(--size-xx-small) 0}.caption,.small{line-height:var(--line-height-small)}.caption,.small,label.svelte-u2a119.svelte-u2a119{font-weight:var(--text-weight-normal)}.caption,.helper.svelte-56inlw.svelte-56inlw,.small{color:hsl(var(--color-invert-3))}.small{font-size:var(--text-size-small)}.caption{font-size:var(--text-size-x-small);margin:0;letter-spacing:.08em;text-transform:uppercase}main.svelte-56inlw.svelte-56inlw{margin-bottom:4.8rem}main.svelte-56inlw>div.svelte-56inlw{padding:0 var(--size-x-small);margin:1.6rem 0}footer.svelte-56inlw.svelte-56inlw{display:flex;position:fixed;bottom:0;left:0;right:0;background:hsl(var(--color-neutral-0));box-shadow:0 0 1.6rem hsla(var(--color-invert-0),.05);padding:.4rem 1.2rem}input.svelte-19u47n0:focus~.checkbox-toggle.svelte-19u47n0::after,label.svelte-u2a119.svelte-u2a119:focus-within{box-shadow:0 0 0 .2rem hsl(var(--color-invert-0))}footer.svelte-56inlw .col{flex:1 1 auto;margin:.4rem}.helper.svelte-56inlw.svelte-56inlw{display:flex}.helper.svelte-56inlw .icon-container{flex:0 0 2.4rem;height:auto;padding:.2rem}.helper.svelte-56inlw span.svelte-56inlw{margin:.2rem .8rem}label.svelte-u2a119.svelte-u2a119{display:flex;align-items:flex-start;justify-content:space-between;background:0 0;border:1px solid;border-radius:var(--border-radius-small);overflow:hidden;font-size:var(--text-size-medium);line-height:var(--line-height-medium);color:hsl(var(--color-invert-2));transition:all var(--transition-fast) ease-out;margin:var(--size-xx-small) 0}label.svelte-u2a119:focus-within .left-side.svelte-u2a119{color:hsl(var(--color-invert-0))}.left-side.svelte-u2a119.svelte-u2a119{flex:1 1 auto;padding:.2rem;display:inherit;color:hsl(var(--color-invert-2))}.left-side.svelte-u2a119 .icon-container.svelte-u2a119{display:inline-block;width:var(--size-small);height:var(--size-small);margin:.3rem;flex-shrink:0;color:inherit}.left-side.svelte-u2a119 .label.svelte-u2a119{margin:.3rem}.right-side.svelte-u2a119.svelte-u2a119{display:inline-flex;background:hsl(var(--color-neutral-0));outline:solid 1px;flex:0 0 35%;padding:.2rem .9rem}.right-side.svelte-u2a119 input.svelte-u2a119{background:0 0;border:transparent;width:100%;text-align:right;line-height:inherit;font-weight:var(--text-weight-bold);margin:.3rem}.right-side.svelte-u2a119 input.svelte-u2a119:focus{outline:transparent}.right-side.svelte-u2a119 .unit-measure.svelte-u2a119{margin:.3rem;color:hsl(var(--color-invert-3))}input.svelte-u2a119.svelte-u2a119::-webkit-inner-spin-button,input.svelte-u2a119.svelte-u2a119::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}input.svelte-u2a119.svelte-u2a119{-moz-appearance:textfield}.unit-measure.svelte-u2a119.svelte-u2a119:empty{display:none}button.svelte-hodw9t{display:inline-flex;justify-content:center;align-content:center;position:relative;font-size:var(--text-size-medium);line-height:var(--line-height-large);margin:0;min-width:8rem;padding:.3rem 1.2rem;border-radius:var(--border-radius-small);transition:background var(--transition-fast) ease-in}button.svelte-hodw9t:focus{box-shadow:0 0 0 .2rem hsl(var(--color-invert-1));outline:0}.primary.svelte-hodw9t{background:hsl(var(--color-primary));color:hsl(var(--color-neutral-0));border:1px solid}.secondary.svelte-hodw9t{background:0 0;color:hsl(var(--color-primary));border:1px solid}.svg-icon.svelte-4kflf7{color:inherit;display:block;width:100%;height:100%}.svg-icon *{fill:currentColor}label.svelte-19u47n0.svelte-19u47n0{display:flex;margin:var(--size-xx-small) 0;color:hsl(var(--color-invert-2))}input.svelte-19u47n0.svelte-19u47n0{position:absolute;width:var(--size-small);height:var(--size-small);z-index:-1;opacity:0}input.svelte-19u47n0.svelte-19u47n0:focus{outline:0}.checkbox-toggle.svelte-19u47n0.svelte-19u47n0{position:relative;flex:0 0 var(--size-medium);height:var(--size-medium)}.checkbox-toggle.svelte-19u47n0.svelte-19u47n0:after,.checkbox-toggle.svelte-19u47n0.svelte-19u47n0:before{background:hsl(var(--color-neutral-0));border:1px solid;display:inline-block;position:absolute;left:50%;top:50%;content:"";width:1.8rem;height:1.8rem;opacity:1;border-radius:var(--border-radius-small);transition:all var(--transition-fast) ease-out;filter:brightness(100%);transform-origin:center center;transform:translate(var(--translate)) rotate(var(--rotate)) scale(var(--scale))}.checkbox-toggle.svelte-19u47n0.svelte-19u47n0:before{z-index:-2}.checkbox-toggle.svelte-19u47n0.svelte-19u47n0:after{z-index:-1}label.svelte-19u47n0:hover .checkbox-toggle.svelte-19u47n0:after{filter:brightness(80%)}input.svelte-19u47n0:checked~.checkbox-toggle.svelte-19u47n0:after,input.svelte-19u47n0:checked~.checkbox-toggle.svelte-19u47n0:before{background:hsl(var(--color-primary));border-color:hsl(var(--color-primary))}input.svelte-19u47n0:checked~.checkbox-toggle.svelte-19u47n0:before{opacity:0;--scale:1.75}.checkbox-icon.svelte-19u47n0.svelte-19u47n0{display:inline-block;width:100%;height:100%;transform:scale(0);color:hsl(var(--color-invert-1));transition:transform var(--transition-fast) ease-out}input:checked~.checkbox-toggle.svelte-19u47n0 .checkbox-icon.svelte-19u47n0{transform:scale(1);opacity:1}.label.svelte-19u47n0.svelte-19u47n0{display:inline-flex;flex:1 1 auto;margin:.2rem .8rem;justify-content:space-between}.helper.svelte-19u47n0.svelte-19u47n0{font-size:var(--text-size-small);font-weight:var(--text-weight-normal);margin:0;line-height:var(--line-height-large);color:hsl(var(--color-invert-2))}.checkbox-icon.svelte-19u47n0 .icon-color{color:hsl(var(--color-neutral-0))}.icon-helper.svelte-19u47n0.svelte-19u47n0{flex-shrink:0;display:none;width:2rem;height:2rem;margin:0 -.8rem;color:hsl(var(--color-invert-3))}.icon-helper.show.svelte-19u47n0.svelte-19u47n0{display:block}.helper.svelte-19u47n0.svelte-19u47n0:empty{display:none}
+</style>
+</head>
+  <body>
+
+<script type="text/javascript">
+var ui = (function (svelte) {
     'use strict';
 
     function noop() { }
@@ -136,14 +139,6 @@ var ui = (function () {
     let current_component;
     function set_current_component(component) {
         current_component = component;
-    }
-    function get_current_component() {
-        if (!current_component)
-            throw new Error('Function called outside component initialization');
-        return current_component;
-    }
-    function onMount(fn) {
-        get_current_component().$$.on_mount.push(fn);
     }
     // TODO figure out if we still want to support
     // shorthand events, or if we want to implement
@@ -420,12 +415,6 @@ var ui = (function () {
       texterSuffix: '',
     };
 
-    var IconFrame = "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M7 22V17H2V15H7V9H2V7H7L7 2H9L9 7H15V2H17V7H22V9H17L17 15H22V17H17V22H15V17H9V22H7ZM15 15L15 9H9V15H15Z\" fill=\"#CFD9E5\" fill-opacity=\"0.95\"/>\n</svg>";
-
-    var IconText = "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M3 3H4H12H20H21V4V9H19V5H13V19H15V21H12H9V19H11V5H5V9H3V4V3Z\" fill=\"#CFD9E5\"/>\n</svg>";
-
-    var Warning = "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M12.9846 3.58065C12.547 2.80645 11.453 2.80645 11.0154 3.58064L2.15401 19.2581C1.71641 20.0323 2.26341 21 3.13861 21H20.8614C21.7366 21 22.2836 20.0323 21.846 19.2581L12.9846 3.58065ZM12 19C12.5523 19 13 18.5523 13 18V17.9C13 17.3477 12.5523 16.9 12 16.9C11.4477 16.9 11 17.3477 11 17.9V18C11 18.5523 11.4477 19 12 19ZM13 7V15H11V7H13Z\" fill=\"#CFD9E5\" fill-opacity=\"0.95\"/>\n</svg>";
-
     /* src/ui/components/Icon.svelte generated by Svelte v3.37.0 */
 
     function create_fragment$4(ctx) {
@@ -435,7 +424,7 @@ var ui = (function () {
     	return {
     		c() {
     			i = element("i");
-    			attr(i, "class", i_class_value = "svg-icon " + /*className*/ ctx[0] + " svelte-fcu417");
+    			attr(i, "class", i_class_value = "svg-icon " + /*className*/ ctx[0] + " svelte-4kflf7");
     		},
     		m(target, anchor) {
     			insert(target, i, anchor);
@@ -443,7 +432,7 @@ var ui = (function () {
     		},
     		p(ctx, [dirty]) {
     			if (dirty & /*iconName*/ 2) i.innerHTML = /*iconName*/ ctx[1];
-    			if (dirty & /*className*/ 1 && i_class_value !== (i_class_value = "svg-icon " + /*className*/ ctx[0] + " svelte-fcu417")) {
+    			if (dirty & /*className*/ 1 && i_class_value !== (i_class_value = "svg-icon " + /*className*/ ctx[0] + " svelte-4kflf7")) {
     				attr(i, "class", i_class_value);
     			}
     		},
@@ -476,6 +465,8 @@ var ui = (function () {
 
     var Checkmark = "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M17.7643 8.64487L11.858 15.6449L11.1631 16.4685L10.3936 15.714L7.2999 12.6807L8.7001 11.2526L11.0244 13.5315L16.2357 7.35513L17.7643 8.64487Z\" fill=\"#CFD9E5\" fill-opacity=\"0.95\"/>\n</svg>";
 
+    var Warning = "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M12.9846 3.58065C12.547 2.80645 11.453 2.80645 11.0154 3.58064L2.15401 19.2581C1.71641 20.0323 2.26341 21 3.13861 21H20.8614C21.7366 21 22.2836 20.0323 21.846 19.2581L12.9846 3.58065ZM12 19C12.5523 19 13 18.5523 13 18V17.9C13 17.3477 12.5523 16.9 12 16.9C11.4477 16.9 11 17.3477 11 17.9V18C11 18.5523 11.4477 19 12 19ZM13 7V15H11V7H13Z\" fill=\"#CFD9E5\" fill-opacity=\"0.95\"/>\n</svg>";
+
     /* src/ui/components/Checkbox.svelte generated by Svelte v3.37.0 */
 
     function get_each_context(ctx, list, i) {
@@ -489,7 +480,7 @@ var ui = (function () {
     const get_label_slot_changes = dirty => ({});
     const get_label_slot_context = ctx => ({});
 
-    // (145:8) {:else}
+    // (149:8) {:else}
     function create_else_block(ctx) {
     	let t_value = /*checkbox*/ ctx[9].value + "";
     	let t;
@@ -512,7 +503,7 @@ var ui = (function () {
     	};
     }
 
-    // (143:8) {#if checkboxes.length === 1}
+    // (147:8) {#if checkboxes.length === 1}
     function create_if_block(ctx) {
     	let current;
     	const label_slot_template = /*#slots*/ ctx[6].label;
@@ -551,7 +542,7 @@ var ui = (function () {
     	};
     }
 
-    // (131:0) {#each checkboxes as checkbox}
+    // (135:0) {#each checkboxes as checkbox}
     function create_each_block(ctx) {
     	let label;
     	let input;
@@ -618,15 +609,15 @@ var ui = (function () {
     			attr(input, "type", "checkbox");
     			input.__value = input_value_value = /*checkbox*/ ctx[9].value;
     			input.value = input.__value;
-    			attr(input, "class", "svelte-15sa3m");
+    			attr(input, "class", "svelte-19u47n0");
     			/*$$binding_groups*/ ctx[8][0].push(input);
-    			attr(div0, "class", "checkbox-icon svelte-15sa3m");
-    			attr(div1, "class", "checkbox-toggle svelte-15sa3m");
-    			attr(div2, "class", "icon-helper svelte-15sa3m");
+    			attr(div0, "class", "checkbox-icon svelte-19u47n0");
+    			attr(div1, "class", "checkbox-toggle svelte-19u47n0");
+    			attr(div2, "class", "icon-helper svelte-19u47n0");
     			toggle_class(div2, "show", /*show*/ ctx[4]);
-    			attr(div3, "class", "label svelte-15sa3m");
-    			attr(div4, "class", "helper svelte-15sa3m");
-    			attr(label, "class", "svelte-15sa3m");
+    			attr(div3, "class", "label svelte-19u47n0");
+    			attr(div4, "class", "helper svelte-19u47n0");
+    			attr(label, "class", "svelte-19u47n0");
     		},
     		m(target, anchor) {
     			insert(target, label, anchor);
@@ -893,7 +884,7 @@ var ui = (function () {
     			attr(button, "onclick", "this.blur();");
     			attr(button, "variant", /*variant*/ ctx[0]);
     			button.disabled = /*disabled*/ ctx[1];
-    			attr(button, "class", button_class_value = "" + (/*variant*/ ctx[0] + " " + /*className*/ ctx[3] + " svelte-11r32x"));
+    			attr(button, "class", button_class_value = "" + (/*variant*/ ctx[0] + " " + /*className*/ ctx[3] + " svelte-hodw9t"));
     			toggle_class(button, "destructive", /*destructive*/ ctx[2]);
     		},
     		m(target, anchor) {
@@ -929,7 +920,7 @@ var ui = (function () {
     				button.disabled = /*disabled*/ ctx[1];
     			}
 
-    			if (!current || dirty & /*variant, className*/ 9 && button_class_value !== (button_class_value = "" + (/*variant*/ ctx[0] + " " + /*className*/ ctx[3] + " svelte-11r32x"))) {
+    			if (!current || dirty & /*variant, className*/ 9 && button_class_value !== (button_class_value = "" + (/*variant*/ ctx[0] + " " + /*className*/ ctx[3] + " svelte-hodw9t"))) {
     				attr(button, "class", button_class_value);
     			}
 
@@ -1047,16 +1038,18 @@ var ui = (function () {
     			t2 = space();
     			div3 = element("div");
     			if (unit_measure_slot) unit_measure_slot.c();
-    			attr(div0, "class", "icon-container svelte-1f5p3kb");
-    			attr(div1, "class", "label svelte-1f5p3kb");
-    			attr(div2, "class", "left-side svelte-1f5p3kb");
+    			attr(div0, "class", "icon-container svelte-u2a119");
+    			attr(div1, "class", "label svelte-u2a119");
+    			attr(div2, "class", "left-side svelte-u2a119");
+    			attr(input, "id", "unit-measure");
     			attr(input, "type", "number");
     			attr(input, "placeholder", /*placeholder*/ ctx[2]);
     			attr(input, "step", /*step*/ ctx[3]);
-    			attr(input, "class", "svelte-1f5p3kb");
-    			attr(div3, "class", "unit-measure svelte-1f5p3kb");
-    			attr(div4, "class", "right-side svelte-1f5p3kb");
-    			attr(label, "class", "svelte-1f5p3kb");
+    			attr(input, "class", "svelte-u2a119");
+    			attr(div3, "class", "unit-measure svelte-u2a119");
+    			attr(div4, "class", "right-side svelte-u2a119");
+    			attr(label, "for", "unit-measure");
+    			attr(label, "class", "svelte-u2a119");
     		},
     		m(target, anchor) {
     			insert(target, label, anchor);
@@ -1183,6 +1176,10 @@ var ui = (function () {
     	}
     }
 
+    var IconFrame = "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M7 22V17H2V15H7V9H2V7H7L7 2H9L9 7H15V2H17V7H22V9H17L17 15H22V17H17V22H15V17H9V22H7ZM15 15L15 9H9V15H15Z\" fill=\"#CFD9E5\" fill-opacity=\"0.95\"/>\n</svg>";
+
+    var IconText = "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M3 3H4H12H20H21V4V9H19V5H13V19H15V21H12H9V19H11V5H5V9H3V4V3Z\" fill=\"#CFD9E5\"/>\n</svg>";
+
     /* src/ui/App.svelte generated by Svelte v3.37.0 */
 
     const { window: window_1 } = globals;
@@ -1205,7 +1202,7 @@ var ui = (function () {
     	};
     }
 
-    // (110:6) 
+    // (121:6) 
     function create_unit_measure_slot_2(ctx) {
     	let span;
 
@@ -1224,7 +1221,7 @@ var ui = (function () {
     	};
     }
 
-    // (117:6) 
+    // (128:6) 
     function create_label_slot_2(ctx) {
     	let span;
 
@@ -1243,7 +1240,7 @@ var ui = (function () {
     	};
     }
 
-    // (121:6) 
+    // (132:6) 
     function create_label_slot_1(ctx) {
     	let span;
 
@@ -1262,7 +1259,7 @@ var ui = (function () {
     	};
     }
 
-    // (125:6) 
+    // (136:6) 
     function create_label_slot(ctx) {
     	let span;
 
@@ -1281,7 +1278,7 @@ var ui = (function () {
     	};
     }
 
-    // (142:6) 
+    // (152:6) 
     function create_textfield_label_slot_1(ctx) {
     	let span;
 
@@ -1300,7 +1297,7 @@ var ui = (function () {
     	};
     }
 
-    // (143:6) 
+    // (153:6) 
     function create_unit_measure_slot_1(ctx) {
     	let span;
 
@@ -1319,7 +1316,7 @@ var ui = (function () {
     	};
     }
 
-    // (147:6) 
+    // (157:6) 
     function create_textfield_label_slot(ctx) {
     	let span;
 
@@ -1338,7 +1335,7 @@ var ui = (function () {
     	};
     }
 
-    // (148:6) 
+    // (158:6) 
     function create_unit_measure_slot(ctx) {
     	let span;
 
@@ -1357,7 +1354,7 @@ var ui = (function () {
     	};
     }
 
-    // (154:2) <Button on:click={resetToDefault} variant="secondary" class="col">
+    // (163:2) <Button on:click="{resetToDefault}" variant="secondary" class="col">
     function create_default_slot_1(ctx) {
     	let t;
 
@@ -1374,7 +1371,7 @@ var ui = (function () {
     	};
     }
 
-    // (155:2) <Button on:click={saveSettings} class="col">
+    // (164:2) <Button on:click="{saveSettings}" class="col">
     function create_default_slot(ctx) {
     	let t;
 
@@ -1613,15 +1610,15 @@ var ui = (function () {
     			t16 = space();
     			create_component(button1.$$.fragment);
     			attr(h20, "class", "caption");
-    			attr(div0, "class", "svelte-4b1p9u");
+    			attr(div0, "class", "svelte-56inlw");
     			attr(h21, "class", "caption");
-    			attr(span, "class", "small svelte-4b1p9u");
-    			attr(div1, "class", "helper svelte-4b1p9u");
-    			attr(div2, "class", "svelte-4b1p9u");
+    			attr(span, "class", "small svelte-56inlw");
+    			attr(div1, "class", "helper svelte-56inlw");
+    			attr(div2, "class", "svelte-56inlw");
     			attr(h22, "class", "caption");
-    			attr(div3, "class", "svelte-4b1p9u");
-    			attr(main, "class", "svelte-4b1p9u");
-    			attr(footer, "class", "svelte-4b1p9u");
+    			attr(div3, "class", "svelte-56inlw");
+    			attr(main, "class", "svelte-56inlw");
+    			attr(footer, "class", "svelte-56inlw");
     		},
     		m(target, anchor) {
     			insert(target, main, anchor);
@@ -1665,7 +1662,7 @@ var ui = (function () {
     		p(ctx, [dirty]) {
     			const numberfield0_changes = {};
 
-    			if (dirty & /*$$scope*/ 8192) {
+    			if (dirty & /*$$scope*/ 4096) {
     				numberfield0_changes.$$scope = { dirty, ctx };
     			}
 
@@ -1678,7 +1675,7 @@ var ui = (function () {
     			numberfield0.$set(numberfield0_changes);
     			const checkbox0_changes = {};
 
-    			if (dirty & /*$$scope*/ 8192) {
+    			if (dirty & /*$$scope*/ 4096) {
     				checkbox0_changes.$$scope = { dirty, ctx };
     			}
 
@@ -1691,7 +1688,7 @@ var ui = (function () {
     			checkbox0.$set(checkbox0_changes);
     			const checkbox1_changes = {};
 
-    			if (dirty & /*$$scope*/ 8192) {
+    			if (dirty & /*$$scope*/ 4096) {
     				checkbox1_changes.$$scope = { dirty, ctx };
     			}
 
@@ -1704,7 +1701,7 @@ var ui = (function () {
     			checkbox1.$set(checkbox1_changes);
     			const checkbox2_changes = {};
 
-    			if (dirty & /*$$scope*/ 8192) {
+    			if (dirty & /*$$scope*/ 4096) {
     				checkbox2_changes.$$scope = { dirty, ctx };
     			}
 
@@ -1717,7 +1714,7 @@ var ui = (function () {
     			checkbox2.$set(checkbox2_changes);
     			const numberfield1_changes = {};
 
-    			if (dirty & /*$$scope*/ 8192) {
+    			if (dirty & /*$$scope*/ 4096) {
     				numberfield1_changes.$$scope = { dirty, ctx };
     			}
 
@@ -1730,7 +1727,7 @@ var ui = (function () {
     			numberfield1.$set(numberfield1_changes);
     			const numberfield2_changes = {};
 
-    			if (dirty & /*$$scope*/ 8192) {
+    			if (dirty & /*$$scope*/ 4096) {
     				numberfield2_changes.$$scope = { dirty, ctx };
     			}
 
@@ -1743,14 +1740,14 @@ var ui = (function () {
     			numberfield2.$set(numberfield2_changes);
     			const button0_changes = {};
 
-    			if (dirty & /*$$scope*/ 8192) {
+    			if (dirty & /*$$scope*/ 4096) {
     				button0_changes.$$scope = { dirty, ctx };
     			}
 
     			button0.$set(button0_changes);
     			const button1_changes = {};
 
-    			if (dirty & /*$$scope*/ 8192) {
+    			if (dirty & /*$$scope*/ 4096) {
     				button1_changes.$$scope = { dirty, ctx };
     			}
 
@@ -1801,45 +1798,9 @@ var ui = (function () {
     }
 
     function instance($$self, $$props, $$invalidate) {
-    	var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, generator) {
-    		function adopt(value) {
-    			return value instanceof P
-    			? value
-    			: new P(function (resolve) {
-    						resolve(value);
-    					});
-    		}
+    	let uiSettings = { ...defaultSettings };
 
-    		return new (P || (P = Promise))(function (resolve, reject) {
-    				function fulfilled(value) {
-    					try {
-    						step(generator.next(value));
-    					} catch(e) {
-    						reject(e);
-    					}
-    				}
-
-    				function rejected(value) {
-    					try {
-    						step(generator["throw"](value));
-    					} catch(e) {
-    						reject(e);
-    					}
-    				}
-
-    				function step(result) {
-    					result.done
-    					? resolve(result.value)
-    					: adopt(result.value).then(fulfilled, rejected);
-    				}
-
-    				step((generator = generator.apply(thisArg, _arguments || [])).next());
-    			});
-    	};
-
-    	let uiSettings = Object.assign({}, defaultSettings);
-
-    	onMount(() => {
+    	svelte.onMount(() => {
     		window.focus();
     	});
 
@@ -1851,13 +1812,13 @@ var ui = (function () {
     		return currentSettings;
     	};
 
-    	onmessage = e => __awaiter(void 0, void 0, void 0, function* () {
+    	onmessage = async e => {
     		const codeSettings = e.data.pluginMessage;
 
     		// console.log('in ui msg:');
     		// console.log(e.data.pluginMessage);
     		$$invalidate(0, uiSettings = updateSettings(uiSettings, codeSettings));
-    	});
+    	};
 
     	const saveSettings = () => {
     		const { fillerPrefix, fillerSuffix, strokeerPrefix, strokeerSuffix } = uiSettings;
@@ -1952,7 +1913,7 @@ var ui = (function () {
 
     return app;
 
-}());
+}(svelte));
+
 </script>
-</body>
-</html>
+</body></html>

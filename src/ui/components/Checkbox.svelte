@@ -1,7 +1,10 @@
 <script>
+  // components
+  import Icon from '@components/Icon.svelte';
+
+  // assets
   import Checkmark from '@assets/icons/checkmark.svg';
   import Warning from '@assets/icons/warning.svg';
-  import Icon from '@components/Icon.svelte';
 
   export let iconName = Checkmark;
   export let checked = false;
@@ -134,11 +137,11 @@
 
 {#each checkboxes as checkbox}
   <label>
-    <input type="checkbox" bind:group value={checkbox.value} bind:checked />
+    <input type="checkbox" bind:group value="{checkbox.value}" bind:checked />
 
     <div class="checkbox-toggle">
       <div class="checkbox-icon">
-        <Icon {iconName} class="icon-color" />
+        <Icon iconName="{iconName}" class="icon-color" />
       </div>
     </div>
 
@@ -150,7 +153,7 @@
       </span>
 
       <div class="icon-helper" class:show>
-        <Icon iconName={Warning} />
+        <Icon iconName="{Warning}" />
       </div>
     </div>
 

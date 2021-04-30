@@ -1,13 +1,17 @@
 <script>
   import { onMount } from 'svelte';
-  import { defaultSettings } from '@defaultSettings';
-  import IconFrame from '@assets/icons/frame-layers.svg';
-  import IconText from '@assets/icons/text-layers.svg';
-  import Warning from '@assets/icons/warning.svg';
+  import { defaultSettings } from '@modules/default-settings.js';
+
+  // Components
   import Icon from '@components/Icon.svelte';
   import Checkbox from '@components/Checkbox.svelte';
   import Button from '@components/Button.svelte';
   import NumberField from '@components/NumberField.svelte';
+
+  // Assets
+  import IconFrame from '@assets/icons/frame-layers.svg';
+  import IconText from '@assets/icons/text-layers.svg';
+  import Warning from '@assets/icons/warning.svg';
 
   let uiSettings = { ...defaultSettings };
   let showAlert = false;
@@ -112,7 +116,7 @@
 <main>
   <div>
     <h2 class="caption">General</h2>
-    <NumberField bind:value={uiSettings.notificationTimeout} step="1000">
+    <NumberField bind:value="{uiSettings.notificationTimeout}" step="1000">
       <span slot="textfield-label">Notification duration</span>
       <span slot="unit-measure">ms</span>
     </NumberField>
@@ -120,46 +124,44 @@
 
   <div>
     <h2 class="caption">Generate styles</h2>
-    <Checkbox bind:checked={uiSettings.addPrevToDescription}>
+    <Checkbox bind:checked="{uiSettings.addPrevToDescription}">
       <span slot="label">Show last style in description</span>
     </Checkbox>
 
-    <Checkbox bind:checked={uiSettings.updateUsingLocalStyles} show>
+    <Checkbox bind:checked="{uiSettings.updateUsingLocalStyles}" show>
       <span slot="label">Update using local styles</span>
     </Checkbox>
 
-    <Checkbox bind:checked={uiSettings.partialMatch} show>
+    <Checkbox bind:checked="{uiSettings.partialMatch}" show>
       <span slot="label">Extend name match</span>
     </Checkbox>
 
     <div class="helper">
-      <Icon iconName={Warning} class="icon-container" />
+      <Icon iconName="{Warning}" class="icon-container" />
       <span class="small">
         Experimental features!
         <br />
         Sometimes, produces unexpected results...
       </span>
-
     </div>
   </div>
 
   <div>
     <h2 class="caption">Extract Styles</h2>
-    <NumberField bind:value={uiSettings.textsPerSection} iconName={IconText}>
+    <NumberField bind:value="{uiSettings.textsPerSection}" iconName="{IconText}">
       <span slot="textfield-label">Texts per column</span>
       <span slot="unit-measure">layers</span>
     </NumberField>
 
-    <NumberField bind:value={uiSettings.framesPerSection} iconName={IconFrame}>
+    <NumberField bind:value="{uiSettings.framesPerSection}" iconName="{IconFrame}">
       <span slot="textfield-label">Frames per row</span>
       <span slot="unit-measure">layers</span>
     </NumberField>
   </div>
-
 </main>
 <footer>
-  <Button on:click={resetToDefault} variant="secondary" class="col">Reset to default</Button>
-  <Button on:click={saveSettings} class="col">Save settings</Button>
+  <Button on:click="{resetToDefault}" variant="secondary" class="col">Reset to default</Button>
+  <Button on:click="{saveSettings}" class="col">Save settings</Button>
 </footer>
 
-<svelte:window on:keydown={cancelModalUsingEscape} />
+<svelte:window on:keydown="{cancelModalUsingEscape}" />

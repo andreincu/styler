@@ -1,5 +1,4 @@
-import 'normalize.css';
-import './styles/all.scss';
+import '@styles/all.scss';
 
 import App from './App.svelte';
 

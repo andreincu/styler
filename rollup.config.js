@@ -1,54 +1,78 @@
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import svelte from 'rollup-plugin-svelte';
 import sveltePreprocess from 'svelte-preprocess';
-import typescript from '@rollup/plugin-typescript';
-import scss from 'rollup-plugin-scss';
 import svg from 'rollup-plugin-svg';
-import resolve from '@rollup/plugin-node-resolve';
-import htmlBundle from 'rollup-plugin-html-bundle';
+import scss from 'rollup-plugin-scss';
+import typescript from '@rollup/plugin-typescript';
+import html from 'rollup-plugin-bundle-html-thomzz';
+import alias from '@rollup/plugin-alias';
+
+// optional - delete the bundle directory before bundling
+import del from 'rollup-plugin-delete';
+import path from 'path';
+
+const projectRootDir = path.resolve(__dirname);
 
 export default [
   {
-    input: 'src/code/main.ts',
-    output: {
-      file: 'public/code.js',
-      name: 'code',
-      format: 'cjs',
-    },
-    plugins: [resolve(), typescript(), commonjs()],
-  },
-  {
     input: 'src/ui/main.js',
     output: {
-      file: 'src/ui/build/bundle.js',
+      file: 'public/bundle/ui.js',
       name: 'ui',
       format: 'iife',
     },
+    external: ['prettier', 'svelte'],
     plugins: [
+      alias({
+        entries: [
+          { find: '@modules', replacement: path.resolve(projectRootDir, 'src/code/modules') },
+          { find: '@components', replacement: path.resolve(projectRootDir, 'src/ui/components') },
+          { find: '@assets', replacement: path.resolve(projectRootDir, 'src/assets') },
+          { find: '@styles', replacement: path.resolve(projectRootDir, 'src/ui/styles') },
+        ],
+      }),
+
+      nodeResolve(),
+      commonjs(),
+
+      svg(),
+      typescript(),
+
       svelte({
         include: 'src/**/*.svelte',
-        // Optionally, preprocess components with svelte.preprocess:
-        // https://svelte.dev/docs#svelte_preprocess
-        preprocess: sveltePreprocess({
-          defaults: {
-            script: 'typescript',
-            style: 'scss',
-          },
-        }),
+        preprocess: sveltePreprocess(),
+
+        // getting rid of css unused warnings
+        onwarn: (warning, handler) => {
+          if (warning.code === 'css-unused-selector') return;
+
+          handler(warning);
+        },
       }),
 
-      typescript(),
-      scss(),
-      svg(),
-      htmlBundle({
+      scss({
+        output: 'public/bundle/styles.css',
+      }),
+
+      html({
         template: 'src/ui/template.html',
-        target: 'public/ui.html',
+        dest: 'public/bundle',
+        filename: 'ui.html',
         inline: true,
+        minifyCss: true,
       }),
 
-      resolve({
-        browser: true,
-      }),
+      del({ targets: 'public/bundle/*' }),
     ],
+  },
+  {
+    input: 'src/code/main.ts',
+    output: {
+      file: 'public/bundle/code.js',
+      name: 'code',
+      format: 'iife',
+    },
+    plugins: [nodeResolve(), typescript()],
   },
 ];

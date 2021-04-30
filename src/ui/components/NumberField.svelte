@@ -1,5 +1,8 @@
 <script>
+  // components
   import Icon from '@components/Icon.svelte';
+
+  // assets
   import NotificationTimeout from '@assets/icons/time.svg';
 
   export let iconName = NotificationTimeout;
@@ -86,18 +89,23 @@
 <label for="unit-measure">
   <div class="left-side">
     <div class="icon-container">
-      <Icon {iconName} />
+      <Icon iconName="{iconName}" />
     </div>
     <div class="label">
       <slot name="textfield-label" />
     </div>
   </div>
   <div class="right-side">
-    <input id="unit-measure" type="number" bind:value {placeholder} {step} on:click={(event) => event.currentTarget.select()} />
+    <input
+      id="unit-measure"
+      type="number"
+      bind:value
+      placeholder="{placeholder}"
+      step="{step}"
+      on:click="{(event) => event.currentTarget.select()}" />
 
     <div class="unit-measure">
       <slot name="unit-measure" />
     </div>
-
   </div>
 </label>
