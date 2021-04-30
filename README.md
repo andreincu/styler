@@ -1,4 +1,4 @@
-![cover](@assets/cover.png)
+![cover](./src/assets/cover.png)
 
 # Styler
 
@@ -7,7 +7,7 @@ Basically, you can control your styles by changing layer properties and updating
 
 ## Features
 
-### Extract Styles ![new](@assets/tag-new.svg)
+### Extract Styles ![new](./src/assets/tag-new.svg)
 
 Creates layers based on local styles.  
 This can be useful to transfer style from a project to another, or for libraries that already have styles created, but needs to make bulk changes.
@@ -41,7 +41,7 @@ Works on selected layers.
 - By Effect Type
 - By Grid Type
 
-### Customize plugin ![new](assets/tag-new.svg)
+### Customize plugin ![new](./src/assets/tag-new.svg)
 
 - **Notification timeout:** changes the duration of all notification alerts that appears while interacting with Styler.
 - **Show last style in description:** appends the name of the latest style that was applied to the layer to the current style description.
