@@ -6,8 +6,8 @@
   "bracketSpacing": true,
   "arrowParens": "always",
   "printWidth": 100,
-  "svelteSortOrder": "scripts-styles-markup",
-  "svelteStrictMode": true,
+  "svelteSortOrder": "options-scripts-styles-markup",
+  "svelteStrictMode": false,
   "svelteBracketNewLine": false,
   "svelteAllowShorthand": true,
   "svelteIndentScriptAndStyle": true

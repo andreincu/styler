@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { defaultSettings } from '@modules/default-settings.js';
+  import { defaultSettings } from '@modules/default-settings.ts';
 
   // Components
   import Icon from '@components/Icon.svelte';
@@ -116,7 +116,12 @@
 <main>
   <div>
     <h2 class="caption">General</h2>
-    <NumberField bind:value="{uiSettings.notificationTimeout}" step="1000">
+    <NumberField
+      bind:value={uiSettings.notificationTimeout}
+      id="number-1"
+      step="1000"
+      min="0"
+      max="50000">
       <span slot="textfield-label">Notification duration</span>
       <span slot="unit-measure">ms</span>
     </NumberField>
@@ -124,20 +129,20 @@
 
   <div>
     <h2 class="caption">Generate styles</h2>
-    <Checkbox bind:checked="{uiSettings.addPrevToDescription}">
+    <Checkbox bind:checked={uiSettings.addPrevToDescription}>
       <span slot="label">Show last style in description</span>
     </Checkbox>
 
-    <Checkbox bind:checked="{uiSettings.updateUsingLocalStyles}" show>
+    <Checkbox bind:checked={uiSettings.updateUsingLocalStyles} show>
       <span slot="label">Update using local styles</span>
     </Checkbox>
 
-    <Checkbox bind:checked="{uiSettings.partialMatch}" show>
+    <Checkbox bind:checked={uiSettings.partialMatch} show>
       <span slot="label">Extend name match</span>
     </Checkbox>
 
     <div class="helper">
-      <Icon iconName="{Warning}" class="icon-container" />
+      <Icon iconName={Warning} class="icon-container" />
       <span class="small">
         Experimental features!
         <br />
@@ -148,20 +153,30 @@
 
   <div>
     <h2 class="caption">Extract Styles</h2>
-    <NumberField bind:value="{uiSettings.textsPerSection}" iconName="{IconText}">
+    <NumberField
+      bind:value={uiSettings.textsPerSection}
+      id="number-2"
+      iconName={IconText}
+      min="0"
+      max="50">
       <span slot="textfield-label">Texts per column</span>
       <span slot="unit-measure">layers</span>
     </NumberField>
 
-    <NumberField bind:value="{uiSettings.framesPerSection}" iconName="{IconFrame}">
+    <NumberField
+      bind:value={uiSettings.framesPerSection}
+      id="number-3"
+      iconName={IconFrame}
+      min="0"
+      max="50">
       <span slot="textfield-label">Frames per row</span>
       <span slot="unit-measure">layers</span>
     </NumberField>
   </div>
 </main>
 <footer>
-  <Button on:click="{resetToDefault}" variant="secondary" class="col">Reset to default</Button>
-  <Button on:click="{saveSettings}" class="col">Save settings</Button>
+  <Button on:click={resetToDefault} variant="secondary" class="col">Reset to default</Button>
+  <Button on:click={saveSettings} class="col">Save settings</Button>
 </footer>
 
-<svelte:window on:keydown="{cancelModalUsingEscape}" />
+<svelte:window on:keydown={cancelModalUsingEscape} />

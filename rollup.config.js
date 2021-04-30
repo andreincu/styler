@@ -16,20 +16,28 @@ const projectRootDir = path.resolve(__dirname);
 
 export default [
   {
+    input: 'src/code/main.ts',
+    output: {
+      file: 'public/bundle/code.js',
+      name: 'code',
+      format: 'iife',
+    },
+    plugins: [nodeResolve(), typescript()],
+  },
+  {
     input: 'src/ui/main.js',
     output: {
       file: 'public/bundle/ui.js',
       name: 'ui',
       format: 'iife',
     },
-    external: ['prettier', 'svelte'],
     plugins: [
       alias({
         entries: [
-          { find: '@modules', replacement: path.resolve(projectRootDir, 'src/code/modules') },
-          { find: '@components', replacement: path.resolve(projectRootDir, 'src/ui/components') },
-          { find: '@assets', replacement: path.resolve(projectRootDir, 'src/assets') },
-          { find: '@styles', replacement: path.resolve(projectRootDir, 'src/ui/styles') },
+          { find: '@modules', replacement: path.resolve(projectRootDir, './src/code/modules') },
+          { find: '@components', replacement: path.resolve(projectRootDir, './src/ui/components') },
+          { find: '@assets', replacement: path.resolve(projectRootDir, './src/assets') },
+          { find: '@styles', replacement: path.resolve(projectRootDir, './src/ui/styles') },
         ],
       }),
 
@@ -62,17 +70,6 @@ export default [
         inline: true,
         minifyCss: true,
       }),
-
-      del({ targets: 'public/bundle/*' }),
     ],
-  },
-  {
-    input: 'src/code/main.ts',
-    output: {
-      file: 'public/bundle/code.js',
-      name: 'code',
-      format: 'iife',
-    },
-    plugins: [nodeResolve(), typescript()],
   },
 ];

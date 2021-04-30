@@ -9,6 +9,7 @@
   export let value = '';
   export let placeholder = '';
   export let step = 1;
+  export let id, min, max;
 </script>
 
 <style>
@@ -86,10 +87,10 @@
   }
 </style>
 
-<label for="unit-measure">
+<label for={id}>
   <div class="left-side">
     <div class="icon-container">
-      <Icon iconName="{iconName}" />
+      <Icon {iconName} />
     </div>
     <div class="label">
       <slot name="textfield-label" />
@@ -97,12 +98,14 @@
   </div>
   <div class="right-side">
     <input
-      id="unit-measure"
+      {id}
       type="number"
       bind:value
-      placeholder="{placeholder}"
-      step="{step}"
-      on:click="{(event) => event.currentTarget.select()}" />
+      {placeholder}
+      {min}
+      {max}
+      {step}
+      on:click={(event) => event.currentTarget.select()} />
 
     <div class="unit-measure">
       <slot name="unit-measure" />

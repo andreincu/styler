@@ -48,8 +48,8 @@
   on:click
   on:submit
   onclick="this.blur();"
-  variant="{variant}"
-  disabled="{disabled}"
+  {variant}
+  {disabled}
   class:destructive
   class="{variant} {className}">
   <slot />
