@@ -69,6 +69,16 @@
         },
         '*',
       );
+    } else if (event.key === 'Enter') {
+      parent.postMessage(
+        {
+          pluginMessage: {
+            type: 'save-settings',
+            uiSettings,
+          },
+        },
+        '*',
+      );
     }
   };
 </script>

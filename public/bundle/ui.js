@@ -1239,7 +1239,7 @@ var ui = (function () {
     	};
     }
 
-    // (126:6) 
+    // (136:6) 
     function create_unit_measure_slot_2(ctx) {
     	let span;
 
@@ -1258,7 +1258,7 @@ var ui = (function () {
     	};
     }
 
-    // (133:6) 
+    // (143:6) 
     function create_label_slot_2(ctx) {
     	let span;
 
@@ -1277,7 +1277,7 @@ var ui = (function () {
     	};
     }
 
-    // (137:6) 
+    // (147:6) 
     function create_label_slot_1(ctx) {
     	let span;
 
@@ -1296,7 +1296,7 @@ var ui = (function () {
     	};
     }
 
-    // (141:6) 
+    // (151:6) 
     function create_label_slot(ctx) {
     	let span;
 
@@ -1315,7 +1315,7 @@ var ui = (function () {
     	};
     }
 
-    // (162:6) 
+    // (172:6) 
     function create_textfield_label_slot_1(ctx) {
     	let span;
 
@@ -1334,7 +1334,7 @@ var ui = (function () {
     	};
     }
 
-    // (163:6) 
+    // (173:6) 
     function create_unit_measure_slot_1(ctx) {
     	let span;
 
@@ -1353,7 +1353,7 @@ var ui = (function () {
     	};
     }
 
-    // (172:6) 
+    // (182:6) 
     function create_textfield_label_slot(ctx) {
     	let span;
 
@@ -1372,7 +1372,7 @@ var ui = (function () {
     	};
     }
 
-    // (173:6) 
+    // (183:6) 
     function create_unit_measure_slot(ctx) {
     	let span;
 
@@ -1391,7 +1391,7 @@ var ui = (function () {
     	};
     }
 
-    // (178:2) <Button on:click={resetToDefault} variant="secondary" class="col">
+    // (188:2) <Button on:click={resetToDefault} variant="secondary" class="col">
     function create_default_slot_1(ctx) {
     	let t;
 
@@ -1408,7 +1408,7 @@ var ui = (function () {
     	};
     }
 
-    // (179:2) <Button on:click={saveSettings} class="col">
+    // (189:2) <Button on:click={saveSettings} class="col">
     function create_default_slot(ctx) {
     	let t;
 
@@ -1887,6 +1887,13 @@ var ui = (function () {
     	const cancelModalUsingEscape = event => {
     		if (event.key === "Escape") {
     			parent.postMessage({ pluginMessage: { type: "cancel-modal" } }, "*");
+    		} else if (event.key === "Enter") {
+    			parent.postMessage(
+    				{
+    					pluginMessage: { type: "save-settings", uiSettings }
+    				},
+    				"*"
+    			);
     		}
     	};
 
