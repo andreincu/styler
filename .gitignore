@@ -10,7 +10,7 @@ lerna-debug.log*
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Build temps
-public/temp/
+public/temp/*
 
 # Runtime data
 pids
