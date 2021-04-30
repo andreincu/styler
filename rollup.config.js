@@ -1,16 +1,12 @@
-import { nodeResolve } from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs';
-import svelte from 'rollup-plugin-svelte';
-import sveltePreprocess from 'svelte-preprocess';
-import svg from 'rollup-plugin-svg';
-import scss from 'rollup-plugin-scss';
-import typescript from '@rollup/plugin-typescript';
-import html from 'rollup-plugin-bundle-html-thomzz';
 import alias from '@rollup/plugin-alias';
-
-// optional - delete the bundle directory before bundling
-import del from 'rollup-plugin-delete';
+import resolve from '@rollup/plugin-node-resolve';
+import typescript from '@rollup/plugin-typescript';
 import path from 'path';
+import html from 'rollup-plugin-bundle-html-thomzz';
+import scss from 'rollup-plugin-scss';
+import svelte from 'rollup-plugin-svelte';
+import svg from 'rollup-plugin-svg';
+import sveltePreprocess from 'svelte-preprocess';
 
 const projectRootDir = path.resolve(__dirname);
 
@@ -22,7 +18,7 @@ export default [
       name: 'code',
       format: 'iife',
     },
-    plugins: [nodeResolve(), typescript()],
+    plugins: [resolve(), typescript()],
   },
   {
     input: 'src/ui/main.js',
@@ -41,8 +37,7 @@ export default [
         ],
       }),
 
-      nodeResolve(),
-      commonjs(),
+      resolve(),
 
       svg(),
       typescript(),

@@ -5,15 +5,11 @@
   "devDependencies": {
     "@figma/plugin-typings": "^1.17.1",
     "@rollup/plugin-alias": "^3.1.2",
-    "@rollup/plugin-commonjs": "^18.0.0",
-    "@rollup/plugin-html": "^0.2.3",
     "@rollup/plugin-node-resolve": "^11.2.1",
     "@rollup/plugin-typescript": "^6.0.0",
     "prettier": "^1.19.1",
-    "prettier-plugin-svelte": "^2.2.0",
     "rollup": "^2.32.0",
     "rollup-plugin-bundle-html-thomzz": "^1.2.0",
-    "rollup-plugin-delete": "^2.0.0",
     "rollup-plugin-scss": "^3.0.0-rc1",
     "rollup-plugin-svelte": "^7.1.0",
     "rollup-plugin-svg": "^2.0.0",
@@ -24,7 +20,9 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "watch": "rollup -c -w"
+    "watch": "rollup -c -w",
+    "clean": "rm -rf node_modules",
+    "reinstall": "npm run clean && npm i"
   },
   "repository": {
     "type": "git",

@@ -188,6 +188,17 @@ footer.svelte-56inlw .col {
   margin: 0.2rem 0.8rem;
 }
 
+.svg-icon.svelte-4kflf7 {
+  color: inherit;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.svg-icon * {
+  fill: currentColor;
+}
+
 label.svelte-19u47n0.svelte-19u47n0 {
   display: flex;
   margin: var(--size-xx-small) 0;
@@ -306,15 +317,35 @@ input.svelte-19u47n0:focus ~ .checkbox-toggle.svelte-19u47n0::after {
   display: none;
 }
 
-.svg-icon.svelte-4kflf7 {
-  color: inherit;
-  display: block;
-  width: 100%;
-  height: 100%;
+button.svelte-hodw9t {
+  display: inline-flex;
+  justify-content: center;
+  align-content: center;
+  position: relative;
+  font-size: var(--text-size-medium);
+  line-height: var(--line-height-large);
+  margin: 0;
+  min-width: 8rem;
+  padding: 0.3rem 1.2rem;
+  border-radius: var(--border-radius-small);
+  transition: background var(--transition-fast) ease-in;
 }
 
-.svg-icon * {
-  fill: currentColor;
+button.svelte-hodw9t:focus {
+  box-shadow: 0 0 0 0.2rem hsl(var(--color-invert-1));
+  outline: 0;
+}
+
+.primary.svelte-hodw9t {
+  background: hsl(var(--color-primary));
+  color: hsl(var(--color-neutral-0));
+  border: 1px solid hsl(var(--color-primary));
+}
+
+.secondary.svelte-hodw9t {
+  background: transparent;
+  color: hsl(var(--color-primary));
+  border: 1px solid hsl(var(--color-neutral-2));
 }
 
 label.svelte-u2a119.svelte-u2a119 {
@@ -399,35 +430,4 @@ input.svelte-u2a119.svelte-u2a119 {
 
 .unit-measure.svelte-u2a119.svelte-u2a119:empty {
   display: none;
-}
-
-button.svelte-hodw9t {
-  display: inline-flex;
-  justify-content: center;
-  align-content: center;
-  position: relative;
-  font-size: var(--text-size-medium);
-  line-height: var(--line-height-large);
-  margin: 0;
-  min-width: 8rem;
-  padding: 0.3rem 1.2rem;
-  border-radius: var(--border-radius-small);
-  transition: background var(--transition-fast) ease-in;
-}
-
-button.svelte-hodw9t:focus {
-  box-shadow: 0 0 0 0.2rem hsl(var(--color-invert-1));
-  outline: 0;
-}
-
-.primary.svelte-hodw9t {
-  background: hsl(var(--color-primary));
-  color: hsl(var(--color-neutral-0));
-  border: 1px solid hsl(var(--color-primary));
-}
-
-.secondary.svelte-hodw9t {
-  background: transparent;
-  color: hsl(var(--color-primary));
-  border: 1px solid hsl(var(--color-neutral-2));
 }
