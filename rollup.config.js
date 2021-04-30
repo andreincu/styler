@@ -23,7 +23,7 @@ export default [
   {
     input: 'src/ui/main.js',
     output: {
-      file: 'public/bundle/ui.js',
+      file: 'public/bundle/temp/ui.js',
       name: 'ui',
       format: 'iife',
     },
@@ -55,7 +55,7 @@ export default [
       }),
 
       scss({
-        output: 'public/bundle/styles.css',
+        output: 'public/bundle/temp/styles.css',
       }),
 
       html({
