@@ -1,5 +1,12 @@
 import { Config } from './config';
-import { CMD, colors, counter, messages, showNofication, showNotificationAtArrayEnd } from './globals';
+import {
+  CMD,
+  colors,
+  counter,
+  messages,
+  showNofication,
+  showNotificationAtArrayEnd,
+} from './globals';
 import { cleanSelection, createFrameLayer, createTextLayer, ungroup, createLayer } from './layers';
 import { checkStyleType, isArrayEmpty } from './utils';
 
@@ -23,7 +30,10 @@ export const updateStyleNames = (currentConfig: Config, newConfig: Config) => {
     }
 
     styles.map((style) => {
-      if (style.type !== styler.styleType || checkStyleType(style, currentConfig) !== styler.layerPropType) {
+      if (
+        style.type !== styler.styleType ||
+        checkStyleType(style, currentConfig) !== styler.layerPropType
+      ) {
         return;
       }
 
@@ -75,19 +85,31 @@ export const changeAllStyles = (config) => {
     const stylersLength = stylers.length;
 
     stylers.map((styler, stylerIndex) => {
-      const notificationOptions = { layerIndex, layersLength, stylerIndex, stylersLength, notificationTimeout };
+      const notificationOptions = {
+        layerIndex,
+        layersLength,
+        stylerIndex,
+        stylersLength,
+        notificationTimeout,
+      };
 
       const styleIdMatch = styler.getStyleById(layer);
       const styleNameMatch = styler.getStyleByName(layer.name, partialMatch);
 
       if (CMD === 'generate-all-styles') {
-        styler.generateStyle(layer, { styleNameMatch, styleIdMatch, updateUsingLocalStyles, addPrevToDescription });
+        styler.generateStyle(layer, {
+          styleNameMatch,
+          styleIdMatch,
+          updateUsingLocalStyles,
+          addPrevToDescription,
+        });
         showNotificationAtArrayEnd('generated', notificationOptions);
       }
 
       // apply
       else if (CMD === 'apply-all-styles') {
-        styler.applyStyle(layer, styleNameMatch);
+        const applyingStyle = styler.getLocalStyleByByExternalId(layer) || styleNameMatch;
+        styler.applyStyle(layer, applyingStyle);
         showNotificationAtArrayEnd('applied', notificationOptions);
       }
 
@@ -145,11 +167,15 @@ export const extractAllStyles = async (config) => {
     const parentByType = styler.styleType === 'TEXT' ? textContainer : miscContainer;
     const flowByType = styler.styleType === 'TEXT' ? vertFlow : horizFlow;
     const itemsPerSection = styler.styleType === 'TEXT' ? textsPerSection : framesPerSection;
-    const optionByType = styler.styleType === 'TEXT' ? { color: colors.black } : { size: 80, color: colors.white };
+    const optionByType =
+      styler.styleType === 'TEXT' ? { color: colors.black } : { size: 80, color: colors.white };
 
     await Promise.all(
       styles.map(async (style, styleIndex) => {
-        if (style.type !== styler.styleType || checkStyleType(style, config) !== styler.layerPropType) {
+        if (
+          style.type !== styler.styleType ||
+          checkStyleType(style, config) !== styler.layerPropType
+        ) {
           return;
         }
 
@@ -179,3 +205,6 @@ export const extractAllStyles = async (config) => {
   figma.viewport.scrollAndZoomIntoView(createdLayers);
   mainContainer.remove();
 };
+function getLocalStyleByByExternalId(layer: SceneNode) {
+  throw new Error('Function not implemented.');
+}

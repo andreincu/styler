@@ -71,7 +71,8 @@ export class Styler {
 
     const keyword = 'Previous style:';
     const pos = currentDescription.lastIndexOf(keyword);
-    const newDescription = currentDescription.slice(0, pos) + `${keyword}\n${styleIdMatch?.name || ''}`;
+    const newDescription =
+      currentDescription.slice(0, pos) + `${keyword}\n${styleIdMatch?.name || ''}`;
 
     return !styleIdMatch
       ? (styleNameMatch.description = currentDescription)
@@ -92,16 +93,25 @@ export class Styler {
 
   getStyleById = (layer) => figma.getStyleById(layer[this.layerStyleID]);
 
+  getLocalStyleByByExternalId = (layer: SceneNode) => {
+    const externalStyleName = this.getStyleById(layer)?.name || '';
+    return this.getLocalStyles().find((style) => style.name === externalStyleName);
+  };
+
   getStyleByName = (name, partialMatch = defaultSettings.partialMatch) => {
     const stylesByType = this.getLocalStyles();
-    const match = stylesByType.find((style) => style.name === addAffixTo(name, this.prefix, this.suffix));
+    const match = stylesByType.find(
+      (style) => style.name === addAffixTo(name, this.prefix, this.suffix),
+    );
 
     if (match) {
       return match;
     }
 
     if (partialMatch === true) {
-      return stylesByType.find((style) => name.split(/\W+/g).find((word) => style.name.includes(word)));
+      return stylesByType.find((style) =>
+        name.split(/\W+/g).find((word) => style.name.includes(word)),
+      );
     }
   };
 
@@ -122,7 +132,9 @@ export class Styler {
     this.detachStyle(layer);
     this.styleProps.map((prop, propIndex) => {
       if (!styleNameMatch || this.isPropEmpty(layer)) {
-        console.log(`Update: ${this.layerProps[propIndex]} not found || No style found for ${layer.name}`);
+        console.log(
+          `Update: ${this.layerProps[propIndex]} not found || No style found for ${layer.name}`,
+        );
         return;
       }
 
@@ -164,7 +176,11 @@ export class Styler {
     }
 
     // update only if external style is applied - kind of old behaviour
-    else if ((!styleIdMatch || styleIdMatch?.remote) && styleNameMatch && updateUsingLocalStyles === false) {
+    else if (
+      (!styleIdMatch || styleIdMatch?.remote) &&
+      styleNameMatch &&
+      updateUsingLocalStyles === false
+    ) {
       this.updateStyle(layer, styleNameMatch, addPrevToDescription, styleIdMatch);
       counter.updated++;
     }
@@ -176,7 +192,12 @@ export class Styler {
     }
 
     // using localStyles - new behaviour
-    else if (styleIdMatch && !styleIdMatch?.remote && !styleNameMatch && updateUsingLocalStyles === true) {
+    else if (
+      styleIdMatch &&
+      !styleIdMatch?.remote &&
+      !styleNameMatch &&
+      updateUsingLocalStyles === true
+    ) {
       this.renameStyle(layer, styleIdMatch);
       counter.renamed++;
     }
@@ -206,7 +227,9 @@ export class Styler {
   };
 
   replaceSuffix = (name: string, newSuffix = '') => {
-    return name.endsWith(this.suffix) ? name.slice(0, name.lastIndexOf(this.suffix)) + newSuffix : name;
+    return name.endsWith(this.suffix)
+      ? name.slice(0, name.lastIndexOf(this.suffix)) + newSuffix
+      : name;
   };
 
   replaceAffix = (name, newPrefix = '', newSuffix = newPrefix) => {

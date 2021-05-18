@@ -38,7 +38,11 @@ figma.clientStorage.getAsync(clientStorageKey).then((cachedSettings) => {
 
           updateStyleNames(currentConfig, newConfig);
 
-          showNofication(counter.customize, messages(counter).customize, newConfig.notificationTimeout);
+          showNofication(
+            counter.customize,
+            messages(counter).customize,
+            newConfig.notificationTimeout,
+          );
           return;
         });
       }
