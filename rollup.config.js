@@ -14,7 +14,7 @@ const production = !process.env.ROLLUP_WATCH;
 
 export default [
   {
-    input: 'src/code/main.ts',
+    input: 'src/code/code.ts',
     output: {
       file: 'public/bundle/code.js',
       name: 'code',
@@ -23,7 +23,7 @@ export default [
     plugins: [resolve(), typescript(), production && terser({ format: { comments: false } })],
   },
   {
-    input: 'src/ui/main.js',
+    input: 'src/ui/ui.js',
     output: {
       file: 'public/bundle/temp/ui.js',
       name: 'ui',
