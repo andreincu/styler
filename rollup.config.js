@@ -7,8 +7,10 @@ import scss from 'rollup-plugin-scss';
 import svelte from 'rollup-plugin-svelte';
 import svg from 'rollup-plugin-svg';
 import sveltePreprocess from 'svelte-preprocess';
+import { terser } from 'rollup-plugin-terser';
 
 const projectRootDir = path.resolve(__dirname);
+const production = !process.env.ROLLUP_WATCH;
 
 export default [
   {
@@ -18,7 +20,7 @@ export default [
       name: 'code',
       format: 'iife',
     },
-    plugins: [resolve(), typescript()],
+    plugins: [resolve(), typescript(), production && terser({ format: { comments: false } })],
   },
   {
     input: 'src/ui/main.js',
@@ -41,6 +43,7 @@ export default [
 
       svg(),
       typescript(),
+      production && terser({ format: { comments: false } }),
 
       svelte({
         include: 'src/**/*.svelte',
