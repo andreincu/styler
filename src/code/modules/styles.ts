@@ -252,5 +252,7 @@ export const applyStyles = (config) => {
       styler.applyStyle(layer, applyingStyle);
       showNotificationAtArrayEnd('applied', notificationOptions);
     });
+
+    layer.name = oldLayerName;
   });
 };
