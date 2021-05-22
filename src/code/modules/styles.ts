@@ -8,7 +8,7 @@ import {
   showNotificationAtArrayEnd,
 } from './globals';
 import { cleanSelection, createFrameLayer, createTextLayer, ungroup, createLayer } from './layers';
-import { checkStyleType, isArrayEmpty } from './utils';
+import { checkStyleType, getFlat, isArrayEmpty } from './utils';
 
 export const getAllLocalStyles = (): BaseStyle[] => {
   return [
@@ -106,13 +106,6 @@ export const changeAllStyles = (config) => {
         showNotificationAtArrayEnd('generated', notificationOptions);
       }
 
-      // apply
-      else if (CMD === 'apply-all-styles') {
-        const applyingStyle = styler.getLocalStyleByByExternalId(layer) || styleNameMatch;
-        styler.applyStyle(layer, applyingStyle);
-        showNotificationAtArrayEnd('applied', notificationOptions);
-      }
-
       // detach
       else if (CMD === 'detach-all-styles') {
         styler.detachStyle(layer);
@@ -123,7 +116,10 @@ export const changeAllStyles = (config) => {
       else if (CMD.includes('remove')) {
         styler.removeStyle(layer, styleIdMatch);
         showNotificationAtArrayEnd('removed', notificationOptions);
-      } else {
+      }
+
+      //
+      else {
         figma.closePlugin('🤷‍♂️ This should not happen. Nothing was changed...');
       }
     });
@@ -205,6 +201,56 @@ export const extractAllStyles = async (config) => {
   figma.viewport.scrollAndZoomIntoView(createdLayers);
   mainContainer.remove();
 };
-function getLocalStyleByByExternalId(layer: SceneNode) {
-  throw new Error('Function not implemented.');
-}
+
+export const applyStyles = (config) => {
+  const {
+    addPrevToDescription,
+    allStylers,
+    notificationTimeout,
+    texterOnly,
+    partialMatch,
+    updateUsingLocalStyles,
+  } = config;
+
+  const selectionIds = figma.currentPage.selection.map((layer: any) => getFlat(layer)).flat();
+  const selection = selectionIds.map((id) => figma.getNodeById(id));
+
+  if (isArrayEmpty(selection)) {
+    showNofication(0, messages(counter).layers, notificationTimeout);
+    return;
+  }
+
+  const selectionLength = selection.length;
+
+  selection.map(async (layer, layerIndex) => {
+    let stylers = allStylers;
+    const oldLayerName = layer.name;
+
+    if (layer.type === 'TEXT') {
+      await figma.loadFontAsync(layer.fontName as FontName);
+
+      if (layer.name[0] !== '+') {
+        stylers = texterOnly;
+      } else {
+        layer.name = layer.name.slice(1);
+      }
+    }
+
+    const stylersLength = stylers.length;
+
+    stylers.map((styler, stylerIndex) => {
+      const notificationOptions = {
+        layerIndex,
+        selectionLength,
+        stylerIndex,
+        stylersLength,
+        notificationTimeout,
+      };
+      const styleNameMatch = styler.getStyleByName(layer.name, partialMatch);
+
+      const applyingStyle = styler.getLocalStyleByByExternalId(layer) || styleNameMatch;
+      styler.applyStyle(layer, applyingStyle);
+      showNotificationAtArrayEnd('applied', notificationOptions);
+    });
+  });
+};

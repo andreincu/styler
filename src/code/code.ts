@@ -1,6 +1,6 @@
 import { clientStorageKey, Config } from './modules/config';
 import { CMD, counter, messages, showNofication } from './modules/globals';
-import { changeAllStyles, extractAllStyles, updateStyleNames } from './modules/styles';
+import { applyStyles, changeAllStyles, extractAllStyles, updateStyleNames } from './modules/styles';
 
 let currentConfig;
 
@@ -47,6 +47,10 @@ figma.clientStorage.getAsync(clientStorageKey).then((cachedSettings) => {
           });
         }
       };
+      break;
+
+    case 'apply-all-styles':
+      applyStyles(currentConfig);
       break;
 
     default:

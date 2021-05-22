@@ -1,10 +1,12 @@
 import { Config } from './config';
 
 // make the first string Uppercase
-export const ucFirst = (word: string): string => word[0].toLocaleUpperCase() + word.slice(1).toLocaleLowerCase();
+export const ucFirst = (word: string): string =>
+  word[0].toLocaleUpperCase() + word.slice(1).toLocaleLowerCase();
 
 // add addfix to the string
-export const addAffixTo = (word: string, prefix = '', suffix = ''): string => prefix + word + suffix;
+export const addAffixTo = (word: string, prefix = '', suffix = ''): string =>
+  prefix + word + suffix;
 
 // check if array is empty
 export const isArrayEmpty = (array) => (array || []).length === 0;
@@ -73,4 +75,8 @@ export const checkStyleType = (style: BaseStyle, config: Config) => {
     });
   }
   return styleType;
+};
+
+export const getFlat = ({ id, children = [] }) => {
+  return children.reduce((r, o) => [...r, ...getFlat(o)], [id]);
 };

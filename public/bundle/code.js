@@ -157,6 +157,9 @@
         }
         return styleType;
     };
+    const getFlat = ({ id, children = [] }) => {
+        return children.reduce((r, o) => [...r, ...getFlat(o)], [id]);
+    };
 
     class Styler {
         constructor(options = {}) {
@@ -556,11 +559,6 @@
                     });
                     showNotificationAtArrayEnd('generated', notificationOptions);
                 }
-                else if (CMD === 'apply-all-styles') {
-                    const applyingStyle = styler.getLocalStyleByByExternalId(layer) || styleNameMatch;
-                    styler.applyStyle(layer, applyingStyle);
-                    showNotificationAtArrayEnd('applied', notificationOptions);
-                }
                 else if (CMD === 'detach-all-styles') {
                     styler.detachStyle(layer);
                     showNotificationAtArrayEnd('detached', notificationOptions);
@@ -627,6 +625,43 @@
         figma.viewport.scrollAndZoomIntoView(createdLayers);
         mainContainer.remove();
     });
+    const applyStyles = (config) => {
+        const { addPrevToDescription, allStylers, notificationTimeout, texterOnly, partialMatch, updateUsingLocalStyles, } = config;
+        const selectionIds = figma.currentPage.selection.map((layer) => getFlat(layer)).flat();
+        const selection = selectionIds.map((id) => figma.getNodeById(id));
+        if (isArrayEmpty(selection)) {
+            showNofication(0, messages(counter).layers, notificationTimeout);
+            return;
+        }
+        const selectionLength = selection.length;
+        selection.map((layer, layerIndex) => __awaiter(void 0, void 0, void 0, function* () {
+            let stylers = allStylers;
+            layer.name;
+            if (layer.type === 'TEXT') {
+                yield figma.loadFontAsync(layer.fontName);
+                if (layer.name[0] !== '+') {
+                    stylers = texterOnly;
+                }
+                else {
+                    layer.name = layer.name.slice(1);
+                }
+            }
+            const stylersLength = stylers.length;
+            stylers.map((styler, stylerIndex) => {
+                const notificationOptions = {
+                    layerIndex,
+                    selectionLength,
+                    stylerIndex,
+                    stylersLength,
+                    notificationTimeout,
+                };
+                const styleNameMatch = styler.getStyleByName(layer.name, partialMatch);
+                const applyingStyle = styler.getLocalStyleByByExternalId(layer) || styleNameMatch;
+                styler.applyStyle(layer, applyingStyle);
+                showNotificationAtArrayEnd('applied', notificationOptions);
+            });
+        }));
+    };
 
     let currentConfig;
     figma.clientStorage.getAsync(clientStorageKey).then((cachedSettings) => {
@@ -657,6 +692,9 @@
                         });
                     }
                 };
+                break;
+            case 'apply-all-styles':
+                applyStyles(currentConfig);
                 break;
             default:
                 changeAllStyles(currentConfig);
