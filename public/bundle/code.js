@@ -20,60 +20,6 @@
         texterSuffix: '',
     };
 
-    const messages = (counter) => {
-        return {
-            applied: {
-                empty: `🤔 No local style found to apply. Maybe? Renam...`,
-                single: `✌️ Applied only ${counter.applied} style. He he...`,
-                multiple: `✌️ Applied ${counter.applied} styles. He he...`,
-            },
-            detached: {
-                empty: `🤔 No style was applied on any of the selected layers. Idk...`,
-                single: `💔 Detached only ${counter.detached} style. Layers will miss you...`,
-                multiple: `💔 Detached ${counter.detached} styles. Layers will miss you...`,
-            },
-            extracted: {
-                empty: `😵 No local style found to extract. Ouch...`,
-                single: `😺 Created only ${counter.extracted} layer. Uhuu...`,
-                multiple: `😺 Created ${counter.extracted} layers. Uhuu...`,
-            },
-            generated: {
-                empty: `😭 We do not support empty or mixed properties. Oh, Noo...`,
-                single: `
-      🔨 Created: ${counter.created} -
-      ✨ Updated: ${counter.updated} -
-      👻 Renamed: ${counter.renamed} -
-      😶 No changes: ${counter.ignored}
-    `,
-                multiple: `
-      🔨 Created: ${counter.created} -
-      ✨ Updated: ${counter.updated} -
-      👻 Renamed: ${counter.renamed} -
-      😶 No changes: ${counter.ignored}
-    `,
-            },
-            removed: {
-                empty: `🤔 No local style was applied on any of the selected layers. Yep, it's not weird...`,
-                single: `🔥 Removed only ${counter.removed} style. Rrr...`,
-                multiple: `🔥 Removed ${counter.removed} styles. Rrr...`,
-            },
-            customize: {
-                empty: '🌟 Settings were saved, but there was nothing to update.',
-                single: '✅ Settings were saved and only 1 style was updated.',
-                multiple: `✅ Settings were saved and ${counter.customize} style was updated.`,
-            },
-            layers: {
-                empty: '😎 You must select at least 1 layer. Yea...',
-            },
-            cancelSettings: {
-                empty: '🥺 Nothing was changed, everything is as before.',
-            },
-            clearCache: {
-                empty: '🧹 Cleaned saved settings from cache.',
-            },
-        };
-    };
-
     const CMD = figma.command;
     const counter = {
         applied: 0,
@@ -88,32 +34,6 @@
         renamed: 0,
         removed: 0,
         updated: 0,
-    };
-    const showNofication = (counter = 0, messages, timeout = 7000) => {
-        const { verySpecial = '', special = '', empty = '', single = '', multiple = '' } = messages;
-        switch (counter) {
-            case -2:
-                figma.notify(verySpecial, { timeout });
-                break;
-            case -1:
-                figma.notify(special, { timeout });
-                break;
-            case 0:
-                figma.notify(empty, { timeout });
-                break;
-            case 1:
-                figma.notify(single, { timeout });
-                break;
-            default:
-                figma.notify(multiple, { timeout });
-        }
-        figma.closePlugin();
-    };
-    const showNotificationAtArrayEnd = (type, notificationOptions = {}) => {
-        const { layerIndex = 0, layersLength = 1, stylerIndex = 0, stylersLength = 1, notificationTimeout = defaultSettings.notificationTimeout, } = notificationOptions;
-        if (layerIndex === layersLength - 1 && stylerIndex === stylersLength - 1) {
-            showNofication(counter[type], messages(counter)[type], notificationTimeout);
-        }
     };
     const white = [255, 255, 255, 1];
     const black = [0, 0, 0, 1];
@@ -386,6 +306,87 @@
             this.texterOnly = [this.texter];
         }
     }
+
+    const messages = (counter) => {
+        return {
+            applied: {
+                empty: `🤔 No local style found to apply. Maybe? Renam...`,
+                single: `✌️ Applied only ${counter.applied} style. He he...`,
+                multiple: `✌️ Applied ${counter.applied} styles. He he...`,
+            },
+            detached: {
+                empty: `🤔 No style was applied on any of the selected layers. Idk...`,
+                single: `💔 Detached only ${counter.detached} style. Layers will miss you...`,
+                multiple: `💔 Detached ${counter.detached} styles. Layers will miss you...`,
+            },
+            extracted: {
+                empty: `😵 No local style found to extract. Ouch...`,
+                single: `😺 Created only ${counter.extracted} layer. Uhuu...`,
+                multiple: `😺 Created ${counter.extracted} layers. Uhuu...`,
+            },
+            generated: {
+                empty: `😭 We do not support empty or mixed properties. Oh, Noo...`,
+                single: `
+      🔨 Created: ${counter.created} -
+      ✨ Updated: ${counter.updated} -
+      👻 Renamed: ${counter.renamed} -
+      😶 No changes: ${counter.ignored}
+    `,
+                multiple: `
+      🔨 Created: ${counter.created} -
+      ✨ Updated: ${counter.updated} -
+      👻 Renamed: ${counter.renamed} -
+      😶 No changes: ${counter.ignored}
+    `,
+            },
+            removed: {
+                empty: `🤔 No local style was applied on any of the selected layers. Yep, it's not weird...`,
+                single: `🔥 Removed only ${counter.removed} style. Rrr...`,
+                multiple: `🔥 Removed ${counter.removed} styles. Rrr...`,
+            },
+            customize: {
+                empty: '🌟 Settings were saved, but there was nothing to update.',
+                single: '✅ Settings were saved and only 1 style was updated.',
+                multiple: `✅ Settings were saved and ${counter.customize} style was updated.`,
+            },
+            layers: {
+                empty: '😎 You must select at least 1 layer. Yea...',
+            },
+            cancelSettings: {
+                empty: '🥺 Nothing was changed, everything is as before.',
+            },
+            clearCache: {
+                empty: '🧹 Cleaned saved settings from cache.',
+            },
+        };
+    };
+
+    const showNofication = (counter = 0, messages, timeout = 7000) => {
+        const { verySpecial = '', special = '', empty = '', single = '', multiple = '' } = messages;
+        switch (counter) {
+            case -2:
+                figma.notify(verySpecial, { timeout });
+                break;
+            case -1:
+                figma.notify(special, { timeout });
+                break;
+            case 0:
+                figma.notify(empty, { timeout });
+                break;
+            case 1:
+                figma.notify(single, { timeout });
+                break;
+            default:
+                figma.notify(multiple, { timeout });
+        }
+        figma.closePlugin();
+    };
+    const showNotificationAtArrayEnd = (type, notificationOptions = {}) => {
+        const { layerIndex = 0, layersLength = 1, stylerIndex = 0, stylersLength = 1, notificationTimeout = defaultSettings.notificationTimeout, } = notificationOptions;
+        if (layerIndex === layersLength - 1 && stylerIndex === stylersLength - 1) {
+            showNofication(counter[type], messages(counter)[type], notificationTimeout);
+        }
+    };
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation.

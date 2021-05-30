@@ -30,8 +30,6 @@
 
   onmessage = async (e) => {
     const codeSettings = e.data.pluginMessage;
-    // console.log('in ui msg:');
-    // console.log(e.data.pluginMessage);
 
     uiSettings = updateSettings(uiSettings, codeSettings);
   };

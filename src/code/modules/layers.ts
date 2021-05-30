@@ -33,9 +33,11 @@ export interface TextLayer {
 }
 
 const isContainer = (layer) => ['FRAME', 'COMPONENT', 'INSTANCE'].includes(layer.type);
-const isShape = (layer) => ['RECTANGLE', 'ELLIPSE', 'POLYGON', 'STAR', 'VECTOR'].includes(layer.type);
+const isShape = (layer) =>
+  ['RECTANGLE', 'ELLIPSE', 'POLYGON', 'STAR', 'VECTOR'].includes(layer.type);
 const isText = (layer) => layer.type === 'TEXT';
-const excludeGroups = (layers) => layers.filter((layer) => isContainer(layer) || isShape(layer) || isText(layer));
+const excludeGroups = (layers) =>
+  layers.filter((layer) => isContainer(layer) || isShape(layer) || isText(layer));
 
 export const changeColor = (layer, prop, rgba = [0, 0, 0, 1]) => {
   const color = webRGBToFigmaRGB(rgba);

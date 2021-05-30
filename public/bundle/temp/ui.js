@@ -1238,7 +1238,7 @@ var ui = (function () {
     	};
     }
 
-    // (137:6) 
+    // (135:6) 
     function create_unit_measure_slot_2(ctx) {
     	let span;
 
@@ -1257,7 +1257,7 @@ var ui = (function () {
     	};
     }
 
-    // (144:6) 
+    // (142:6) 
     function create_label_slot_2(ctx) {
     	let span;
 
@@ -1276,7 +1276,7 @@ var ui = (function () {
     	};
     }
 
-    // (148:6) 
+    // (146:6) 
     function create_label_slot_1(ctx) {
     	let span;
 
@@ -1295,7 +1295,7 @@ var ui = (function () {
     	};
     }
 
-    // (152:6) 
+    // (150:6) 
     function create_label_slot(ctx) {
     	let span;
 
@@ -1314,7 +1314,7 @@ var ui = (function () {
     	};
     }
 
-    // (173:6) 
+    // (171:6) 
     function create_textfield_label_slot_1(ctx) {
     	let span;
 
@@ -1333,7 +1333,7 @@ var ui = (function () {
     	};
     }
 
-    // (174:6) 
+    // (172:6) 
     function create_unit_measure_slot_1(ctx) {
     	let span;
 
@@ -1352,7 +1352,7 @@ var ui = (function () {
     	};
     }
 
-    // (183:6) 
+    // (181:6) 
     function create_textfield_label_slot(ctx) {
     	let span;
 
@@ -1371,7 +1371,7 @@ var ui = (function () {
     	};
     }
 
-    // (184:6) 
+    // (182:6) 
     function create_unit_measure_slot(ctx) {
     	let span;
 
@@ -1390,7 +1390,7 @@ var ui = (function () {
     	};
     }
 
-    // (189:2) <Button on:click={resetToDefault} variant="secondary" class="col">
+    // (187:2) <Button on:click={resetToDefault} variant="secondary" class="col">
     function create_default_slot_1(ctx) {
     	let t;
 
@@ -1407,7 +1407,7 @@ var ui = (function () {
     	};
     }
 
-    // (190:2) <Button on:click={saveSettings} class="col">
+    // (188:2) <Button on:click={saveSettings} class="col">
     function create_default_slot(ctx) {
     	let t;
 
@@ -1859,9 +1859,6 @@ var ui = (function () {
 
     	onmessage = async e => {
     		const codeSettings = e.data.pluginMessage;
-
-    		// console.log('in ui msg:');
-    		// console.log(e.data.pluginMessage);
     		$$invalidate(0, uiSettings = updateSettings(uiSettings, codeSettings));
     	};
 
