@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { defaultSettings } from '@modules/default-settings.ts';
+  import { defaultSettings } from '@code/settings'
 
   // Components
   import Icon from '@components/Icon.svelte';
@@ -121,6 +121,7 @@
   .helper span {
     margin: 0.2rem 0.8rem;
   }
+
 </style>
 
 <main>

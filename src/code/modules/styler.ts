@@ -1,4 +1,4 @@
-import { defaultSettings } from './default-settings.js';
+import { defaultSettings } from '../settings';
 import { CMD, counter } from './globals';
 import { addAffixTo, isArrayEmpty, ucFirst } from './utils';
 

@@ -11,6 +11,16 @@ import { terser } from 'rollup-plugin-terser';
 
 const projectRootDir = path.resolve(__dirname);
 const production = !process.env.ROLLUP_WATCH;
+const customAlias = () =>
+  alias({
+    entries: [
+      { find: '@code', replacement: path.resolve(projectRootDir, './src/code/') },
+      { find: '@modules', replacement: path.resolve(projectRootDir, './src/code/modules') },
+      { find: '@components', replacement: path.resolve(projectRootDir, './src/ui/components') },
+      { find: '@assets', replacement: path.resolve(projectRootDir, './src/assets') },
+      { find: '@styles', replacement: path.resolve(projectRootDir, './src/ui/styles') },
+    ],
+  });
 
 export default [
   {
@@ -20,7 +30,12 @@ export default [
       name: 'code',
       format: 'iife',
     },
-    plugins: [resolve(), typescript(), production && terser({ format: { comments: false } })],
+    plugins: [
+      customAlias(),
+      resolve(),
+      typescript(),
+      production && terser({ format: { comments: false } }),
+    ],
   },
   {
     input: 'src/ui/ui.js',
@@ -30,15 +45,7 @@ export default [
       format: 'iife',
     },
     plugins: [
-      alias({
-        entries: [
-          { find: '@modules', replacement: path.resolve(projectRootDir, './src/code/modules') },
-          { find: '@components', replacement: path.resolve(projectRootDir, './src/ui/components') },
-          { find: '@assets', replacement: path.resolve(projectRootDir, './src/assets') },
-          { find: '@styles', replacement: path.resolve(projectRootDir, './src/ui/styles') },
-        ],
-      }),
-
+      customAlias(),
       resolve(),
 
       svg(),

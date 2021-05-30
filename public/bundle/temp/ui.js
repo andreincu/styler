@@ -1238,7 +1238,7 @@ var ui = (function () {
     	};
     }
 
-    // (136:6) 
+    // (137:6) 
     function create_unit_measure_slot_2(ctx) {
     	let span;
 
@@ -1257,7 +1257,7 @@ var ui = (function () {
     	};
     }
 
-    // (143:6) 
+    // (144:6) 
     function create_label_slot_2(ctx) {
     	let span;
 
@@ -1276,7 +1276,7 @@ var ui = (function () {
     	};
     }
 
-    // (147:6) 
+    // (148:6) 
     function create_label_slot_1(ctx) {
     	let span;
 
@@ -1295,7 +1295,7 @@ var ui = (function () {
     	};
     }
 
-    // (151:6) 
+    // (152:6) 
     function create_label_slot(ctx) {
     	let span;
 
@@ -1314,7 +1314,7 @@ var ui = (function () {
     	};
     }
 
-    // (172:6) 
+    // (173:6) 
     function create_textfield_label_slot_1(ctx) {
     	let span;
 
@@ -1333,7 +1333,7 @@ var ui = (function () {
     	};
     }
 
-    // (173:6) 
+    // (174:6) 
     function create_unit_measure_slot_1(ctx) {
     	let span;
 
@@ -1352,7 +1352,7 @@ var ui = (function () {
     	};
     }
 
-    // (182:6) 
+    // (183:6) 
     function create_textfield_label_slot(ctx) {
     	let span;
 
@@ -1371,7 +1371,7 @@ var ui = (function () {
     	};
     }
 
-    // (183:6) 
+    // (184:6) 
     function create_unit_measure_slot(ctx) {
     	let span;
 
@@ -1390,7 +1390,7 @@ var ui = (function () {
     	};
     }
 
-    // (188:2) <Button on:click={resetToDefault} variant="secondary" class="col">
+    // (189:2) <Button on:click={resetToDefault} variant="secondary" class="col">
     function create_default_slot_1(ctx) {
     	let t;
 
@@ -1407,7 +1407,7 @@ var ui = (function () {
     	};
     }
 
-    // (189:2) <Button on:click={saveSettings} class="col">
+    // (190:2) <Button on:click={saveSettings} class="col">
     function create_default_slot(ctx) {
     	let t;
 
@@ -1655,15 +1655,15 @@ var ui = (function () {
     			t16 = space();
     			create_component(button1.$$.fragment);
     			attr(h20, "class", "caption");
-    			attr(div0, "class", "svelte-56inlw");
+    			attr(div0, "class", "svelte-1apueeo");
     			attr(h21, "class", "caption");
-    			attr(span, "class", "small svelte-56inlw");
-    			attr(div1, "class", "helper svelte-56inlw");
-    			attr(div2, "class", "svelte-56inlw");
+    			attr(span, "class", "small svelte-1apueeo");
+    			attr(div1, "class", "helper svelte-1apueeo");
+    			attr(div2, "class", "svelte-1apueeo");
     			attr(h22, "class", "caption");
-    			attr(div3, "class", "svelte-56inlw");
-    			attr(main, "class", "svelte-56inlw");
-    			attr(footer, "class", "svelte-56inlw");
+    			attr(div3, "class", "svelte-1apueeo");
+    			attr(main, "class", "svelte-1apueeo");
+    			attr(footer, "class", "svelte-1apueeo");
     		},
     		m(target, anchor) {
     			insert(target, main, anchor);

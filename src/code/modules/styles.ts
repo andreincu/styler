@@ -1,13 +1,8 @@
 import { Config } from './config';
-import {
-  CMD,
-  colors,
-  counter,
-  messages,
-  showNofication,
-  showNotificationAtArrayEnd,
-} from './globals';
-import { cleanSelection, createFrameLayer, createTextLayer, ungroup, createLayer } from './layers';
+import { CMD, colors, counter } from './globals';
+import { cleanSelection, createFrameLayer, createLayer, ungroup } from './layers';
+import { messages } from './messages';
+import { showNofication, showNotificationAtArrayEnd } from './notifications';
 import { checkStyleType, getFlat, isArrayEmpty } from './utils';
 
 export const getAllLocalStyles = (): BaseStyle[] => {

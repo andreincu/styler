@@ -1,5 +1,7 @@
 import { clientStorageKey, Config } from './modules/config';
-import { CMD, counter, messages, showNofication } from './modules/globals';
+import { CMD, counter } from './modules/globals';
+import { messages } from './modules/messages';
+import { showNofication } from './modules/notifications';
 import { applyStyles, changeAllStyles, extractAllStyles, updateStyleNames } from './modules/styles';
 
 let currentConfig;

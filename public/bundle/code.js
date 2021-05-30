@@ -20,21 +20,6 @@
         texterSuffix: '',
     };
 
-    const CMD = figma.command;
-    const counter = {
-        applied: 0,
-        created: 0,
-        customize: 0,
-        detached: 0,
-        extracted: 0,
-        generated: 0,
-        textContainer: 0,
-        miscContainer: 0,
-        ignored: 0,
-        renamed: 0,
-        removed: 0,
-        updated: 0,
-    };
     const messages = (counter) => {
         return {
             applied: {
@@ -54,6 +39,12 @@
             },
             generated: {
                 empty: `😭 We do not support empty or mixed properties. Oh, Noo...`,
+                single: `
+      🔨 Created: ${counter.created} -
+      ✨ Updated: ${counter.updated} -
+      👻 Renamed: ${counter.renamed} -
+      😶 No changes: ${counter.ignored}
+    `,
                 multiple: `
       🔨 Created: ${counter.created} -
       ✨ Updated: ${counter.updated} -
@@ -82,20 +73,41 @@
             },
         };
     };
-    const showNofication = (counter = 0, messages = { empty: '', single: undefined, multiple: '' }, notificationTimeout) => {
-        const { empty, multiple, single = multiple } = messages;
-        if (counter === 0) {
-            figma.notify(empty, { timeout: notificationTimeout });
-            figma.closePlugin();
+
+    const CMD = figma.command;
+    const counter = {
+        applied: 0,
+        created: 0,
+        customize: 0,
+        detached: 0,
+        extracted: 0,
+        generated: 0,
+        textContainer: 0,
+        miscContainer: 0,
+        ignored: 0,
+        renamed: 0,
+        removed: 0,
+        updated: 0,
+    };
+    const showNofication = (counter = 0, messages, timeout = 7000) => {
+        const { verySpecial = '', special = '', empty = '', single = '', multiple = '' } = messages;
+        switch (counter) {
+            case -2:
+                figma.notify(verySpecial, { timeout });
+                break;
+            case -1:
+                figma.notify(special, { timeout });
+                break;
+            case 0:
+                figma.notify(empty, { timeout });
+                break;
+            case 1:
+                figma.notify(single, { timeout });
+                break;
+            default:
+                figma.notify(multiple, { timeout });
         }
-        else if (counter === 1) {
-            figma.notify(single, { timeout: notificationTimeout });
-            figma.closePlugin();
-        }
-        else {
-            figma.notify(multiple, { timeout: notificationTimeout });
-            figma.closePlugin();
-        }
+        figma.closePlugin();
     };
     const showNotificationAtArrayEnd = (type, notificationOptions = {}) => {
         const { layerIndex = 0, layersLength = 1, stylerIndex = 0, stylersLength = 1, notificationTimeout = defaultSettings.notificationTimeout, } = notificationOptions;
@@ -636,7 +648,7 @@
         const selectionLength = selection.length;
         selection.map((layer, layerIndex) => __awaiter(void 0, void 0, void 0, function* () {
             let stylers = allStylers;
-            layer.name;
+            const oldLayerName = layer.name;
             if (layer.type === 'TEXT') {
                 yield figma.loadFontAsync(layer.fontName);
                 if (layer.name[0] !== '+') {
@@ -660,6 +672,7 @@
                 styler.applyStyle(layer, applyingStyle);
                 showNotificationAtArrayEnd('applied', notificationOptions);
             });
+            layer.name = oldLayerName;
         }));
     };
 
