@@ -1038,20 +1038,20 @@ var ui = (function () {
     			t2 = space();
     			div3 = element("div");
     			if (unit_measure_slot) unit_measure_slot.c();
-    			attr(div0, "class", "icon-container svelte-u2a119");
-    			attr(div1, "class", "label svelte-u2a119");
-    			attr(div2, "class", "left-side svelte-u2a119");
+    			attr(div0, "class", "icon-container svelte-1xs2am0");
+    			attr(div1, "class", "label svelte-1xs2am0");
+    			attr(div2, "class", "left-side svelte-1xs2am0");
     			attr(input, "id", /*id*/ ctx[4]);
     			attr(input, "type", "number");
     			attr(input, "placeholder", /*placeholder*/ ctx[2]);
     			attr(input, "min", /*min*/ ctx[5]);
     			attr(input, "max", /*max*/ ctx[6]);
     			attr(input, "step", /*step*/ ctx[3]);
-    			attr(input, "class", "svelte-u2a119");
-    			attr(div3, "class", "unit-measure svelte-u2a119");
-    			attr(div4, "class", "right-side svelte-u2a119");
+    			attr(input, "class", "svelte-1xs2am0");
+    			attr(div3, "class", "unit-measure svelte-1xs2am0");
+    			attr(div4, "class", "right-side svelte-1xs2am0");
     			attr(label, "for", /*id*/ ctx[4]);
-    			attr(label, "class", "svelte-u2a119");
+    			attr(label, "class", "svelte-1xs2am0");
     		},
     		m(target, anchor) {
     			insert(target, label, anchor);

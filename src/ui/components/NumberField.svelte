@@ -15,7 +15,6 @@
 <style>
   label {
     display: flex;
-    align-items: flex-start;
     justify-content: space-between;
     background: transparent;
     border: 1px solid hsl(var(--color-neutral-2));
@@ -85,6 +84,7 @@
   .unit-measure:empty {
     display: none;
   }
+
 </style>
 
 <label for={id}>
