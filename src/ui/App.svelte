@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { defaultSettings } from '@code/settings'
+  import { DEFAULT_SETTINGS } from '@code/settings';
 
   // Components
   import Icon from '@components/Icon.svelte';
@@ -13,14 +13,14 @@
   import IconText from '@assets/icons/text-layers.svg';
   import Warning from '@assets/icons/warning.svg';
 
-  let uiSettings = { ...defaultSettings };
+  let uiSettings = { ...DEFAULT_SETTINGS };
   let showAlert = false;
 
   onMount(() => {
     window.focus();
   });
 
-  const updateSettings = (currentSettings, newSettings = defaultSettings) => {
+  const updateSettings = (currentSettings, newSettings = DEFAULT_SETTINGS) => {
     Object.keys(newSettings).map((key) => {
       currentSettings[key] = newSettings[key];
     });
@@ -52,7 +52,7 @@
   };
 
   const resetToDefault = () => {
-    uiSettings = updateSettings(uiSettings, defaultSettings);
+    uiSettings = updateSettings(uiSettings, DEFAULT_SETTINGS);
 
     return uiSettings;
   };

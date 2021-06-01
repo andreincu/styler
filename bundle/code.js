@@ -1,24 +1,30 @@
 (function () {
     'use strict';
 
-    const defaultSettings = {
-        addPrevToDescription: true,
-        framesPerSection: 6,
-        textsPerSection: 8,
-        notificationTimeout: 6000,
-        updateUsingLocalStyles: false,
-        partialMatch: false,
-        fillerPrefix: '',
-        fillerSuffix: '',
-        strokeerPrefix: '',
-        strokeerSuffix: '-stroke',
-        effecterPrefix: '',
-        effecterSuffix: '',
-        griderPrefix: '',
-        griderSuffix: '',
-        texterPrefix: '',
-        texterSuffix: '',
-    };
+    /*! *****************************************************************************
+    Copyright (c) Microsoft Corporation.
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
+    ***************************************************************************** */
+
+    function __awaiter(thisArg, _arguments, P, generator) {
+        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+        return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+            step((generator = generator.apply(thisArg, _arguments || [])).next());
+        });
+    }
 
     const CMD = figma.command;
     const counter = {
@@ -133,7 +139,7 @@
                 const externalStyleName = ((_a = this.getStyleById(layer)) === null || _a === void 0 ? void 0 : _a.name) || '';
                 return this.getLocalStyles().find((style) => style.name === externalStyleName);
             };
-            this.getStyleByName = (name, partialMatch = defaultSettings.partialMatch) => {
+            this.getStyleByName = (name, partialMatch) => {
                 const stylesByType = this.getLocalStyles();
                 const match = stylesByType.find((style) => style.name === addAffixTo(name, this.prefix, this.suffix));
                 if (match) {
@@ -176,7 +182,7 @@
                 }
             };
             this.generateStyle = (layer, options) => {
-                const { styleIdMatch, styleNameMatch, updateUsingLocalStyles = defaultSettings.updateUsingLocalStyles, addPrevToDescription = defaultSettings.addPrevToDescription, } = options;
+                const { styleIdMatch, styleNameMatch, updateUsingLocalStyles, addPrevToDescription } = options;
                 if (this.isPropEmpty(layer) || this.isPropMixed(layer)) {
                     console.log(`Generate: We have some mixed or empty props.`);
                     return;
@@ -243,10 +249,9 @@
         }
     }
 
-    const clientStorageKey = 'cachedSettings';
     class Config {
-        constructor(options = defaultSettings) {
-            const { addPrevToDescription = defaultSettings.addPrevToDescription, framesPerSection = defaultSettings.framesPerSection, textsPerSection = defaultSettings.textsPerSection, notificationTimeout = defaultSettings.notificationTimeout, updateUsingLocalStyles = defaultSettings.updateUsingLocalStyles, partialMatch = defaultSettings.partialMatch, texterPrefix = defaultSettings.texterPrefix, texterSuffix = defaultSettings.texterSuffix, griderPrefix = defaultSettings.griderPrefix, griderSuffix = defaultSettings.griderSuffix, fillerPrefix = defaultSettings.fillerPrefix, fillerSuffix = defaultSettings.fillerSuffix, strokeerPrefix = defaultSettings.strokeerPrefix, strokeerSuffix = defaultSettings.strokeerSuffix, effecterPrefix = defaultSettings.effecterPrefix, effecterSuffix = defaultSettings.effecterSuffix, } = options;
+        constructor(options) {
+            const { addPrevToDescription, framesPerSection, textsPerSection, notificationTimeout, updateUsingLocalStyles, partialMatch, texterPrefix, texterSuffix, griderPrefix, griderSuffix, fillerPrefix, fillerSuffix, strokeerPrefix, strokeerSuffix, effecterPrefix, effecterSuffix, } = options;
             this.addPrevToDescription = addPrevToDescription;
             this.framesPerSection = framesPerSection;
             this.textsPerSection = textsPerSection;
@@ -382,36 +387,11 @@
         figma.closePlugin();
     };
     const showNotificationAtArrayEnd = (type, notificationOptions = {}) => {
-        const { layerIndex = 0, layersLength = 1, stylerIndex = 0, stylersLength = 1, notificationTimeout = defaultSettings.notificationTimeout, } = notificationOptions;
+        const { layerIndex = 0, layersLength = 1, stylerIndex = 0, stylersLength = 1, notificationTimeout, } = notificationOptions;
         if (layerIndex === layersLength - 1 && stylerIndex === stylersLength - 1) {
             showNofication(counter[type], messages(counter)[type], notificationTimeout);
         }
     };
-
-    /*! *****************************************************************************
-    Copyright (c) Microsoft Corporation.
-
-    Permission to use, copy, modify, and/or distribute this software for any
-    purpose with or without fee is hereby granted.
-
-    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-    PERFORMANCE OF THIS SOFTWARE.
-    ***************************************************************************** */
-
-    function __awaiter(thisArg, _arguments, P, generator) {
-        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-        return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-            step((generator = generator.apply(thisArg, _arguments || [])).next());
-        });
-    }
 
     const namesRGB = ['r', 'g', 'b'];
     function webRGBToFigmaRGB(color) {
@@ -677,43 +657,74 @@
         }));
     };
 
-    let currentConfig;
-    figma.clientStorage.getAsync(clientStorageKey).then((cachedSettings) => {
-        currentConfig = new Config(cachedSettings);
-        const { notificationTimeout } = currentConfig;
-        switch (CMD) {
-            case 'clear-cache':
-                figma.clientStorage.setAsync(clientStorageKey, undefined).then(() => {
+    const DEFAULT_SETTINGS = {
+        addPrevToDescription: true,
+        framesPerSection: 6,
+        textsPerSection: 8,
+        notificationTimeout: 6000,
+        updateUsingLocalStyles: false,
+        partialMatch: false,
+        fillerPrefix: '',
+        fillerSuffix: '',
+        strokeerPrefix: '',
+        strokeerSuffix: '-stroke',
+        effecterPrefix: '',
+        effecterSuffix: '',
+        griderPrefix: '',
+        griderSuffix: '',
+        texterPrefix: '',
+        texterSuffix: '',
+    };
+    const DEFAULT_SETTINGS_KEY = 'cachedSettings';
+    function loadSettingsAsync(defaultSettings, settingsKey = DEFAULT_SETTINGS_KEY) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const settings = (yield figma.clientStorage.getAsync(settingsKey)) || defaultSettings;
+            return Object.assign(defaultSettings, settings);
+        });
+    }
+    function saveSettingsAsync(settings, settingsKey = DEFAULT_SETTINGS_KEY) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield figma.clientStorage.setAsync(settingsKey, settings);
+        });
+    }
+
+    function main() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cachedSettings = yield loadSettingsAsync(DEFAULT_SETTINGS);
+            let currentConfig = new Config(cachedSettings);
+            const { notificationTimeout } = currentConfig;
+            switch (CMD) {
+                case 'clear-cache':
+                    yield saveSettingsAsync(undefined);
                     showNofication(0, messages(counter).clearCache, currentConfig.notificationTimeout);
-                });
-                break;
-            case 'extract-all-styles':
-                extractAllStyles(currentConfig).then(() => showNofication(counter.extracted, messages(counter).extracted, notificationTimeout));
-                break;
-            case 'customize-plugin':
-                figma.showUI(__html__, { width: 320, height: 424 });
-                figma.ui.postMessage(cachedSettings);
-                figma.ui.onmessage = (msg) => {
-                    if (msg.type === 'cancel-modal') {
-                        showNofication(0, messages(counter).cancelSettings, notificationTimeout);
-                    }
-                    else if (msg.type === 'save-settings') {
-                        figma.clientStorage.setAsync(clientStorageKey, msg.uiSettings).then(() => {
+                    break;
+                case 'extract-all-styles':
+                    extractAllStyles(currentConfig).then(() => showNofication(counter.extracted, messages(counter).extracted, notificationTimeout));
+                    break;
+                case 'customize-plugin':
+                    figma.showUI(__html__, { width: 320, height: 424 });
+                    figma.ui.postMessage(cachedSettings);
+                    figma.ui.onmessage = (msg) => __awaiter(this, void 0, void 0, function* () {
+                        if (msg.type === 'cancel-modal') {
+                            showNofication(0, messages(counter).cancelSettings, notificationTimeout);
+                        }
+                        else if (msg.type === 'save-settings') {
                             const newConfig = new Config(msg.uiSettings);
                             updateStyleNames(currentConfig, newConfig);
                             showNofication(counter.customize, messages(counter).customize, newConfig.notificationTimeout);
-                            return;
-                        });
-                    }
-                };
-                break;
-            case 'apply-all-styles':
-                applyStyles(currentConfig);
-                break;
-            default:
-                changeAllStyles(currentConfig);
-                break;
-        }
-    });
+                            yield saveSettingsAsync(msg.uiSettings);
+                        }
+                    });
+                    break;
+                case 'apply-all-styles':
+                    applyStyles(currentConfig);
+                    break;
+                default:
+                    changeAllStyles(currentConfig);
+                    break;
+            }
+        });
+    }
+    main();
 
 }());

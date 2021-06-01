@@ -30,7 +30,7 @@ export default [
   {
     input: 'src/ui/ui.js',
     output: {
-      file: 'temp/ui.js',
+      file: 'bundle/ui/ui.js',
       name: 'ui',
       format: 'iife',
     },
@@ -48,16 +48,15 @@ export default [
       }),
 
       scss({
-        output: 'temp/styles.css',
+        output: 'bundle/ui/styles.css',
       }),
 
       html({
         template: 'src/ui/template.html',
-        dest: 'bundle',
+        dest: 'bundle/ui/',
         filename: 'ui.html',
         inline: true,
         minifyCss: true && production,
-        externals: [{ type: 'css', file: 'temp/styles.css', pos: 'before' }],
       }),
     ],
   },

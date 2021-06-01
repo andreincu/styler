@@ -3,7 +3,7 @@
   "id": "820660579767995949",
   "api": "1.0.0",
   "main": "bundle/code.js",
-  "ui": "bundle/ui.html",
+  "ui": "bundle/ui/ui.html",
   "menu": [
     {
       "name": "Extract Styles",

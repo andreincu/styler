@@ -1,5 +1,4 @@
 import { Styler } from './styler';
-import { defaultSettings } from '../settings';
 
 export const clientStorageKey = 'cachedSettings';
 
@@ -22,27 +21,27 @@ export class Config {
   stylersWithoutTexter: Styler[];
   texterOnly: Styler[];
 
-  constructor(options = defaultSettings) {
+  constructor(options) {
     const {
       // general
-      addPrevToDescription = defaultSettings.addPrevToDescription,
-      framesPerSection = defaultSettings.framesPerSection,
-      textsPerSection = defaultSettings.textsPerSection,
-      notificationTimeout = defaultSettings.notificationTimeout,
-      updateUsingLocalStyles = defaultSettings.updateUsingLocalStyles,
-      partialMatch = defaultSettings.partialMatch,
+      addPrevToDescription,
+      framesPerSection,
+      textsPerSection,
+      notificationTimeout,
+      updateUsingLocalStyles,
+      partialMatch,
 
       // stylers
-      texterPrefix = defaultSettings.texterPrefix,
-      texterSuffix = defaultSettings.texterSuffix,
-      griderPrefix = defaultSettings.griderPrefix,
-      griderSuffix = defaultSettings.griderSuffix,
-      fillerPrefix = defaultSettings.fillerPrefix,
-      fillerSuffix = defaultSettings.fillerSuffix,
-      strokeerPrefix = defaultSettings.strokeerPrefix,
-      strokeerSuffix = defaultSettings.strokeerSuffix,
-      effecterPrefix = defaultSettings.effecterPrefix,
-      effecterSuffix = defaultSettings.effecterSuffix,
+      texterPrefix,
+      texterSuffix,
+      griderPrefix,
+      griderSuffix,
+      fillerPrefix,
+      fillerSuffix,
+      strokeerPrefix,
+      strokeerSuffix,
+      effecterPrefix,
+      effecterSuffix,
     } = options;
 
     this.addPrevToDescription = addPrevToDescription;

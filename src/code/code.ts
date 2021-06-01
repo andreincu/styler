@@ -3,18 +3,19 @@ import { CMD, counter } from './modules/globals';
 import { messages } from './modules/messages';
 import { showNofication } from './modules/notifications';
 import { applyStyles, changeAllStyles, extractAllStyles, updateStyleNames } from './modules/styles';
+import { DEFAULT_SETTINGS, loadSettingsAsync, saveSettingsAsync } from './settings';
 
-let currentConfig;
+async function main() {
+  const cachedSettings = await loadSettingsAsync(DEFAULT_SETTINGS);
 
-figma.clientStorage.getAsync(clientStorageKey).then((cachedSettings) => {
-  currentConfig = new Config(cachedSettings);
+  let currentConfig = new Config(cachedSettings);
   const { notificationTimeout } = currentConfig;
 
   switch (CMD) {
     case 'clear-cache':
-      figma.clientStorage.setAsync(clientStorageKey, undefined).then(() => {
-        showNofication(0, messages(counter).clearCache, currentConfig.notificationTimeout);
-      });
+      await saveSettingsAsync(undefined);
+
+      showNofication(0, messages(counter).clearCache, currentConfig.notificationTimeout);
       break;
 
     case 'extract-all-styles':
@@ -28,25 +29,24 @@ figma.clientStorage.getAsync(clientStorageKey).then((cachedSettings) => {
 
       figma.ui.postMessage(cachedSettings);
 
-      figma.ui.onmessage = (msg) => {
+      figma.ui.onmessage = async (msg) => {
         if (msg.type === 'cancel-modal') {
           showNofication(0, messages(counter).cancelSettings, notificationTimeout);
         }
 
         // save
         else if (msg.type === 'save-settings') {
-          figma.clientStorage.setAsync(clientStorageKey, msg.uiSettings).then(() => {
-            const newConfig = new Config(msg.uiSettings);
+          const newConfig = new Config(msg.uiSettings);
 
-            updateStyleNames(currentConfig, newConfig);
+          updateStyleNames(currentConfig, newConfig);
 
-            showNofication(
-              counter.customize,
-              messages(counter).customize,
-              newConfig.notificationTimeout,
-            );
-            return;
-          });
+          showNofication(
+            counter.customize,
+            messages(counter).customize,
+            newConfig.notificationTimeout,
+          );
+
+          await saveSettingsAsync(msg.uiSettings);
         }
       };
       break;
@@ -59,4 +59,6 @@ figma.clientStorage.getAsync(clientStorageKey).then((cachedSettings) => {
       changeAllStyles(currentConfig);
       break;
   }
-});
+}
+
+main();

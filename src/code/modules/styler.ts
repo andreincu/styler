@@ -1,4 +1,3 @@
-import { defaultSettings } from '../settings';
 import { CMD, counter } from './globals';
 import { addAffixTo, isArrayEmpty, ucFirst } from './utils';
 
@@ -98,7 +97,7 @@ export class Styler {
     return this.getLocalStyles().find((style) => style.name === externalStyleName);
   };
 
-  getStyleByName = (name, partialMatch = defaultSettings.partialMatch) => {
+  getStyleByName = (name, partialMatch) => {
     const stylesByType = this.getLocalStyles();
     const match = stylesByType.find(
       (style) => style.name === addAffixTo(name, this.prefix, this.suffix),
@@ -157,12 +156,7 @@ export class Styler {
   };
 
   generateStyle = (layer, options) => {
-    const {
-      styleIdMatch,
-      styleNameMatch,
-      updateUsingLocalStyles = defaultSettings.updateUsingLocalStyles,
-      addPrevToDescription = defaultSettings.addPrevToDescription,
-    } = options;
+    const { styleIdMatch, styleNameMatch, updateUsingLocalStyles, addPrevToDescription } = options;
 
     if (this.isPropEmpty(layer) || this.isPropMixed(layer)) {
       console.log(`Generate: We have some mixed or empty props.`);
