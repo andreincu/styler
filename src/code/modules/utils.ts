@@ -1,4 +1,4 @@
-import { Config } from './config';
+import { Config } from '../Config';
 
 // make the first string Uppercase
 export const ucFirst = (word: string): string =>

@@ -1,6 +1,4 @@
-import { Styler } from './styler';
-
-export const clientStorageKey = 'cachedSettings';
+import { Styler } from './modules/styler';
 
 export class Config {
   // general

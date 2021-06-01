@@ -1,4 +1,4 @@
-import { Config } from './config';
+import { Config } from '../Config';
 import { CMD, colors, counter } from './globals';
 import { cleanSelection, createFrameLayer, createLayer, ungroup } from './layers';
 import { messages } from './messages';
