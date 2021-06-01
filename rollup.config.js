@@ -26,7 +26,7 @@ export default [
   {
     input: 'src/code/code.ts',
     output: {
-      file: 'public/bundle/code.js',
+      file: 'bundle/code.js',
       name: 'code',
       format: 'iife',
     },
@@ -40,7 +40,7 @@ export default [
   {
     input: 'src/ui/ui.js',
     output: {
-      file: 'public/bundle/temp/ui.js',
+      file: 'bundle/temp/ui.js',
       name: 'ui',
       format: 'iife',
     },
@@ -65,12 +65,12 @@ export default [
       }),
 
       scss({
-        output: 'public/bundle/temp/styles.css',
+        output: 'bundle/temp/styles.css',
       }),
 
       html({
         template: 'src/ui/template.html',
-        dest: 'public/bundle',
+        dest: 'bundle',
         filename: 'ui.html',
         inline: true,
         minifyCss: true,
