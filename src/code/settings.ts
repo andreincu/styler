@@ -26,12 +26,15 @@ https://github.com/yuanqing/create-figma-plugin/blob/03a26abc76a2ea2fe7a3b33aa9e
 
 const DEFAULT_SETTINGS_KEY = 'cachedSettings';
 
-export async function loadSettingsAsync(defaultSettings, settingsKey = DEFAULT_SETTINGS_KEY) {
-  const settings = (await figma.clientStorage.getAsync(settingsKey)) || defaultSettings;
+export async function loadSettingsAsync(
+  newSettigns = DEFAULT_SETTINGS,
+  settingsKey = DEFAULT_SETTINGS_KEY,
+) {
+  const settings = await figma.clientStorage.getAsync(settingsKey);
 
-  return Object.assign(defaultSettings, settings);
+  return Object.assign(newSettigns, settings);
 }
 
-export async function saveSettingsAsync(settings, settingsKey = DEFAULT_SETTINGS_KEY) {
-  await figma.clientStorage.setAsync(settingsKey, settings);
+export async function saveSettingsAsync(newSettings, settingsKey = DEFAULT_SETTINGS_KEY) {
+  await figma.clientStorage.setAsync(settingsKey, newSettings);
 }

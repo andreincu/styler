@@ -676,15 +676,15 @@
         texterSuffix: '',
     };
     const DEFAULT_SETTINGS_KEY = 'cachedSettings';
-    function loadSettingsAsync(defaultSettings, settingsKey = DEFAULT_SETTINGS_KEY) {
+    function loadSettingsAsync(newSettigns = DEFAULT_SETTINGS, settingsKey = DEFAULT_SETTINGS_KEY) {
         return __awaiter(this, void 0, void 0, function* () {
-            const settings = (yield figma.clientStorage.getAsync(settingsKey)) || defaultSettings;
-            return Object.assign(defaultSettings, settings);
+            const settings = yield figma.clientStorage.getAsync(settingsKey);
+            return Object.assign(newSettigns, settings);
         });
     }
-    function saveSettingsAsync(settings, settingsKey = DEFAULT_SETTINGS_KEY) {
+    function saveSettingsAsync(newSettings, settingsKey = DEFAULT_SETTINGS_KEY) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield figma.clientStorage.setAsync(settingsKey, settings);
+            yield figma.clientStorage.setAsync(settingsKey, newSettings);
         });
     }
 

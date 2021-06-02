@@ -1,6 +1,6 @@
 ### Specific folders
 node_modules
-temp
+bundle
 
 ### macOS
 .DS_Store

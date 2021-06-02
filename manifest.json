@@ -65,6 +65,13 @@
     {
       "name": "Customize plugin",
       "command": "customize-plugin"
+    },
+    {
+      "separator": true
+    },
+    {
+      "name": "Clear cache",
+      "command": "clear-cache"
     }
   ]
 }
