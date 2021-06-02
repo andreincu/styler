@@ -6,6 +6,7 @@
     "esModuleInterop": true,
     "removeComments": true,
     "moduleResolution": "node",
+    "composite": false,
     "typeRoots": ["./node_modules/@types", "./node_modules/@figma"]
   },
   "exclude": ["node_modules"]

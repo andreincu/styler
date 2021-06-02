@@ -1,4 +1,4 @@
-import { Styler } from './modules/styler';
+import { Styler } from './modules/Styler';
 
 export class Config {
   // general
