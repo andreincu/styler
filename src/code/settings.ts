@@ -19,6 +19,11 @@ export const DEFAULT_SETTINGS = {
   texterSuffix: '',
 };
 
+/* 
+Inspired by Yuan Qing Lim
+https://github.com/yuanqing/create-figma-plugin/blob/03a26abc76a2ea2fe7a3b33aa9ef53cb54bd52a7/packages/utilities/src/settings.ts#L10
+ */
+
 const DEFAULT_SETTINGS_KEY = 'cachedSettings';
 
 export async function loadSettingsAsync(defaultSettings, settingsKey = DEFAULT_SETTINGS_KEY) {
