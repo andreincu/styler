@@ -5,6 +5,7 @@ export const defaultSettings = {
   notificationTimeout: 6000,
   updateUsingLocalStyles: false,
   partialMatch: false,
+  reverseLayers: false,
 
   // stylers
   fillerPrefix: '',

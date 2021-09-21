@@ -149,12 +149,12 @@ export const createLayer = async (
 
 export const ungroup = (layer) => layer.parent.parent.appendChild(layer);
 
-/* 
+/*
 --- clean Selection
 --- remove unwanted layers from array
---- reorder layers to be sorted as in layer panel 
+--- reorder layers to be sorted as in layer panel
 */
-export const cleanSelection = (): SceneNode[] => {
+export const cleanSelection = ({ reverseLayers = false }): SceneNode[] => {
   const selection = excludeGroups(figma.currentPage.selection);
   const selectionByParent = Object.values(groupBy(selection, 'parent'));
   const layers: any = [];
@@ -166,5 +166,5 @@ export const cleanSelection = (): SceneNode[] => {
     layers.push(orderedGroup);
   });
 
-  return layers.flat().reverse();
+  return reverseLayers ? layers.flat() : layers.flat().reverse();
 };

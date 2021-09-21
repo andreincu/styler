@@ -11,6 +11,7 @@ export class Config {
   notificationTimeout: number;
   updateUsingLocalStyles: boolean;
   partialMatch: boolean;
+  reverseLayers: boolean;
 
   // stylers
   texter: Styler;
@@ -31,6 +32,7 @@ export class Config {
       notificationTimeout = defaultSettings.notificationTimeout,
       updateUsingLocalStyles = defaultSettings.updateUsingLocalStyles,
       partialMatch = defaultSettings.partialMatch,
+      reverseLayers = defaultSettings.reverseLayers,
 
       // stylers
       texterPrefix = defaultSettings.texterPrefix,
@@ -51,6 +53,7 @@ export class Config {
     this.notificationTimeout = notificationTimeout;
     this.updateUsingLocalStyles = updateUsingLocalStyles;
     this.partialMatch = partialMatch;
+    this.reverseLayers = reverseLayers;
 
     this.texter = new Styler({
       name: 'texter',

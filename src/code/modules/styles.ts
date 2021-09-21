@@ -49,8 +49,9 @@ export const changeAllStyles = (config) => {
     texterOnly,
     partialMatch,
     updateUsingLocalStyles,
+    reverseLayers,
   } = config;
-  const layers = cleanSelection();
+  const layers = cleanSelection({ reverseLayers });
 
   if (isArrayEmpty(layers)) {
     showNofication(0, messages(counter).layers, notificationTimeout);
