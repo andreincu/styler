@@ -7,7 +7,7 @@ Basically, you can control your styles by changing layer properties and updating
 
 ## Features
 
-### Extract Styles ![new](assets/tag-new.svg)
+### Extract Styles
 
 Creates layers based on local styles.  
 This can be useful to transfer style from a project to another, or for libraries that already have styles created, but needs to make bulk changes.
@@ -41,7 +41,7 @@ Works on selected layers.
 - By Effect Type
 - By Grid Type
 
-### Customize plugin ![new](assets/tag-new.svg)
+### Customize plugin
 
 - **Notification timeout:** changes the duration of all notification alerts that appears while interacting with Styler.
 - **Show last style in description:** appends the name of the latest style that was applied to the layer to the current style description.
@@ -52,12 +52,13 @@ Works on selected layers.
 - **Extend name match:** also changes the behaviour of **Generate Styles** by looking for a partial name match between layer name and style name, as results will be many styles found.  
   _Use this with caution._
 - **Texts per column** and **Frames per row** controls the grid of the extracted layers.
+- **Reverse generation layers**: change the order of how styles are created when using **Generate styles**
 
 ## Known issues
 
 1. Some of the **Type details** of the text layers are not saved into the style. This is also a limitation of the API... 😭  
-**[Fixed]** ~~1. While trying to rename the styles using underscore `_` or point `.` prefixes, the style will not change the publish status (it will not become unpublish). This is a limitation of the API. ☹️~~  
-**[WIP]** ~~After you create styles, you cannot reorder them using Figma API. 😔~~
+   **[Fixed]** ~~1. While trying to rename the styles using underscore `_` or point `.` prefixes, the style will not change the publish status (it will not become unpublish). This is a limitation of the API. ☹️~~  
+   **[WIP]** ~~After you create styles, you cannot reorder them using Figma API. 😔~~
 
 ## Notes
 
