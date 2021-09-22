@@ -132,6 +132,10 @@
       <span slot="label">Extend name match</span>
     </Checkbox>
 
+    <Checkbox bind:checked={uiSettings.reverseLayers}>
+      <span slot="label">Reverse generation order</span>
+    </Checkbox>
+
     <div class="helper">
       <Icon iconName={Warning} class="icon-container" />
       <span class="small">

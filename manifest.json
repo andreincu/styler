@@ -1,11 +1,12 @@
 {
   "name": "Styler",
+  "editorType": ["figma"],
   "id": "820660579767995949",
   "api": "1.0.0",
   "main": "dist/code.js",
   "ui": "dist/ui.html",
   "menu": [
-    
+
     {
       "name": "Extract Styles",
       "command": "extract-all-styles"
