@@ -68,6 +68,4 @@ module.exports = {
   ],
 
   devtool: prod ? false : 'source-map',
-
-  stats: 'errors-warnings',
 };

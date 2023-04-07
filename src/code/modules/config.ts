@@ -1,5 +1,5 @@
-import { Styler } from './styler';
 import { defaultSettings } from './default-settings.js';
+import { Styler } from './styler';
 
 export const clientStorageKey = 'cachedSettings';
 
@@ -67,6 +67,11 @@ export class Config {
         'paragraphSpacing',
         'textCase',
         'textDecoration',
+        // added since types 1.62.0
+        'leadingTrim',
+        'listSpacing',
+        'hangingQuote',
+        'hangingList',
       ],
       prefix: texterPrefix,
       suffix: texterSuffix,
