@@ -9,6 +9,9 @@
   "keywords": [],
   "author": "andrei-iancu <andrei-i@outlook.com>",
   "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0 <17.0.0"
+  },
   "devDependencies": {
     "@figma/plugin-typings": "^1.34.1",
     "@types/node": "^13.13.52",
