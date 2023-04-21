@@ -70,7 +70,7 @@ export class Config {
         // added since types 1.62.0
         'leadingTrim',
         'listSpacing',
-        'hangingQuote',
+        'hangingPunctuation',
         'hangingList',
       ],
       prefix: texterPrefix,
